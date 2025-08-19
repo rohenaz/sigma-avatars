@@ -29,9 +29,11 @@ export const getAngle = (x: number, y: number): number => {
 export const getUnit = (number: number, range: number, index?: number): number => {
   const value = number % range
 
-  if(index && ((getDigit(number, index) % 2) === 0)) {
+  if (index && ((getDigit(number, index) % 2) === 0)) {
     return -value
-  } else return value
+  } else {
+    return value
+  }
 }
 
 export const getRandomColor = (number: number, colors: Color[], range: number): Color => {
@@ -57,9 +59,9 @@ export const getContrast = (hexcolor: string): string => {
 	}
 
 	// Convert to RGB value
-	const r = parseInt(hexcolor.substr(0,2),16);
-	const g = parseInt(hexcolor.substr(2,2),16);
-	const b = parseInt(hexcolor.substr(4,2),16);
+	const r = parseInt(hexcolor.substring(0,2),16);
+	const g = parseInt(hexcolor.substring(2,2),16);
+	const b = parseInt(hexcolor.substring(4,2),16);
 
 	// Get YIQ ratio
 	const yiq = ((r * 299) + (g * 587) + (b * 114)) / 1000;

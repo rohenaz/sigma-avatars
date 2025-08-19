@@ -92,10 +92,3 @@ The `square` prop is used to make the avatar square.
 ```jsx
 <Avatar name="Helen Keller" square/>
 ```
-
-## API service
-
-> [!IMPORTANT]  
-> Please note that the old service was paused in July 31st 2024. We recommend transitioning to our new API service to ensure uninterrupted access and support.
-
-Get access to the Sigma Avatars API service [here →](https://boringdesigners.gumroad.com/l/sigma-avatars-service).
