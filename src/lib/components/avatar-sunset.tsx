@@ -48,8 +48,8 @@ const AvatarSunset = ({ name, colors, title, square, size, ...otherProps }: Avat
           y2={SIZE / 2}
           gradientUnits="userSpaceOnUse"
         >
-          <stop stopColor={sunsetColors[0]} />
-          <stop offset={1} stopColor={sunsetColors[1]} />
+          <stop style={{ stopColor: sunsetColors[0] }} />
+          <stop offset={1} style={{ stopColor: sunsetColors[1] }} />
         </linearGradient>
         <linearGradient
           id={'gradient_paint1_linear_' + nameWithoutSpace}
@@ -59,8 +59,8 @@ const AvatarSunset = ({ name, colors, title, square, size, ...otherProps }: Avat
           y2={SIZE}
           gradientUnits="userSpaceOnUse"
         >
-          <stop stopColor={sunsetColors[2]} />
-          <stop offset={1} stopColor={sunsetColors[3]} />
+          <stop style={{ stopColor: sunsetColors[2] }} />
+          <stop offset={1} style={{ stopColor: sunsetColors[3] }} />
         </linearGradient>
       </defs>
     </svg>

@@ -5,6 +5,7 @@ import AvatarBeam from './components/avatar-beam';
 import AvatarSunset from './components/avatar-sunset';
 import AvatarMarble from './components/avatar-marble';
 import type { AvatarProps } from './components/types';
+import { defaultColors } from './utilities';
 
 const AVATAR_VARIANTS = {
   pixel: AvatarPixel,
@@ -19,7 +20,7 @@ const AVATAR_VARIANTS = {
 
 const Avatar = ({
   variant = 'marble',
-  colors = ['#92A1C6', '#146A7C', '#F0AB3D', '#C271B4', '#C20D90'],
+  colors = defaultColors,
   name = 'Clara Barton',
   title = false,
   size,
@@ -41,3 +42,17 @@ const Avatar = ({
 };
 
 export default Avatar;
+
+// Export types and utilities for consumers
+export type { AvatarProps, Color, ColorPalette } from './components/types';
+export { 
+  shadcnColors, 
+  shadcnColorPrefixColors, 
+  defaultColors,
+  paletteToArray,
+  isHex,
+  isCssVariable,
+  isRgbColor,
+  isHslColor,
+  isOklchColor
+} from './utilities';

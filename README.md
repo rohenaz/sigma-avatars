@@ -1,22 +1,28 @@
-# Boring avatars
+# Sigma Avatars
 
-Boring avatars is a tiny JavaScript React library that generates custom, SVG-based avatars from any username and color palette.
-<a href="https://www.npmjs.com/package/boring-avatars">
+Sigma Avatars is a tiny JavaScript React library that generates custom, SVG-based avatars from any username and color palette.
+<a href="https://www.npmjs.com/package/sigma-avatars">
 
-![hi](https://badgen.net/npm/v/boring-avatars)
+![hi](https://badgen.net/npm/v/sigma-avatars)
 
 </a>
 
 ## Install
 
 ```
-npm install boring-avatars
+bun add sigma-avatars
+```
+
+or with npm:
+
+```
+npm install sigma-avatars
 ```
 
 ## Usage
 
 ```jsx
-import Avatar from 'boring-avatars';
+import Avatar from 'sigma-avatars';
 
 <Avatar name="Maria Mitchell" />;
 ```
@@ -55,10 +61,29 @@ The `size` prop is used to change the size of the avatar.
 ```
 
 #### Colors
-The `colors` prop is used to change the color palette of the avatar.
+The `colors` prop is used to change the color palette of the avatar. Sigma Avatars now supports CSS variables and modern color formats including those used by shadcn/ui.
 
 ```jsx
+// Traditional hex colors
 <Avatar name="Grace Hopper" colors={["#fb6900", "#f63700", "#004853", "#007e80", "#00b9bd"]}/>
+
+// shadcn/ui CSS variables (OKLCH)
+<Avatar name="Jane Doe" colors={[
+  "var(--color-primary)",
+  "var(--color-secondary)", 
+  "var(--color-accent)",
+  "var(--color-muted)",
+  "var(--color-card)"
+]}/>
+
+// Mix of formats
+<Avatar name="John Smith" colors={[
+  "var(--primary)",
+  "#f63700",
+  "oklch(0.7 0.2 340)",
+  "hsl(220 14% 96%)",
+  "rgb(100 200 150)"
+]}/>
 ```
 
 #### Square
@@ -73,4 +98,4 @@ The `square` prop is used to make the avatar square.
 > [!IMPORTANT]  
 > Please note that the old service was paused in July 31st 2024. We recommend transitioning to our new API service to ensure uninterrupted access and support.
 
-Get access to the Boring avatars API service [here →](https://boringdesigners.gumroad.com/l/boring-avatars-service).
+Get access to the Sigma Avatars API service [here →](https://boringdesigners.gumroad.com/l/sigma-avatars-service).

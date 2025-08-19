@@ -39,11 +39,11 @@ const AvatarMarble = ({ name, colors, title, square, size, ...otherProps }: Avat
         <rect width={SIZE} height={SIZE} rx={square ? undefined : SIZE * 2} fill="#FFFFFF" />
       </mask>
       <g mask={`url(#${maskID})`}>
-        <rect width={SIZE} height={SIZE} fill={properties[0].color} />
+        <rect width={SIZE} height={SIZE} style={{ fill: properties[0].color }} />
         <path
           filter={`url(#filter_${maskID})`}
           d="M32.414 59.35L50.376 70.5H72.5v-71H33.728L26.5 13.381l19.057 27.08L32.414 59.35z"
-          fill={properties[1].color}
+          style={{ fill: properties[1].color }}
           transform={
             'translate(' +
             properties[1].translateX +
@@ -64,9 +64,9 @@ const AvatarMarble = ({ name, colors, title, square, size, ...otherProps }: Avat
           filter={`url(#filter_${maskID})`}
           style={{
             mixBlendMode: 'overlay',
+            fill: properties[2].color
           }}
           d="M22.216 24L0 46.75l14.108 38.129L78 86l-3.081-59.276-22.378 4.005 12.972 20.186-23.35 27.395L22.215 24z"
-          fill={properties[2].color}
           transform={
             'translate(' +
             properties[2].translateX +
