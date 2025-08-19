@@ -49,8 +49,8 @@ const AvatarSection = styled.div`
 `;
 
 const Input = styled.input`
-  padding: var(--textbox);
-  font: inherit;
+  padding: 0.3rem 0.5rem;
+  font-size: 0.75rem;
   color: inherit;
   border: 1px solid transparent;
   transition: 0.5s;
@@ -194,20 +194,6 @@ export const Playground = () => {
   return (
     <>
       <BaseStyles />
-      <Banner>
-        This is a playground to test local changes and not the one used in{' '}
-        <a style={{ color: 'white' }} href="https://boringavatars.com">
-          boringavatars.com
-        </a>{' '}
-        . For suggestions, issues or PR's go to the{' '}
-        <a
-          style={{ color: 'white' }}
-          href="http://www.github.com/boringdesigners/boring-avatars-playground"
-        >
-          playground repository
-        </a>
-      </Banner>
-      .
       <Header>
         <SegmentGroup>
           {(['beam', 'bauhaus', 'ring', 'sunset', 'pixel', 'marble'] as const).map(

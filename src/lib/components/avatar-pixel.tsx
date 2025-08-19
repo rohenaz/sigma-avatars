@@ -28,19 +28,20 @@ const AvatarPixel = ({ name, colors, title, square, size, ...otherProps }: Avata
       xmlns="http://www.w3.org/2000/svg"
       width={size}
       height={size}
+      shapeRendering="crispEdges"
       {...otherProps}
     >
       {title && <title>{name}</title>}
       <mask
         id={maskID}
-        mask-type="alpha"
+        maskType="alpha"
         maskUnits="userSpaceOnUse"
         x={0}
         y={0}
         width={SIZE}
         height={SIZE}
       >
-        <rect width={SIZE} height={SIZE} rx={square ? undefined : SIZE * 2} fill="#FFFFFF" />
+        <rect width={SIZE} height={SIZE} fill="#FFFFFF" />
       </mask>
       <g mask={`url(#${maskID})`}>
         <rect width={10} height={10} style={{ fill: pixelColors[0] }} />

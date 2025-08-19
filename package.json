@@ -1,7 +1,7 @@
 {
   "name": "sigma-avatars",
   "description": "Sigma Avatars is a tiny JavaScript React library that generates custom, SVG-based, round avatars from any username and color palette.",
-  "homepage": "https://sigma-avatars.com/",
+  "homepage": "https://avatars.sigmaidentity.com/",
   "version": "2.0.1",
   "repository": {
     "type": "git",
