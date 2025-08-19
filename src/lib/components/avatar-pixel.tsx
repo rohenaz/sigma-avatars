@@ -34,7 +34,6 @@ const AvatarPixel = ({ name, colors, title, square, size, ...otherProps }: Avata
       {title && <title>{name}</title>}
       <mask
         id={maskID}
-        maskType="alpha"
         maskUnits="userSpaceOnUse"
         x={0}
         y={0}

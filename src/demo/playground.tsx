@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, memo, useMemo } from 'react';
 import styled from 'styled-components';
 import { SegmentGroup, Segment, Button, BaseStyles, ColorDot } from './ui-system';
 import colors from 'nice-color-palettes/1000.json';
@@ -75,10 +75,13 @@ interface AvatarWrapperProps {
   playgroundColors: string[];
   size: number;
   square: boolean;
-  variant: 'beam' | 'bauhaus' | 'ring' | 'sunset' | 'pixel' | 'marble';
+  variant: 'beam' | 'bauhaus' | 'ring' | 'sunset' | 'pixel' | 'marble' | 'fractal';
 }
 
-const AvatarWrapper = ({ name, playgroundColors, size, square, variant }: AvatarWrapperProps) => {
+// Memoized Avatar component to prevent unnecessary re-renders
+const MemoizedAvatar = memo(Avatar);
+
+const AvatarWrapper = memo(({ name, playgroundColors, size, square, variant }: AvatarWrapperProps) => {
   const [avatarName, setAvatarName] = useState<string>(name);
   const handleFocus = (event: React.FocusEvent<HTMLInputElement>) => event.target.select();
   const ref = useRef<HTMLDivElement>(null);
@@ -98,7 +101,7 @@ const AvatarWrapper = ({ name, playgroundColors, size, square, variant }: Avatar
   return (
     <AvatarContainer>
       <AvatarSection className="Avatar" ref={ref}>
-        <Avatar
+        <MemoizedAvatar
           name={avatarName}
           colors={playgroundColors}
           size={size}
@@ -113,7 +116,7 @@ const AvatarWrapper = ({ name, playgroundColors, size, square, variant }: Avatar
       />
     </AvatarContainer>
   );
-};
+});
 
 const getRandomPaletteIndex = (): number => Math.floor(Math.random() * paletteColors.length);
 
@@ -196,7 +199,7 @@ export const Playground = () => {
       <BaseStyles />
       <Header>
         <SegmentGroup>
-          {(['beam', 'bauhaus', 'ring', 'sunset', 'pixel', 'marble'] as const).map(
+          {(['beam', 'bauhaus', 'ring', 'sunset', 'pixel', 'marble', 'fractal'] as const).map(
             (variantItem, i) => (
               <Segment
                 key={i}
@@ -230,16 +233,18 @@ export const Playground = () => {
         </SegmentGroup>
       </Header>
       <AvatarsGrid>
-        {exampleNames.map((exampleName, name) => (
-          <AvatarWrapper
-            key={name}
-            size={avatarSize}
-            square={isSquare}
-            name={exampleName}
-            playgroundColors={filteredColors}
-            variant={variant}
-          />
-        ))}
+        {useMemo(() => 
+          exampleNames.map((exampleName, index) => (
+            <AvatarWrapper
+              key={`${variant}-${index}`}
+              size={avatarSize}
+              square={isSquare}
+              name={exampleName}
+              playgroundColors={filteredColors}
+              variant={variant}
+            />
+          )), [avatarSize, isSquare, filteredColors, variant]
+        )}
       </AvatarsGrid>
     </>
   );

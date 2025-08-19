@@ -35,7 +35,7 @@ import Avatar from 'sigma-avatars';
 | square  | boolean                                                      | `false`                                                   |
 | title   | boolean                                                      | `false`                                                   |
 | name    | string                                                       | `Clara Barton`                                            |
-| variant | oneOf: `marble`, `beam`, `pixel`,`sunset`, `ring`, `bauhaus` | `marble`                                                  |
+| variant | oneOf: `marble`, `beam`, `pixel`,`sunset`, `ring`, `bauhaus`, `fractal` | `marble`                                                  |
 | colors  | array                                                        | `['#92A1C6', '#146A7C', '#F0AB3D', '#C271B4', '#C20D90']` | 
 
 
@@ -47,10 +47,13 @@ The `name` prop is used to generate the avatar. It can be the username, email or
 ```
 
 #### Variant
-The `variant` prop is used to change the theme of the avatar. The available variants are: `marble`, `beam`, `pixel`, `sunset`, `ring` and `bauhaus`.
+The `variant` prop is used to change the theme of the avatar. The available variants are: `marble`, `beam`, `pixel`, `sunset`, `ring`, `bauhaus`, and `fractal`.
 
 ```jsx
 <Avatar name="Alice Paul" variant="beam"/>
+
+// New fractal variant with GPU-accelerated noise patterns
+<Avatar name="Sofia Kovalevskaya" variant="fractal"/>
 ```
 
 #### Size
