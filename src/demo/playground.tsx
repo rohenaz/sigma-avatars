@@ -75,7 +75,7 @@ interface AvatarWrapperProps {
   playgroundColors: string[];
   size: number;
   square: boolean;
-  variant: 'beam' | 'bauhaus' | 'ring' | 'sunset' | 'pixel' | 'marble' | 'fractal';
+  variant: 'beam' | 'bauhaus' | 'ring' | 'sunset' | 'pixel' | 'marble' | 'fractal' | 'mage' | 'anime';
 }
 
 // Memoized Avatar component to prevent unnecessary re-renders
@@ -199,7 +199,7 @@ export const Playground = () => {
       <BaseStyles />
       <Header>
         <SegmentGroup>
-          {(['beam', 'bauhaus', 'ring', 'sunset', 'pixel', 'marble', 'fractal'] as const).map(
+          {(['beam', 'bauhaus', 'ring', 'sunset', 'pixel', 'marble', 'fractal', 'mage', 'anime'] as const).map(
             (variantItem, i) => (
               <Segment
                 key={i}
