@@ -7,6 +7,7 @@ import AvatarMarble from './components/avatar-marble';
 import AvatarFractal from './components/avatar-fractal';
 import AvatarMage from './components/avatar-mage';
 import AvatarAnime from './components/avatar-anime';
+import AvatarPepe from './components/avatar-pepe';
 import type { AvatarProps } from './components/types';
 import { defaultColors } from './utilities';
 
@@ -20,6 +21,7 @@ const AVATAR_VARIANTS = {
   fractal: AvatarFractal,
   mage: AvatarMage,
   anime: AvatarAnime,
+  pepe: AvatarPepe,
   geometric: AvatarBeam, // Deprecated, use 'beam'
   abstract: AvatarBauhaus, // Deprecated, use 'bauhaus'
 };

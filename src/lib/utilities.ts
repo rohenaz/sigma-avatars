@@ -27,7 +27,9 @@ export const getAngle = (x: number, y: number): number => {
 }
 
 export const getUnit = (number: number, range: number, index?: number): number => {
-  const value = number % range
+  // Add bit spreading to avoid collisions on small ranges
+  const spread = (number ^ (number >>> 16)) * 0x85ebca6b;
+  const value = Math.abs(spread) % range
 
   if (index && ((getDigit(number, index) % 2) === 0)) {
     return -value

@@ -4,12 +4,13 @@ import { SegmentGroup, Segment, Button, BaseStyles, ColorDot } from './ui-system
 import colors from 'nice-color-palettes/1000.json';
 import { exampleNames } from './example-names';
 import Avatar from '../lib';
+import { ThemeToggle } from './theme-toggle';
 
 const paletteColors = colors;
 
 const Header = styled.header`
   display: grid;
-  grid-template-columns: auto 1fr auto auto auto auto;
+  grid-template-columns: auto 1fr auto auto auto auto auto;
   padding: var(--pagePadding);
   align-items: center;
   grid-gap: var(--sp-s);
@@ -75,7 +76,7 @@ interface AvatarWrapperProps {
   playgroundColors: string[];
   size: number;
   square: boolean;
-  variant: 'beam' | 'bauhaus' | 'ring' | 'sunset' | 'pixel' | 'marble' | 'fractal' | 'mage' | 'anime';
+  variant: 'beam' | 'bauhaus' | 'ring' | 'sunset' | 'pixel' | 'marble' | 'fractal' | 'mage' | 'anime' | 'pepe';
 }
 
 // Memoized Avatar component to prevent unnecessary re-renders
@@ -199,7 +200,7 @@ export const Playground = () => {
       <BaseStyles />
       <Header>
         <SegmentGroup>
-          {(['beam', 'bauhaus', 'ring', 'sunset', 'pixel', 'marble', 'fractal', 'mage', 'anime'] as const).map(
+          {(['beam', 'bauhaus', 'ring', 'sunset', 'pixel', 'marble', 'fractal', 'mage', 'anime', 'pepe'] as const).map(
             (variantItem, i) => (
               <Segment
                 key={i}
@@ -231,6 +232,7 @@ export const Playground = () => {
             />
           ))}
         </SegmentGroup>
+        <ThemeToggle />
       </Header>
       <AvatarsGrid>
         {useMemo(() => 
