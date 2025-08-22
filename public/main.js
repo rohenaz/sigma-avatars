@@ -21019,8 +21019,8 @@ var getContrast = (hexcolor) => {
     hexcolor = hexcolor.slice(1);
   }
   const r2 = Number.parseInt(hexcolor.substring(0, 2), 16);
-  const g2 = Number.parseInt(hexcolor.substring(2, 2), 16);
-  const b2 = Number.parseInt(hexcolor.substring(4, 2), 16);
+  const g2 = Number.parseInt(hexcolor.substring(2, 4), 16);
+  const b2 = Number.parseInt(hexcolor.substring(4, 6), 16);
   const yiq = (r2 * 299 + g2 * 587 + b2 * 114) / 1000;
   return yiq >= 128 ? "#000000" : "#FFFFFF";
 };
