@@ -1,0 +1,34 @@
+# Source code
+src/
+scripts/
+
+# Demo files
+demo-dist/
+public/
+index.html
+
+# Development files
+.vscode/
+.github/
+vectors/
+
+# Config files
+biome.jsonc
+tsconfig.*.json
+bun.lock
+CLAUDE.md
+
+# Build artifacts (except dist)
+build/
+*.log
+*.tmp
+.DS_Store
+
+# Test files
+*.test.*
+*.spec.*
+__tests__/
+coverage/
+
+# Documentation source
+docs/
