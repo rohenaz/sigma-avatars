@@ -1,5 +1,5 @@
 import React from 'react';
-import { hashCode, getRandomColor } from '../utilities';
+import { getRandomColor, hashCode } from '../utilities';
 import type { AvatarProps } from './types';
 
 const SIZE = 90;
@@ -9,7 +9,7 @@ function generateColors(name: string, colors: string[]) {
   const numFromName = hashCode(name);
   const range = colors && colors.length;
   const colorsShuffle = Array.from({ length: COLORS }, (_, i) =>
-    getRandomColor(numFromName + i, colors, range),
+    getRandomColor(numFromName + i, colors, range)
   );
   const colorsList = [];
   colorsList[0] = colorsShuffle[0];
@@ -25,23 +25,42 @@ function generateColors(name: string, colors: string[]) {
   return colorsList;
 }
 
-const AvatarRing = ({ name, colors, title, square, size, ...otherProps }: AvatarProps) => {
+const AvatarRing = ({
+  name,
+  colors,
+  title,
+  square,
+  size,
+  ...otherProps
+}: AvatarProps) => {
   const ringColors = generateColors(name, colors);
   const maskID = React.useId();
 
   return (
     <svg
-      viewBox={'0 0 ' + SIZE + ' ' + SIZE}
       fill="none"
-      role="img"
-      xmlns="http://www.w3.org/2000/svg"
-      width={size}
       height={size}
+      role="img"
+      viewBox={'0 0 ' + SIZE + ' ' + SIZE}
+      width={size}
+      xmlns="http://www.w3.org/2000/svg"
       {...otherProps}
     >
       {title && <title>{name}</title>}
-      <mask id={maskID} maskUnits="userSpaceOnUse" x={0} y={0} width={SIZE} height={SIZE}>
-        <rect width={SIZE} height={SIZE} rx={square ? undefined : SIZE * 2} fill="#FFFFFF" />
+      <mask
+        height={SIZE}
+        id={maskID}
+        maskUnits="userSpaceOnUse"
+        width={SIZE}
+        x={0}
+        y={0}
+      >
+        <rect
+          fill="#FFFFFF"
+          height={SIZE}
+          rx={square ? undefined : SIZE * 2}
+          width={SIZE}
+        />
       </mask>
       <g mask={`url(#${maskID})`}>
         <path d="M0 0h90v45H0z" style={{ fill: ringColors[0] }} />

@@ -1,11 +1,14 @@
+import { resolve } from 'node:path';
+import react from '@vitejs/plugin-react';
 import { defineConfig } from 'vite';
 import dts from 'vite-plugin-dts';
-import react from '@vitejs/plugin-react';
-import { resolve } from 'path';
 
 // https://vite.dev/config/
 export default defineConfig({
-  plugins: [react(), dts({ tsconfigPath: './tsconfig.lib.json', include: ['src/lib'] })],
+  plugins: [
+    react(),
+    dts({ tsconfigPath: './tsconfig.lib.json', include: ['src/lib'] }),
+  ],
   build: {
     lib: {
       entry: resolve(__dirname, 'src/lib/index.tsx'),

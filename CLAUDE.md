@@ -5,9 +5,10 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Commands
 
 ### Development
-- `bun dev` - Start development server with Vite
-- `bun build` - Build library (TypeScript compilation + Vite build)
-- `bun lint` - Run ESLint
+- `bun dev` - Start development server with Vite (demo app)
+- `bun build` - Build library (TypeScript compiler emits per-file ESM and .d.ts to `build/`)
+- `bun lint` - Run Biome check (lints & reports)
+- `bun lint:fix` - Apply Biome fixes (uses `--apply --unsafe`)
 - `bun preview` - Preview built library
 
 ### Package Manager

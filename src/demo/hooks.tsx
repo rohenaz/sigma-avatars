@@ -1,4 +1,4 @@
-import { useEffect, type RefObject } from "react";
+import { type RefObject, useEffect } from 'react';
 
 export const useOnClickOutside = (
   ref: RefObject<HTMLDivElement | null>,
@@ -31,4 +31,4 @@ export const useOnClickOutside = (
     // ... passing it into this hook.
     [ref, handler]
   );
-}
+};

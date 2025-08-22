@@ -21,7 +21,7 @@ export const exampleNames = [
   'ServiceNow',
   'Intuit',
   'Cisco',
-  
+
   // Financial Services
   'Berkshire Hathaway',
   'JPMorgan Chase',
@@ -43,7 +43,7 @@ export const exampleNames = [
   'Capital One',
   'State Street',
   'Discover',
-  
+
   // Healthcare & Pharma
   'UnitedHealth Group',
   'Johnson & Johnson',
@@ -65,7 +65,7 @@ export const exampleNames = [
   'Illumina',
   'Boston Scientific',
   'Medtronic',
-  
+
   // Consumer Goods
   'Procter & Gamble',
   'Coca-Cola',
@@ -73,11 +73,11 @@ export const exampleNames = [
   'Walmart',
   'Home Depot',
   'Nike',
-  'McDonald\'s',
+  "McDonald's",
   'Costco Wholesale',
   'Starbucks',
   'Target',
-  'Lowe\'s Companies',
+  "Lowe's Companies",
   'Colgate-Palmolive',
   'General Mills',
   'Mondelez International',
@@ -87,7 +87,7 @@ export const exampleNames = [
   'Chipotle Mexican Grill',
   'Dollar General',
   'Dollar Tree',
-  
+
   // Industrial & Energy
   'Exxon Mobil',
   'Chevron',
@@ -109,7 +109,7 @@ export const exampleNames = [
   '3M',
   'Honeywell International',
   'General Dynamics',
-  
+
   // Communications & Media
   'Walt Disney',
   'Comcast',
@@ -121,7 +121,7 @@ export const exampleNames = [
   'Paramount Global',
   'Fox',
   'News',
-  
+
   // Other Notable Companies
   'Uber',
   'Airbnb',

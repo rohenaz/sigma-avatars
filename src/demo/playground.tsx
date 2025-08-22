@@ -1,10 +1,16 @@
-import { useEffect, useRef, useState, memo, useMemo } from 'react';
+import colors from 'nice-color-palettes/1000.json' with { type: 'json' };
+import { memo, useEffect, useMemo, useRef, useState } from 'react';
 import styled from 'styled-components';
-import { SegmentGroup, Segment, Button, BaseStyles, ColorDot } from './ui-system';
-import colors from 'nice-color-palettes/1000.json';
-import { exampleNames } from './example-names';
 import Avatar from '../lib';
+import { exampleNames } from './example-names';
 import { ThemeToggle } from './theme-toggle';
+import {
+  BaseStyles,
+  Button,
+  ColorDot,
+  Segment,
+  SegmentGroup,
+} from './ui-system';
 
 const paletteColors = colors;
 
@@ -76,50 +82,66 @@ interface AvatarWrapperProps {
   playgroundColors: string[];
   size: number;
   square: boolean;
-  variant: 'beam' | 'bauhaus' | 'ring' | 'sunset' | 'pixel' | 'marble' | 'fractal' | 'mage' | 'anime' | 'pepe';
+  variant:
+    | 'beam'
+    | 'bauhaus'
+    | 'ring'
+    | 'sunset'
+    | 'pixel'
+    | 'marble'
+    | 'fractal'
+    | 'mage'
+    | 'anime'
+    | 'pepe';
 }
 
 // Memoized Avatar component to prevent unnecessary re-renders
 const MemoizedAvatar = memo(Avatar);
 
-const AvatarWrapper = memo(({ name, playgroundColors, size, square, variant }: AvatarWrapperProps) => {
-  const [avatarName, setAvatarName] = useState<string>(name);
-  const handleFocus = (event: React.FocusEvent<HTMLInputElement>) => event.target.select();
-  const ref = useRef<HTMLDivElement>(null);
-  const [copyValue, setCopyValue] = useState<string>(name);
+const AvatarWrapper = memo(
+  ({ name, playgroundColors, size, square, variant }: AvatarWrapperProps) => {
+    const [avatarName, setAvatarName] = useState<string>(name);
+    const handleFocus = (event: React.FocusEvent<HTMLInputElement>) =>
+      event.target.select();
+    const ref = useRef<HTMLDivElement>(null);
+    const [copyValue, setCopyValue] = useState<string>(name);
 
-  useEffect(() => {
-    if (ref.current) {
-      const svgNode = ref.current.innerHTML;
-      const svgStart = svgNode.indexOf('<svg');
-      const svgEnd = svgNode.indexOf('</svg>') + 6;
-      const svgResult = svgNode.substring(svgStart, svgEnd).toString();
+    useEffect(() => {
+      if (ref.current) {
+        const svgNode = ref.current.innerHTML;
+        const svgStart = svgNode.indexOf('<svg');
+        const svgEnd = svgNode.indexOf('</svg>') + 6;
+        const svgResult = svgNode.substring(svgStart, svgEnd).toString();
 
-      setCopyValue(svgResult);
-    }
-  }, [copyValue, variant, playgroundColors]);
+        setCopyValue(svgResult);
+      }
+    }, [copyValue, variant, playgroundColors]);
 
-  return (
-    <AvatarContainer>
-      <AvatarSection className="Avatar" ref={ref}>
-        <MemoizedAvatar
-          name={avatarName}
-          colors={playgroundColors}
-          size={size}
-          variant={variant}
-          square={square}
+    return (
+      <AvatarContainer>
+        <AvatarSection className="Avatar" ref={ref}>
+          <MemoizedAvatar
+            colors={playgroundColors}
+            name={avatarName}
+            size={size}
+            square={square}
+            variant={variant}
+          />
+        </AvatarSection>
+        <Input
+          onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+            setAvatarName(e.target.value)
+          }
+          onFocus={handleFocus}
+          value={avatarName}
         />
-      </AvatarSection>
-      <Input
-        value={avatarName}
-        onChange={(e: React.ChangeEvent<HTMLInputElement>) => setAvatarName(e.target.value)}
-        onFocus={handleFocus}
-      />
-    </AvatarContainer>
-  );
-});
+      </AvatarContainer>
+    );
+  }
+);
 
-const getRandomPaletteIndex = (): number => Math.floor(Math.random() * paletteColors.length);
+const getRandomPaletteIndex = (): number =>
+  Math.floor(Math.random() * paletteColors.length);
 
 const avatarSizes: Record<string, number> = {
   small: 40,
@@ -128,11 +150,11 @@ const avatarSizes: Record<string, number> = {
 };
 
 const SizeDotWrapper = styled(Button)<{ isSelected: boolean }>`
-  ${(p) => (p.isSelected ? `background-color: var(--c-background)` : null)};
-  ${(p) => !p.isSelected && `color: var(--c-fade)`};
+  ${(p) => (p.isSelected ? 'background-color: var(--c-background)' : null)};
+  ${(p) => !p.isSelected && 'color: var(--c-fade)'};
 
   &:hover {
-    ${(p) => p.isSelected && `background-color: var(--c-background)`};
+    ${(p) => p.isSelected && 'background-color: var(--c-background)'};
   }
 `;
 
@@ -164,12 +186,20 @@ const SizeDot = ({
         return 0;
     }
   };
-  return <SizeDotWrapper isSelected={isSelected} icon={<Dot size={getSize()} />} onClick={onClick} />;
+  return (
+    <SizeDotWrapper
+      icon={<Dot size={getSize()} />}
+      isSelected={isSelected}
+      onClick={onClick}
+    />
+  );
 };
 
 export const Playground = () => {
   const defaultPlaygroundColors = paletteColors[493];
-  const [playgroundColors, setPlaygroundColors] = useState(defaultPlaygroundColors);
+  const [playgroundColors, setPlaygroundColors] = useState(
+    defaultPlaygroundColors
+  );
 
   const [dotColor0, setDotColor0] = useState(playgroundColors[0]);
   const [dotColor1, setDotColor1] = useState(playgroundColors[1]);
@@ -177,7 +207,13 @@ export const Playground = () => {
   const [dotColor3, setDotColor3] = useState(playgroundColors[3]);
   const [dotColor4, setDotColor4] = useState(playgroundColors[4]);
 
-  const filteredColors = [dotColor0, dotColor1, dotColor2, dotColor3, dotColor4];
+  const filteredColors = [
+    dotColor0,
+    dotColor1,
+    dotColor2,
+    dotColor3,
+    dotColor4,
+  ];
 
   const handleRandomColors = () => {
     setPlaygroundColors(paletteColors[getRandomPaletteIndex()]);
@@ -200,34 +236,62 @@ export const Playground = () => {
       <BaseStyles />
       <Header>
         <SegmentGroup>
-          {(['beam', 'bauhaus', 'ring', 'sunset', 'pixel', 'marble', 'fractal', 'mage', 'anime', 'pepe'] as const).map(
-            (variantItem, i) => (
-              <Segment
-                key={i}
-                onClick={() => setVariant(variantItem)}
-                isSelected={variantItem === variant}
-              >
-                {variantItem}
-              </Segment>
-            ),
-          )}
+          {(
+            [
+              'beam',
+              'bauhaus',
+              'ring',
+              'sunset',
+              'pixel',
+              'marble',
+              'fractal',
+              'mage',
+              'anime',
+              'pepe',
+            ] as const
+          ).map((variantItem, i) => (
+            <Segment
+              isSelected={variantItem === variant}
+              key={i}
+              onClick={() => setVariant(variantItem)}
+            >
+              {variantItem}
+            </Segment>
+          ))}
         </SegmentGroup>
         <ColorsSection>
-          <ColorDot value={dotColor0} onChange={(color) => setDotColor0(color)} />
-          <ColorDot value={dotColor1} onChange={(color) => setDotColor1(color)} />
-          <ColorDot value={dotColor2} onChange={(color) => setDotColor2(color)} />
-          <ColorDot value={dotColor3} onChange={(color) => setDotColor3(color)} />
-          <ColorDot value={dotColor4} onChange={(color) => setDotColor4(color)} />
+          <ColorDot
+            onChange={(color) => setDotColor0(color)}
+            value={dotColor0}
+          />
+          <ColorDot
+            onChange={(color) => setDotColor1(color)}
+            value={dotColor1}
+          />
+          <ColorDot
+            onChange={(color) => setDotColor2(color)}
+            value={dotColor2}
+          />
+          <ColorDot
+            onChange={(color) => setDotColor3(color)}
+            value={dotColor3}
+          />
+          <ColorDot
+            onChange={(color) => setDotColor4(color)}
+            value={dotColor4}
+          />
         </ColorsSection>
 
         <Button onClick={() => handleRandomColors()}>Random palette</Button>
-        <Button onClick={() => setSquare(!isSquare)}>{isSquare ? 'Round' : 'Square'}</Button>
+        <Button onClick={() => setSquare(!isSquare)}>
+          {isSquare ? 'Round' : 'Square'}
+        </Button>
         <SegmentGroup>
           {Object.entries(avatarSizes).map(([, value], index) => (
             <SizeDot
+              isSelected={value === avatarSize}
               key={index}
               onClick={() => setAvatarSize(value)}
-              isSelected={value === avatarSize}
               size={value}
             />
           ))}
@@ -235,17 +299,19 @@ export const Playground = () => {
         <ThemeToggle />
       </Header>
       <AvatarsGrid>
-        {useMemo(() => 
-          exampleNames.map((exampleName, index) => (
-            <AvatarWrapper
-              key={`${variant}-${index}`}
-              size={avatarSize}
-              square={isSquare}
-              name={exampleName}
-              playgroundColors={filteredColors}
-              variant={variant}
-            />
-          )), [avatarSize, isSquare, filteredColors, variant]
+        {useMemo(
+          () =>
+            exampleNames.map((exampleName, index) => (
+              <AvatarWrapper
+                key={`${variant}-${index}`}
+                name={exampleName}
+                playgroundColors={filteredColors}
+                size={avatarSize}
+                square={isSquare}
+                variant={variant}
+              />
+            )),
+          [avatarSize, isSquare, filteredColors, variant]
         )}
       </AvatarsGrid>
     </>

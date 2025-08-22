@@ -8,7 +8,13 @@ export type OklchColor = `oklch(${string})`;
 export type CssVariable = `var(--${string})`;
 
 // Union of all supported color formats
-export type Color = HexColor | RgbColor | HslColor | OklchColor | CssVariable | string;
+export type Color =
+  | HexColor
+  | RgbColor
+  | HslColor
+  | OklchColor
+  | CssVariable
+  | string;
 
 // Color palette interface for better DX
 export interface ColorPalette {
@@ -25,4 +31,4 @@ export type AvatarProps = {
   title?: boolean;
   square?: boolean;
   size?: number | string;
-} & SVGProps<SVGSVGElement>
+} & SVGProps<SVGSVGElement>;

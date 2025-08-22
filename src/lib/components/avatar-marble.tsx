@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { hashCode, getUnit, getRandomColor } from '../utilities';
+import { getRandomColor, getUnit, hashCode } from '../utilities';
 import type { AvatarProps } from './types';
 
 const ELEMENTS = 3;
@@ -20,29 +20,52 @@ function generateColors(name: string, colors: string[]) {
   return elementsProperties;
 }
 
-const AvatarMarble = ({ name, colors, title, square, size, ...otherProps }: AvatarProps) => {
+const AvatarMarble = ({
+  name,
+  colors,
+  title,
+  square,
+  size,
+  ...otherProps
+}: AvatarProps) => {
   const properties = generateColors(name, colors);
   const maskID = React.useId();
 
   return (
     <svg
-      viewBox={'0 0 ' + SIZE + ' ' + SIZE}
       fill="none"
-      role="img"
-      xmlns="http://www.w3.org/2000/svg"
-      width={size}
       height={size}
+      role="img"
+      viewBox={'0 0 ' + SIZE + ' ' + SIZE}
+      width={size}
+      xmlns="http://www.w3.org/2000/svg"
       {...otherProps}
     >
       {title && <title>{name}</title>}
-      <mask id={maskID} maskUnits="userSpaceOnUse" x={0} y={0} width={SIZE} height={SIZE}>
-        <rect width={SIZE} height={SIZE} rx={square ? undefined : SIZE * 2} fill="#FFFFFF" />
+      <mask
+        height={SIZE}
+        id={maskID}
+        maskUnits="userSpaceOnUse"
+        width={SIZE}
+        x={0}
+        y={0}
+      >
+        <rect
+          fill="#FFFFFF"
+          height={SIZE}
+          rx={square ? undefined : SIZE * 2}
+          width={SIZE}
+        />
       </mask>
       <g mask={`url(#${maskID})`}>
-        <rect width={SIZE} height={SIZE} style={{ fill: properties[0].color }} />
+        <rect
+          height={SIZE}
+          style={{ fill: properties[0].color }}
+          width={SIZE}
+        />
         <path
-          filter={`url(#filter_${maskID})`}
           d="M32.414 59.35L50.376 70.5H72.5v-71H33.728L26.5 13.381l19.057 27.08L32.414 59.35z"
+          filter={`url(#filter_${maskID})`}
           style={{ fill: properties[1].color }}
           transform={
             'translate(' +
@@ -61,12 +84,12 @@ const AvatarMarble = ({ name, colors, title, square, size, ...otherProps }: Avat
           }
         />
         <path
+          d="M22.216 24L0 46.75l14.108 38.129L78 86l-3.081-59.276-22.378 4.005 12.972 20.186-23.35 27.395L22.215 24z"
           filter={`url(#filter_${maskID})`}
           style={{
             mixBlendMode: 'overlay',
-            fill: properties[2].color
+            fill: properties[2].color,
           }}
-          d="M22.216 24L0 46.75l14.108 38.129L78 86l-3.081-59.276-22.378 4.005 12.972 20.186-23.35 27.395L22.215 24z"
           transform={
             'translate(' +
             properties[2].translateX +
@@ -86,13 +109,13 @@ const AvatarMarble = ({ name, colors, title, square, size, ...otherProps }: Avat
       </g>
       <defs>
         <filter
-          id={`filter_${maskID}`}
-          filterUnits="userSpaceOnUse"
           colorInterpolationFilters="sRGB"
+          filterUnits="userSpaceOnUse"
+          id={`filter_${maskID}`}
         >
           <feFlood floodOpacity={0} result="BackgroundImageFix" />
           <feBlend in="SourceGraphic" in2="BackgroundImageFix" result="shape" />
-          <feGaussianBlur stdDeviation={7} result="effect1_foregroundBlur" />
+          <feGaussianBlur result="effect1_foregroundBlur" stdDeviation={7} />
         </filter>
       </defs>
     </svg>

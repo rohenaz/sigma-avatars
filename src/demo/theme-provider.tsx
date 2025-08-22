@@ -24,7 +24,10 @@ interface ThemeProviderProps {
   defaultTheme?: Theme;
 }
 
-export const ThemeProvider = ({ children, defaultTheme = 'system' }: ThemeProviderProps) => {
+export const ThemeProvider = ({
+  children,
+  defaultTheme = 'system',
+}: ThemeProviderProps) => {
   const [theme, setTheme] = useState<Theme>(() => {
     const stored = localStorage.getItem('theme') as Theme | null;
     return stored || defaultTheme;
@@ -34,7 +37,7 @@ export const ThemeProvider = ({ children, defaultTheme = 'system' }: ThemeProvid
 
   useEffect(() => {
     const root = document.documentElement;
-    
+
     const applyTheme = (isDark: boolean) => {
       const resolvedValue = isDark ? 'dark' : 'light';
       setResolvedTheme(resolvedValue);
@@ -44,14 +47,13 @@ export const ThemeProvider = ({ children, defaultTheme = 'system' }: ThemeProvid
     if (theme === 'system') {
       const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
       applyTheme(mediaQuery.matches);
-      
+
       const handleChange = (e: MediaQueryListEvent) => applyTheme(e.matches);
       mediaQuery.addEventListener('change', handleChange);
-      
+
       return () => mediaQuery.removeEventListener('change', handleChange);
-    } else {
-      applyTheme(theme === 'dark');
     }
+    applyTheme(theme === 'dark');
   }, [theme]);
 
   const handleSetTheme = (newTheme: Theme) => {
@@ -60,7 +62,9 @@ export const ThemeProvider = ({ children, defaultTheme = 'system' }: ThemeProvid
   };
 
   return (
-    <ThemeContext.Provider value={{ theme, resolvedTheme, setTheme: handleSetTheme }}>
+    <ThemeContext.Provider
+      value={{ theme, resolvedTheme, setTheme: handleSetTheme }}
+    >
       {children}
     </ThemeContext.Provider>
   );
