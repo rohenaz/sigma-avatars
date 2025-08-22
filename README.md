@@ -35,7 +35,7 @@ import Avatar from 'sigma-avatars';
 | square  | boolean                                                      | `false`                                                   |
 | title   | boolean                                                      | `false`                                                   |
 | name    | string                                                       | `Clara Barton`                                            |
-| variant | oneOf: `marble`, `beam`, `pixel`,`sunset`, `ring`, `bauhaus`, `fractal`, `mage` | `marble`                                                  |
+| variant | oneOf: `marble`, `beam`, `pixel`,`sunset`, `ring`, `bauhaus`, `fractal`, `mage`, `anime`, `pepe` | `marble`                                                  |
 | colors  | array                                                        | `['#92A1C6', '#146A7C', '#F0AB3D', '#C271B4', '#C20D90']` | 
 
 
@@ -47,7 +47,7 @@ The `name` prop is used to generate the avatar. It can be the username, email or
 ```
 
 #### Variant
-The `variant` prop is used to change the theme of the avatar. The available variants are: `marble`, `beam`, `pixel`, `sunset`, `ring`, `bauhaus`, `fractal`, and `mage`.
+The `variant` prop is used to change the theme of the avatar. The available variants are: `marble`, `beam`, `pixel`, `sunset`, `ring`, `bauhaus`, `fractal`, `mage`, `anime`, and `pepe`.
 
 ```jsx
 <Avatar name="Alice Paul" variant="beam"/>
@@ -57,6 +57,12 @@ The `variant` prop is used to change the theme of the avatar. The available vari
 
 // Mage variant with mystical appearance
 <Avatar name="Merlin" variant="mage"/>
+
+// Anime variant with cel-shaded style
+<Avatar name="Sakura" variant="anime"/>
+
+// Pepe variant with sunglasses
+<Avatar name="Pepe Silvia" variant="pepe"/>
 ```
 
 #### Size
@@ -90,6 +96,15 @@ The `colors` prop is used to change the color palette of the avatar. Sigma Avata
   "hsl(220 14% 96%)",
   "rgb(100 200 150)"
 ]}/>
+
+// Using built-in shadcn color arrays
+import Avatar, { shadcnColors, shadcnColorPrefixColors } from 'sigma-avatars';
+
+// Standard shadcn variables (--primary, --secondary, etc)
+<Avatar name="shadcn User" colors={shadcnColors}/>
+
+// With --color prefix (--color-primary, --color-secondary, etc)
+<Avatar name="Prefix User" colors={shadcnColorPrefixColors}/>
 ```
 
 #### Square
