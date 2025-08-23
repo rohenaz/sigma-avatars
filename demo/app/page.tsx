@@ -8,12 +8,12 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { ArrowRight, Copy, Check, Shuffle } from 'lucide-react';
 import Link from 'next/link';
-import colors from 'nice-color-palettes/1000';
+import { colorPalettes } from '@/lib/color-palettes';
 import { CodeBlock } from '@/components/code-block';
 import { useSidebar } from '@/components/ui/sidebar';
 import { useSidebarContext } from '@/contexts/sidebar-context';
 
-const paletteColors = colors;
+const paletteColors = colorPalettes;
 
 export default function Home() {
   const { setOpen: setSidebarOpen } = useSidebar();

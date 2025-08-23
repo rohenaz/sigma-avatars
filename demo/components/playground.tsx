@@ -2,7 +2,7 @@
 
 import React, { useMemo, useRef, useState, memo, useEffect } from 'react';
 import Avatar, { PATTERN_CATEGORIES, PATTERN_REGISTRY } from 'sigma-avatars';
-import colors from 'nice-color-palettes/1000';
+import { colorPalettes } from '@/lib/color-palettes';
 import Image from 'next/image';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
@@ -36,7 +36,7 @@ import { AppSidebar } from './app-sidebar';
 import { useSidebar } from "@/components/ui/sidebar";
 import { useSidebarContext } from '@/contexts/sidebar-context';
 
-const paletteColors = colors;
+const paletteColors = colorPalettes;
 
 const variants = [
   'marble',

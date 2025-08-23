@@ -8,10 +8,10 @@ import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Separator } from '@/components/ui/separator';
 import { Copy, Check, RefreshCw, Users, MessageSquare, ShoppingBag, Mail, Wallet, Hash, MoreHorizontal, ThumbsUp, Share } from 'lucide-react';
-import colors from 'nice-color-palettes/1000';
+import { colorPalettes } from '@/lib/color-palettes';
 import { CodeBlock } from '@/components/code-block';
 
-const paletteColors = colors;
+const paletteColors = colorPalettes;
 
 // Named color palettes showcasing different color formats
 const namedPalettes = {
