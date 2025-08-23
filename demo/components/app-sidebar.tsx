@@ -154,52 +154,6 @@ export function AppSidebar(props: AppSidebarProps) {
           </div>
         </div>
 
-        {/* Format Selector */}
-        <div className="grid gap-2">
-          <div className="flex items-center justify-between">
-            <Label htmlFor="format-select" className="text-sm font-medium">
-              Format & Size
-            </Label>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={copySvgToClipboard}
-              title="Copy SVG"
-            >
-              {copiedItem === 'svg' ? (
-                <Check className="h-4 w-4" />
-              ) : (
-                <Copy className="h-4 w-4" />
-              )}
-            </Button>
-          </div>
-          <Select value={selectedFormat} onValueChange={(value) => setSelectedFormat(value as 'svg' | 'png' | 'webp')}>
-            <SelectTrigger id="format-select">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="svg">
-                <div className="flex items-center justify-between w-full">
-                  <span>SVG</span>
-                  <span className="text-xs text-muted-foreground ml-2">~2-3 KB</span>
-                </div>
-              </SelectItem>
-              <SelectItem value="png">
-                <div className="flex items-center justify-between w-full">
-                  <span>PNG</span>
-                  <span className="text-xs text-muted-foreground ml-2">~8-12 KB</span>
-                </div>
-              </SelectItem>
-              <SelectItem value="webp">
-                <div className="flex items-center justify-between w-full">
-                  <span>WebP</span>
-                  <span className="text-xs text-muted-foreground ml-2">~4-6 KB</span>
-                </div>
-              </SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-
         {/* Variant Selector */}
         <div className="grid gap-3">
           <Label className="text-sm font-medium">Variants</Label>
@@ -273,17 +227,66 @@ export function AppSidebar(props: AppSidebarProps) {
             language="text"
           />
         </div>
+
+        {/* Format & Size Selector */}
+        <div className="grid gap-2">
+          <Label htmlFor="format-select" className="text-sm font-medium">
+            Format & Size
+          </Label>
+          <Select value={selectedFormat} onValueChange={(value) => setSelectedFormat(value as 'svg' | 'png' | 'webp')}>
+            <SelectTrigger id="format-select">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="svg">
+                <div className="flex items-center justify-between w-full">
+                  <span>SVG</span>
+                  <span className="text-xs text-muted-foreground ml-2">~2-3 KB</span>
+                </div>
+              </SelectItem>
+              <SelectItem value="png">
+                <div className="flex items-center justify-between w-full">
+                  <span>PNG</span>
+                  <span className="text-xs text-muted-foreground ml-2">~8-12 KB</span>
+                </div>
+              </SelectItem>
+              <SelectItem value="webp">
+                <div className="flex items-center justify-between w-full">
+                  <span>WebP</span>
+                  <span className="text-xs text-muted-foreground ml-2">~4-6 KB</span>
+                </div>
+              </SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
       </SidebarContent>
       
-      <SidebarFooter className="p-4 border-t">
-        <Button 
-          onClick={downloadSelectedAvatar} 
-          className="w-full"
-          size="lg"
-        >
-          <Download className="h-4 w-4 mr-2" />
-          Download {selectedFormat.toUpperCase()}
-        </Button>
+      <SidebarFooter className="p-4 border-t space-y-2">
+        <div className="flex gap-2">
+          <Button 
+            onClick={downloadSelectedAvatar} 
+            className="flex-1"
+            size="lg"
+          >
+            <Download className="h-4 w-4 mr-2" />
+            Download {selectedFormat.toUpperCase()}
+          </Button>
+          <Button
+            onClick={copySvgToClipboard}
+            size="lg"
+            variant="outline"
+            title="Copy SVG Code"
+          >
+            {copiedItem === 'svg' ? (
+              <Check className="h-5 w-5" />
+            ) : (
+              <Copy className="h-5 w-5" />
+            )}
+          </Button>
+        </div>
+        <p className="text-xs text-muted-foreground text-center">
+          Copy button exports raw SVG code
+        </p>
       </SidebarFooter>
       
       <SidebarRail />
