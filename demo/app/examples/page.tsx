@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import Avatar from '../../../src/lib';
+import Avatar from 'sigma-avatars';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardAction, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';

@@ -3,7 +3,7 @@
 import * as React from "react"
 import { useState } from 'react';
 import Image from 'next/image';
-import Avatar from '../../src/lib';
+import Avatar from 'sigma-avatars';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';

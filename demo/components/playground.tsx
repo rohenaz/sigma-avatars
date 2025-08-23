@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useMemo, useRef, useState, memo, useEffect } from 'react';
-import Avatar, { PATTERN_CATEGORIES, PATTERN_REGISTRY } from '../../src/lib';
+import Avatar, { PATTERN_CATEGORIES, PATTERN_REGISTRY } from 'sigma-avatars';
 import colors from 'nice-color-palettes/1000';
 import Image from 'next/image';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
