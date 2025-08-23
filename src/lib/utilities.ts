@@ -18,6 +18,12 @@ export const hashCode = (name: string): number => {
   return Math.abs(hash);
 };
 
+// Generate deterministic ID based on name and suffix
+export const generateId = (name: string, suffix: string): string => {
+  const hash = hashCode(name + suffix);
+  return `avatar-${hash}-${suffix}`;
+};
+
 export const getModulus = (num: number, max: number): number => {
   return num % max;
 };

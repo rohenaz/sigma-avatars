@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { getUnit, hashCode } from '../utilities';
+import { generateId, getUnit, hashCode } from '../utilities';
 import type { AvatarProps } from './types';
 
 const SIZE = 80;
@@ -290,7 +290,7 @@ const AvatarFractal = ({
   animate,
   ...otherProps
 }: FractalAvatarProps) => {
-  const maskID = React.useId();
+  const maskID = generateId(name, 'mask');
   const clipID = React.useId();
   const gradientBgID = React.useId();
   const gradientFgID = React.useId();

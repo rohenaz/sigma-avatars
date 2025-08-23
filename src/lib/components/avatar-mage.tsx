@@ -1,38 +1,21 @@
 import * as React from 'react';
-import { getRandomColor, getUnit, hashCode } from '../utilities';
+import { generateId, getRandomColor, getUnit, hashCode } from '../utilities';
 import type { AvatarProps } from './types';
 
 const SIZE = 80;
 
-// Helper to pick the darkest color from palette
-function getDarkestColor(colors: string[]): string {
-  for (const color of colors) {
-    if (color.includes('foreground')) return color;
-    if (color.includes('dark')) return color;
-    if (color.includes('muted')) return color;
-  }
+// Generate marble-style sky background using same logic as marble variant
+function generateMarbleSky(name: string, colors: string[]) {
+  const num = hashCode(name);
+  const ELEMENTS = 3;
 
-  const hexColors = colors.filter((c) => c.startsWith('#'));
-  if (hexColors.length > 0) {
-    let darkest = hexColors[0];
-    let minBrightness = 255 * 3;
-
-    for (const hex of hexColors) {
-      if (hex.length === 7) {
-        const r = Number.parseInt(hex.substring(1, 3), 16);
-        const g = Number.parseInt(hex.substring(3, 5), 16);
-        const b = Number.parseInt(hex.substring(5, 7), 16);
-        const brightness = r + g + b;
-        if (brightness < minBrightness) {
-          minBrightness = brightness;
-          darkest = hex;
-        }
-      }
-    }
-    return darkest;
-  }
-
-  return colors[0] || '#000000';
+  return Array.from({ length: ELEMENTS }, (_, i) => ({
+    color: getRandomColor(num + i, colors, colors.length),
+    translateX: getUnit(num * (i + 1), SIZE / 10, 1),
+    translateY: getUnit(num * (i + 1), SIZE / 10, 2),
+    scale: 1.2 + getUnit(num * (i + 1), SIZE / 20) / 10,
+    rotate: getUnit(num * (i + 1), 360, 1),
+  }));
 }
 
 // Color helpers for anime-style shading
@@ -52,16 +35,10 @@ function rgbToHex(r: number, g: number, b: number) {
   return `#${toHex(r)}${toHex(g)}${toHex(b)}`;
 }
 
-// removed lighten helper
-
 function darken(hex: string, amount = 0.2) {
   const { r, g, b } = hexToRgb(hex);
   return rgbToHex(r * (1 - amount), g * (1 - amount), b * (1 - amount));
 }
-
-// removed mix helper
-
-// removed getAccentColor helper
 
 // Helper to pick eye color - white, yellow, or bright colors from palette
 function getEyeColor(num: number, colors: string[]): string {
@@ -94,7 +71,7 @@ const AvatarMage = ({
   size,
   ...otherProps
 }: AvatarProps) => {
-  const maskID = React.useId();
+  const maskID = generateId(name, 'mask');
   const num = hashCode(name);
 
   // Deterministic parameters
@@ -118,10 +95,10 @@ const AvatarMage = ({
   const tilt = getUnit(num + 13, 31) - 15; // -15 to +15 degrees for hat
   const eyeGlow = getUnit(num + 19, 4); // Eye glow intensity
 
-  // Head scale: current head size is the maximum; allow slight smaller variation (0.92 - 1.0)
-  const headScale = 0.92 + getUnit(num + 85, 9) / 100; // 0.92 .. 1.0
-  const faceRx = SIZE * 0.7 * headScale;
-  const faceRy = SIZE * 0.85 * headScale;
+  // Reduce head size significantly and move face lower for "peeking" effect
+  const headScale = 0.65 + getUnit(num + 85, 15) / 100; // 0.65 .. 0.80 (much smaller)
+  const faceRx = SIZE * 0.6 * headScale; // Narrower face
+  const faceRy = SIZE * 0.7 * headScale; // Shorter face
 
   // Calculate eye spacing first
   const eyeSpacing = SIZE * (0.12 + getUnit(num + 29, 16) / 100); // 0.12 to 0.28 - reduced by ~20%
@@ -151,9 +128,8 @@ const AvatarMage = ({
     minEyeHeight,
     Math.min(baseEyeHeight, maxEyeHeight)
   );
-  const hatY = 0 + getUnit(num + 31, 20); // Hat vertical position 0 to +20 (lowered)
-  // Eyes should be positioned relative to hat brim so they peek from underneath
-  const faceY = hatY + 32 + getUnit(num + 37, 8); // Position eyes just below hat brim with small variation (lowered)
+  // Position face much lower to create "peeking over the edge" effect
+  const faceY = SIZE * 0.65 + getUnit(num + 37, 8); // Face positioned in lower portion of avatar
 
   // New variation parameters
   const headTilt = getUnit(num + 47, 21) - 10; // -10 to +10 degrees head rotation
@@ -172,17 +148,8 @@ const AvatarMage = ({
   const showCollar = getUnit(num + 131, 10) < 3; // 30% chance
   const collarColor = getRandomColor(num + 133, colors, colors.length);
 
-  // Minimal accessories to keep silhouette clean like the reference lineart
-  // accessories removed
-
-  // Anime color setup
-  const hatBase = baseHatColor;
-  const hatShadow = darken(hatBase, 0.35);
-
-  // Cel-shading light setup
-  // removed unused gradient/outline setup
-
-  // Removed ofuda/moon helpers
+  // Generate marble-style sky background
+  const marbleSky = generateMarbleSky(name, colors);
 
   // Draw eye based on shape - more organic and mystical
   const drawEye = (cx: number, isLeft: boolean) => {
@@ -389,28 +356,6 @@ const AvatarMage = ({
     );
   };
 
-  // Cloak silhouette behind face to echo the lineart reference
-  const drawCloak = (y: number, base: string, shadow: string) => (
-    <g key="cloak">
-      <path
-        d={`M ${SIZE * 0.02} ${y + 46}
-            C ${SIZE * 0.2} ${y + 38} ${SIZE * 0.32} ${y + 34} ${SIZE * 0.5} ${y + 32}
-            C ${SIZE * 0.68} ${y + 34} ${SIZE * 0.8} ${y + 38} ${SIZE * 0.98} ${y + 46}
-            L ${SIZE * 0.98} ${SIZE}
-            L ${SIZE * 0.02} ${SIZE}
-            Z`}
-        fill={darken(base, 0.08)}
-      />
-      <path
-        d={`M ${SIZE * 0.18} ${y + 50}
-            C ${SIZE * 0.34} ${y + 46} ${SIZE * 0.66} ${y + 46} ${SIZE * 0.82} ${y + 50}`}
-        fill="none"
-        opacity={0.35}
-        stroke={shadow}
-        strokeWidth={1.1}
-      />
-    </g>
-  );
 
   return (
     <svg
@@ -443,11 +388,56 @@ const AvatarMage = ({
       </mask>
 
       <g mask={`url(#${maskID})`}>
-        {/* Background with proper color */}
+        {/* Base background */}
         <rect
           height={SIZE}
           style={{ fill: getRandomColor(num + 97, colors, colors.length) }}
           width={SIZE}
+        />
+
+        {/* Marble-style sky background using same shapes as marble variant */}
+        <path
+          d="M32.414 59.35L50.376 70.5H72.5v-71H33.728L26.5 13.381l19.057 27.08L32.414 59.35z"
+          filter={`url(#filter_${maskID})`}
+          style={{ fill: marbleSky[1].color }}
+          transform={
+            'translate(' +
+            marbleSky[1].translateX +
+            ' ' +
+            marbleSky[1].translateY +
+            ') rotate(' +
+            marbleSky[1].rotate +
+            ' ' +
+            SIZE / 2 +
+            ' ' +
+            SIZE / 2 +
+            ') scale(' +
+            marbleSky[2].scale +
+            ')'
+          }
+        />
+        <path
+          d="M22.216 24L0 46.75l14.108 38.129L78 86l-3.081-59.276-22.378 4.005 12.972 20.186-23.35 27.395L22.215 24z"
+          filter={`url(#filter_${maskID})`}
+          style={{
+            mixBlendMode: 'overlay',
+            fill: marbleSky[2].color,
+          }}
+          transform={
+            'translate(' +
+            marbleSky[2].translateX +
+            ' ' +
+            marbleSky[2].translateY +
+            ') rotate(' +
+            marbleSky[2].rotate +
+            ' ' +
+            SIZE / 2 +
+            ' ' +
+            SIZE / 2 +
+            ') scale(' +
+            marbleSky[2].scale +
+            ')'
+          }
         />
 
         {/* Collar - at bottom of avatar */}
@@ -466,9 +456,6 @@ const AvatarMage = ({
             style={{ fill: collarColor }}
           />
         )}
-
-        {/* Cloak behind head */}
-        {drawCloak(hatY, hatBase, hatShadow)}
 
         {/* Group for head tilt - affects face and eyes */}
         <g transform={`rotate(${headTilt} ${SIZE / 2} ${SIZE / 2})`}>
@@ -504,6 +491,17 @@ const AvatarMage = ({
 
         {/* Hat removed per new direction */}
       </g>
+      <defs>
+        <filter
+          colorInterpolationFilters="sRGB"
+          filterUnits="userSpaceOnUse"
+          id={`filter_${maskID}`}
+        >
+          <feFlood floodOpacity={0} result="BackgroundImageFix" />
+          <feBlend in="SourceGraphic" in2="BackgroundImageFix" result="shape" />
+          <feGaussianBlur result="effect1_foregroundBlur" stdDeviation={7} />
+        </filter>
+      </defs>
     </svg>
   );
 };

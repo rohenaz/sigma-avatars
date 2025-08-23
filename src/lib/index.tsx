@@ -1,4 +1,4 @@
-import AvatarAnime from './components/avatar-anime';
+import AvatarBarcode from './components/avatar-barcode';
 import AvatarBauhaus from './components/avatar-bauhaus';
 import AvatarBeam from './components/avatar-beam';
 import AvatarFractal from './components/avatar-fractal';
@@ -20,7 +20,7 @@ const AVATAR_VARIANTS = {
   marble: AvatarMarble,
   fractal: AvatarFractal,
   mage: AvatarMage,
-  anime: AvatarAnime,
+  barcode: AvatarBarcode,
   pepe: AvatarPepe,
 };
 

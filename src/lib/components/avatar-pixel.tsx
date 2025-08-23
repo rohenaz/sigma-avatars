@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { getRandomColor, hashCode } from '../utilities';
+import { generateId, getRandomColor, hashCode } from '../utilities';
 import type { AvatarProps } from './types';
 
 const ELEMENTS = 64;
@@ -25,7 +25,7 @@ const AvatarPixel = ({
   ...otherProps
 }: AvatarProps) => {
   const pixelColors = generateColors(name, colors);
-  const maskID = React.useId();
+  const maskID = generateId(name, 'mask');
 
   return (
     <svg

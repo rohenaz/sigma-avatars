@@ -1,5 +1,5 @@
 import React from 'react';
-import { getRandomColor, hashCode } from '../utilities';
+import { generateId, getRandomColor, hashCode } from '../utilities';
 import type { AvatarProps } from './types';
 
 const SIZE = 90;
@@ -34,7 +34,7 @@ const AvatarRing = ({
   ...otherProps
 }: AvatarProps) => {
   const ringColors = generateColors(name, colors);
-  const maskID = React.useId();
+  const maskID = generateId(name, 'mask');
 
   return (
     <svg

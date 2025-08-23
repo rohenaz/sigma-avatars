@@ -35,7 +35,7 @@ import Avatar from 'sigma-avatars';
 | square  | boolean                                                      | `false`                                                   |
 | title   | boolean                                                      | `false`                                                   |
 | name    | string                                                       | `Clara Barton`                                            |
-| variant | oneOf: `marble`, `beam`, `pixel`,`sunset`, `ring`, `bauhaus`, `fractal`, `mage`, `anime`, `pepe` | `marble`                                                  |
+| variant | oneOf: `marble`, `beam`, `pixel`,`sunset`, `ring`, `bauhaus`, `fractal`, `mage`, `barcode`, `pepe` | `marble`                                                  |
 | colors  | array                                                        | `['#92A1C6', '#146A7C', '#F0AB3D', '#C271B4', '#C20D90']` | 
 
 
@@ -47,7 +47,7 @@ The `name` prop is used to generate the avatar. It can be the username, email or
 ```
 
 #### Variant
-The `variant` prop is used to change the theme of the avatar. The available variants are: `marble`, `beam`, `pixel`, `sunset`, `ring`, `bauhaus`, `fractal`, `mage`, `anime`, and `pepe`.
+The `variant` prop is used to change the theme of the avatar. The available variants are: `marble`, `beam`, `pixel`, `sunset`, `ring`, `bauhaus`, `fractal`, `mage`, `barcode`, and `pepe`.
 
 ```jsx
 <Avatar name="Alice Paul" variant="beam"/>
@@ -58,8 +58,8 @@ The `variant` prop is used to change the theme of the avatar. The available vari
 // Mage variant with mystical appearance
 <Avatar name="Merlin" variant="mage"/>
 
-// Anime variant with cel-shaded style
-<Avatar name="Sakura" variant="anime"/>
+// Barcode variant with vertical stripes
+<Avatar name="Product123" variant="barcode"/>
 
 // Pepe variant with sunglasses
 <Avatar name="Pepe Silvia" variant="pepe"/>

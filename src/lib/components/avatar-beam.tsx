@@ -5,6 +5,7 @@ import {
   getRandomColor,
   getUnit,
   hashCode,
+  generateId,
 } from '../utilities';
 import type { AvatarProps } from './types';
 
@@ -56,7 +57,7 @@ const AvatarBeam = ({
   ...otherProps
 }: AvatarProps) => {
   const data = generateData(name, colors);
-  const maskID = React.useId();
+  const maskID = generateId(name, 'mask');
 
   return (
     <svg
@@ -93,7 +94,10 @@ const AvatarBeam = ({
         <rect
           height={SIZE}
           rx={data.isCircle ? SIZE : SIZE / 6}
-          style={{ fill: data.wrapperColor }}
+          style={{ 
+            fill: data.wrapperColor,
+            transformOrigin: `${SIZE / 2}px ${SIZE / 2}px`
+          }}
           transform={
             'translate(' +
             data.wrapperTranslateX +
@@ -101,10 +105,6 @@ const AvatarBeam = ({
             data.wrapperTranslateY +
             ') rotate(' +
             data.wrapperRotate +
-            ' ' +
-            SIZE / 2 +
-            ' ' +
-            SIZE / 2 +
             ') scale(' +
             data.wrapperScale +
             ')'
@@ -114,6 +114,9 @@ const AvatarBeam = ({
           y="0"
         />
         <g
+          style={{
+            transformOrigin: `${SIZE / 2}px ${SIZE / 2}px`
+          }}
           transform={
             'translate(' +
             data.faceTranslateX +
@@ -121,10 +124,6 @@ const AvatarBeam = ({
             data.faceTranslateY +
             ') rotate(' +
             data.faceRotate +
-            ' ' +
-            SIZE / 2 +
-            ' ' +
-            SIZE / 2 +
             ')'
           }
         >

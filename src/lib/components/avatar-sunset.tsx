@@ -1,5 +1,5 @@
 import React from 'react';
-import { getRandomColor, hashCode } from '../utilities';
+import { getRandomColor, hashCode, generateId } from '../utilities';
 import type { AvatarProps } from './types';
 
 const ELEMENTS = 4;
@@ -26,7 +26,7 @@ const AvatarSunset = ({
 }: AvatarProps) => {
   const sunsetColors = generateColors(name, colors);
   const nameWithoutSpace = name.replace(/\s/g, '');
-  const maskID = React.useId();
+  const maskID = generateId(name, 'mask');
 
   return (
     // biome-ignore lint/a11y/noSvgWithoutTitle: title is available when provided

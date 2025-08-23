@@ -1,5 +1,6 @@
 import * as React from 'react';
 import {
+  generateId,
   getBoolean,
   getContrastSafe,
   getRandomColor,
@@ -72,8 +73,10 @@ const EyeGroup: React.FC<{
   lidDrop: number;
   outline: string;
   pupil: string;
-}> = ({ cx, cy, rx, ry, lidDrop, outline, pupil }) => {
-  const uid = React.useId();
+  name: string;
+  eyeId: string;
+}> = ({ cx, cy, rx, ry, lidDrop, outline, pupil, name, eyeId }) => {
+  const uid = generateId(name, `eye-${eyeId}`);
 
   return (
     <g>
@@ -195,7 +198,7 @@ export default function AvatarPepe({
 }: AvatarProps) {
   const n = hashCode(name);
   const range = colors.length;
-  const maskID = React.useId();
+  const maskID = generateId(name, 'mask');
 
   // Face style selection - 15% chance of full-canvas face (no border) - made more rare
   const isFullFace = getUnit(n + 200, 100) < 15;
@@ -338,7 +341,7 @@ export default function AvatarPepe({
     cy = SIZE / 2;
 
   // Pattern IDs
-  const patternID = React.useId();
+  const patternID = generateId(name, 'pattern');
 
   return (
     <svg
@@ -540,6 +543,8 @@ export default function AvatarPepe({
             pupil={pupil}
             rx={eyeRx}
             ry={eyeRy}
+            name={name}
+            eyeId="left"
           />
         ) : (
           <EyeGroup
@@ -550,6 +555,8 @@ export default function AvatarPepe({
             pupil={pupil}
             rx={eyeRx}
             ry={eyeRy}
+            name={name}
+            eyeId="right"
           />
         )}
         {rightOnTop ? (
@@ -561,6 +568,8 @@ export default function AvatarPepe({
             pupil={pupil}
             rx={eyeRx}
             ry={eyeRy}
+            name={name}
+            eyeId="right"
           />
         ) : (
           <EyeGroup
@@ -571,6 +580,8 @@ export default function AvatarPepe({
             pupil={pupil}
             rx={eyeRx}
             ry={eyeRy}
+            name={name}
+            eyeId="left"
           />
         )}
 

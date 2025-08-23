@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { getRandomColor, getUnit, hashCode } from '../utilities';
+import { getRandomColor, getUnit, hashCode, generateId } from '../utilities';
 import type { AvatarProps } from './types';
 
 const ELEMENTS = 3;
@@ -29,7 +29,7 @@ const AvatarMarble = ({
   ...otherProps
 }: AvatarProps) => {
   const properties = generateColors(name, colors);
-  const maskID = React.useId();
+  const maskID = generateId(name, 'mask');
 
   return (
     <svg
