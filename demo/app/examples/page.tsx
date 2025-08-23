@@ -32,7 +32,9 @@ export default function ExamplesPage() {
   const [currentPalette, setCurrentPalette] = useState(paletteColors[8]);
 
   const copyToClipboard = (text: string, id: string) => {
-    navigator.clipboard.writeText(text);
+    if (typeof navigator !== 'undefined' && navigator.clipboard) {
+      navigator.clipboard.writeText(text);
+    }
     setCopiedCode(id);
     setTimeout(() => setCopiedCode(null), 2000);
   };

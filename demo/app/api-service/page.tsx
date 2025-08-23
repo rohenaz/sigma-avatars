@@ -26,7 +26,9 @@ export default function ApiServicePage() {
   const exampleUrl = `${baseUrl}/api/avatar?name=${encodeURIComponent(companyName)}&variant=beam&size=120&colors=264653,2a9d8f,e9c46a,f4a261,e76f51`;
 
   const copyToClipboard = (text: string, id: string) => {
-    navigator.clipboard.writeText(text);
+    if (typeof navigator !== 'undefined' && navigator.clipboard) {
+      navigator.clipboard.writeText(text);
+    }
     setCopiedUrl(id);
     setTimeout(() => setCopiedUrl(null), 2000);
   };
