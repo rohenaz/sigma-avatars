@@ -1,23 +1,23 @@
-import { useRef, useState } from 'react'
-import styled from 'styled-components'
-import { ChromePicker } from 'react-color'
-import { useOnClickOutside } from '../../hooks'
+import { useRef, useState } from 'react';
+import { ChromePicker } from 'react-color';
+import styled from 'styled-components';
+import { useOnClickOutside } from '../../hooks';
 
 const DotWrapper = styled.div`
   position: relative;
-`
+`;
 
 const Wrapper = styled.div`
   width: var(--buttonHeight);
   height: var(--buttonHeight);
   border-radius: 10rem;
   cursor: pointer;
-`
+`;
 
 const PickerWrapper = styled.div`
   position: absolute;
   top: 2rem;
-`
+`;
 
 interface ColorDotProps {
   value: string;
@@ -25,7 +25,7 @@ interface ColorDotProps {
 }
 
 const ColorDot = ({ value, onChange }: ColorDotProps) => {
-  const [pickerIsOpen, setPickerIsOpen] = useState<boolean>(false)
+  const [pickerIsOpen, setPickerIsOpen] = useState<boolean>(false);
   const ref = useRef<HTMLDivElement>(null);
   useOnClickOutside(ref, () => setPickerIsOpen(false));
 
@@ -40,12 +40,12 @@ const ColorDot = ({ value, onChange }: ColorDotProps) => {
         <PickerWrapper ref={ref}>
           <ChromePicker
             color={value}
-            onChange={(v: { hex: string }) => onChange(v.hex)}
             disableAlpha
+            onChange={(v: { hex: string }) => onChange(v.hex)}
           />
         </PickerWrapper>
       )}
     </DotWrapper>
-  )
-}
-export default ColorDot
+  );
+};
+export default ColorDot;

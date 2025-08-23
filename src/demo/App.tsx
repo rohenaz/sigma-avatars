@@ -1,7 +1,10 @@
 import { Playground } from './playground';
+import { ThemeProvider } from './theme-provider';
 
 const App = () => (
-  <Playground />
+  <ThemeProvider defaultTheme="system">
+    <Playground />
+  </ThemeProvider>
 );
 
 export default App;

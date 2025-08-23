@@ -1,9 +1,9 @@
 {
   "compilerOptions": {
     "declaration": true,
-    "declarationDir": "build",
-    "emitDeclarationOnly": false,
-    "outDir": "build",
+    "emitDeclarationOnly": true,
+    "declarationDir": "dist",
+    "outDir": "dist",
     "module": "ESNext",
     "target": "ES2019",
     "moduleResolution": "Node",
@@ -13,7 +13,6 @@
     "strict": true,
     "forceConsistentCasingInFileNames": true
   },
-  "include": [
-    "src/lib"
-  ]
+  "include": ["src/lib"],
+  "exclude": ["**/*.test.ts", "**/*.test.tsx", "**/*.spec.ts", "**/*.spec.tsx"]
 }

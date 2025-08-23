@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { hashCode, getUnit, getRandomColor, getBoolean } from '../utilities';
+import { generateId, getBoolean, getRandomColor, getUnit, hashCode } from '../utilities';
 import type { AvatarProps } from './types';
 
 const ELEMENTS = 4;
@@ -20,32 +20,51 @@ function generateColors(name: string, colors: string[]) {
   return elementsProperties;
 }
 
-const AvatarBauhaus = ({ name, colors, title, square, size, ...otherProps }: AvatarProps) => {
+const AvatarBauhaus = ({
+  name,
+  colors,
+  title,
+  size,
+  ...otherProps
+}: AvatarProps) => {
   const properties = generateColors(name, colors);
-  const maskID = React.useId();
+  const maskID = generateId(name, 'mask');
 
   return (
     <svg
-      viewBox={'0 0 ' + SIZE + ' ' + SIZE}
       fill="none"
-      role="img"
-      xmlns="http://www.w3.org/2000/svg"
-      width={size}
       height={size}
+      role="img"
+      viewBox={'0 0 ' + SIZE + ' ' + SIZE}
+      width={size}
+      xmlns="http://www.w3.org/2000/svg"
       {...otherProps}
     >
       {title && <title>{name}</title>}
-      <mask id={maskID} maskUnits="userSpaceOnUse" x={0} y={0} width={SIZE} height={SIZE}>
-        <rect width={SIZE} height={SIZE} rx={square ? undefined : SIZE * 2} fill="#FFFFFF" />
+      <mask
+        height={SIZE}
+        id={maskID}
+        maskUnits="userSpaceOnUse"
+        width={SIZE}
+        x={0}
+        y={0}
+      >
+        <rect
+          fill="#FFFFFF"
+          height={SIZE}
+          
+          width={SIZE}
+        />
       </mask>
       <g mask={`url(#${maskID})`}>
-        <rect width={SIZE} height={SIZE} fill={properties[0].color} />
         <rect
-          x={(SIZE - 60) / 2}
-          y={(SIZE - 20) / 2}
+          height={SIZE}
+          style={{ fill: properties[0].color }}
           width={SIZE}
+        />
+        <rect
           height={properties[1].isSquare ? SIZE : SIZE / 8}
-          fill={properties[1].color}
+          style={{ fill: properties[1].color }}
           transform={
             'translate(' +
             properties[1].translateX +
@@ -59,21 +78,26 @@ const AvatarBauhaus = ({ name, colors, title, square, size, ...otherProps }: Ava
             SIZE / 2 +
             ')'
           }
+          width={SIZE}
+          x={(SIZE - 60) / 2}
+          y={(SIZE - 20) / 2}
         />
         <circle
           cx={SIZE / 2}
           cy={SIZE / 2}
-          fill={properties[2].color}
           r={SIZE / 5}
-          transform={'translate(' + properties[2].translateX + ' ' + properties[2].translateY + ')'}
+          style={{ fill: properties[2].color }}
+          transform={
+            'translate(' +
+            properties[2].translateX +
+            ' ' +
+            properties[2].translateY +
+            ')'
+          }
         />
         <line
-          x1={0}
-          y1={SIZE / 2}
-          x2={SIZE}
-          y2={SIZE / 2}
           strokeWidth={2}
-          stroke={properties[3].color}
+          style={{ stroke: properties[3].color }}
           transform={
             'translate(' +
             properties[3].translateX +
@@ -87,6 +111,10 @@ const AvatarBauhaus = ({ name, colors, title, square, size, ...otherProps }: Ava
             SIZE / 2 +
             ')'
           }
+          x1={0}
+          x2={SIZE}
+          y1={SIZE / 2}
+          y2={SIZE / 2}
         />
       </g>
     </svg>

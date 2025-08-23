@@ -1,4 +1,4 @@
-import styled from 'styled-components'
+import styled from 'styled-components';
 
 interface ButtonWrapperProps {
   icon?: React.ReactNode;
@@ -12,8 +12,8 @@ const ButtonWrapper = styled.div<ButtonWrapperProps>`
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: 0 ${p => p.hasChildren ? `var(--textbox-x)` : 0};
-  ${p => !p.hasChildren && p.icon ? `width: var(--buttonHeight)` : null};
+  padding: 0 ${(p) => (p.hasChildren ? 'var(--textbox-x)' : 0)};
+  ${(p) => (!p.hasChildren && p.icon ? 'width: var(--buttonHeight)' : null)};
   background: var(--c-button);
   text-transform: uppercase;
   letter-spacing: 0.08em;
@@ -28,7 +28,7 @@ const ButtonWrapper = styled.div<ButtonWrapperProps>`
   &:hover {
     background-color: var(--c-buttonHover);
   }
-`
+`;
 
 interface ButtonProps extends React.HTMLAttributes<HTMLDivElement> {
   children?: React.ReactNode;
@@ -37,11 +37,11 @@ interface ButtonProps extends React.HTMLAttributes<HTMLDivElement> {
 
 const Button = ({ children, icon, ...props }: ButtonProps) => {
   return (
-    <ButtonWrapper icon={icon} hasChildren={children} {...props}>
+    <ButtonWrapper hasChildren={children} icon={icon} {...props}>
       {children}
       {icon && icon}
     </ButtonWrapper>
-  )
-}
+  );
+};
 
-export default Button
+export default Button;
