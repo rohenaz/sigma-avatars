@@ -39,7 +39,8 @@ export default function Home() {
   name="Maria Mitchell"
   variant="beam"
   colors={['#92A1C6', '#146A7C', '#F0AB3D', '#C271B4', '#C20D90']}
-/>;`;
+  className="rounded-full"  // Optional: circle, rounded-md (default), or rounded-none
+/>`;
 
   const variants = ['marble', 'beam', 'pixel', 'sunset', 'ring', 'bauhaus', 'fractal', 'mage', 'barcode', 'pepe'];
   const demoNames = ['Mary Shelley', 'Ada Lovelace', 'Grace Hopper', 'Hedy Lamarr', 'Katherine Johnson'];
@@ -63,7 +64,7 @@ export default function Home() {
       variant,
       colors: currentPalette,
       size: 80,
-      square: false,
+      shape: 'rounded',
       useApi: false
     };
     handleAvatarClick(avatarData);
@@ -151,7 +152,7 @@ export default function Home() {
               </CardHeader>
               <CardContent>
                 <p className="text-muted-foreground">
-                  10 unique variants, custom color palettes, multiple sizes, and shape options.
+                  10 unique variants, custom color palettes, multiple sizes, and flexible shape options (circle, rounded, square).
                 </p>
               </CardContent>
             </Card>
@@ -175,7 +176,7 @@ export default function Home() {
           <h2 className="text-3xl font-bold text-center mb-12">Quick Start</h2>
           
           <Card>
-            <Tabs defaultValue="npm" className="w-full">
+            <Tabs defaultValue="bun" className="w-full">
               <CardHeader className="flex flex-row items-center justify-between pb-3">
                 <CardTitle>Installation</CardTitle>
                 <TabsList className="h-8 grid grid-cols-4">
@@ -243,6 +244,7 @@ export default function Home() {
               </div>
             </CardContent>
           </Card>
+
         </div>
       </section>
 

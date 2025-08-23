@@ -19,12 +19,15 @@ async function ensureCacheDir() {
   }
 }
 
-// Generate cache key from all parameters
+// Generate cache key from avatar-affecting parameters only (exclude format)
 async function getCacheKey(params: Record<string, string>): Promise<string> {
+  // Exclude format from cache key since it doesn't affect avatar generation
+  const { format, ...avatarParams } = params;
+  
   // Sort params to ensure consistent keys
-  const sortedParams = Object.keys(params)
+  const sortedParams = Object.keys(avatarParams)
     .sort()
-    .map(key => `${key}=${params[key]}`)
+    .map(key => `${key}=${avatarParams[key]}`)
     .join('&');
   
   // Use Web Crypto API for edge compatibility

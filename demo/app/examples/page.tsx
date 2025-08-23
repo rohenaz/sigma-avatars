@@ -307,6 +307,7 @@ const PlayerCard = ({ player }) => (
                       variant="beam"
                       colors={namedPalettes['Ocean Breeze']}
                       size={40}
+                      className="rounded-full"
                     />
                     <div className="flex-1">
                       <div className="flex items-center gap-2">
@@ -341,6 +342,7 @@ const PlayerCard = ({ player }) => (
                       variant="marble"
                       colors={namedPalettes['Forest Deep']}
                       size={40}
+                      className="rounded-full"
                     />
                     <div className="flex-1">
                       <div className="flex items-center gap-2">
@@ -390,6 +392,7 @@ const PlayerCard = ({ player }) => (
                         variant="ring"
                         colors={namedPalettes['Purple Dreams']}
                         size={32}
+                        className="rounded-full"
                       />
                       <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-green-500 border-2 border-background rounded-full"></div>
                     </div>
@@ -409,6 +412,7 @@ const PlayerCard = ({ player }) => (
                         variant="sunset"
                         colors={namedPalettes['Warm Earth']}
                         size={32}
+                        className="rounded-full"
                       />
                       <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-yellow-500 border-2 border-background rounded-full"></div>
                     </div>
@@ -428,6 +432,7 @@ const PlayerCard = ({ player }) => (
                         variant="bauhaus"
                         colors={namedPalettes['Electric Blue']}
                         size={32}
+                        className="rounded-full"
                       />
                       <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-gray-400 border-2 border-background rounded-full"></div>
                     </div>
@@ -450,6 +455,7 @@ const PlayerCard = ({ player }) => (
                       variant="ring"
                       colors={namedPalettes['Purple Dreams']}
                       size={24}
+                      className="rounded-full"
                     />
                     <div className="bg-muted rounded-lg px-3 py-2 max-w-xs">
                       <p className="text-sm">Hey team! Ready for the standup?</p>
@@ -465,6 +471,7 @@ const PlayerCard = ({ player }) => (
                       variant="beam"
                       colors={namedPalettes['Ocean Breeze']}
                       size={24}
+                      className="rounded-full"
                     />
                   </div>
                 </div>
@@ -490,7 +497,7 @@ const PlayerCard = ({ player }) => (
                       variant="pixel"
                       colors={namedPalettes['Sunset Glow']}
                       size={48}
-                      className="mx-auto mb-3"
+                      className="mx-auto mb-3 rounded-full"
                     />
                     <h4 className="font-medium text-sm">Lisa Martinez</h4>
                     <p className="text-xs text-muted-foreground">Product Manager</p>
@@ -505,7 +512,7 @@ const PlayerCard = ({ player }) => (
                       variant="fractal"
                       colors={namedPalettes['Cool Mint']}
                       size={48}
-                      className="mx-auto mb-3"
+                      className="mx-auto mb-3 rounded-full"
                     />
                     <h4 className="font-medium text-sm">Tom Anderson</h4>
                     <p className="text-xs text-muted-foreground">Senior Developer</p>
@@ -852,7 +859,7 @@ const mixedColors = [
               </CardHeader>
               <CardContent>
                 <CodeBlock
-                  code={`// Use CSS variables for theme-aware colors
+                  code={`// Use CSS variables for theme-aware colors and shapes
 const themeColors = [
   'var(--primary)',        // Adapts to light/dark
   'var(--secondary)',      // Theme-aware
@@ -861,13 +868,22 @@ const themeColors = [
   'var(--color-chart-2)'
 ];
 
-// Or use predefined shadcn colors
+// Use shadcn/ui radius variables for consistent shapes
+<Avatar
+  name={user.name}
+  colors={themeColors}
+  variant="beam"
+  className="rounded-[var(--radius)]"  // Uses your theme's radius
+/>
+
+// Or use predefined shadcn helpers
 import { shadcnColors } from 'sigma-avatars';
 
 <Avatar
   name={user.name}
   colors={shadcnColors}
-  variant="beam"
+  variant="marble"
+  style={{ borderRadius: 'var(--radius)' }}  // Alternative approach
 />`}
                   language="tsx"
                 />

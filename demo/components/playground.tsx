@@ -414,12 +414,8 @@ export const Playground = () => {
     }
   }, [searchParams]);
 
-  // Update URL when selected avatar changes (from sidebar interactions)
-  useEffect(() => {
-    if (selectedAvatar) {
-      updateUrl(selectedAvatar);
-    }
-  }, [selectedAvatar]);
+  // NOTE: Removed URL updating when selectedAvatar changes to keep sidebar selection 
+  // separate from page navigation state
 
   const handleAvatarClick = (avatarData: {
     name: string;
@@ -429,9 +425,10 @@ export const Playground = () => {
     shape: 'circle' | 'square' | 'rounded';
     useApi: boolean;
   }) => {
+    // Only update sidebar state, not URL params
     contextHandleAvatarClick(avatarData);
     setSidebarOpen(true);
-    updateUrl(avatarData);
+    // Don't call updateUrl here - keep page state separate from sidebar selection
   };
 
   const updateUrl = (avatarData: {
@@ -628,7 +625,7 @@ export const Playground = () => {
         </div>
 
         {/* Company Grid with infinite scroll */}
-        <div className="max-w-6xl mx-auto px-4 py-8">
+        <div className="max-w-7xl mx-auto px-4 py-8">
           {/* Header */}
           <div className="mb-8">
             <div className="flex items-center gap-3 mb-4">
@@ -656,7 +653,7 @@ export const Playground = () => {
             </div>
           </div>
 
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
+          <div className="w-full min-h-[400px] grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-7 gap-4">
             {allCompanies.map((company, index) => {
               const variantIndex = index % variants.length;
               const displayVariant = variant === 'random' ? variants[variantIndex] : variant;
@@ -666,24 +663,24 @@ export const Playground = () => {
               return (
                 <Card 
                   key={`${company}-${index}`} 
-                  className="group hover:shadow-lg transition-shadow cursor-pointer"
+                  className="w-full min-w-0 group hover:shadow-lg transition-shadow cursor-pointer"
                   onClick={() => handleAvatarClick({
                     name: company,
                     variant: displayVariant, // Use the actual variant, not 'random'
                     colors: avatarColors,
-                    size: 120,
+                    size: avatarSize,
                     shape: shape,
                     useApi: useApi
                   })}
                 >
                   <CardContent className="p-4">
-                    <div className="flex flex-col items-center space-y-3">
+                    <div className="flex flex-col items-center space-y-3 w-full min-w-0">
                       <div className="relative">
                         <Avatar
                           name={company}
                           variant={displayVariant}
                           colors={avatarColors}
-                          size={80}
+                          size={avatarSize}
                           className={shape === 'square' ? 'rounded-none' : shape === 'rounded' ? 'rounded-md' : 'rounded-full'}
                           api={useApi ? '/api/avatar' : undefined}
                         />
@@ -694,11 +691,11 @@ export const Playground = () => {
                           #{index + 1}
                         </Badge>
                       </div>
-                      <div className="text-center">
-                        <p className="text-sm font-medium line-clamp-2">
+                      <div className="text-center w-full min-w-0">
+                        <p className="text-sm font-medium line-clamp-2 break-words">
                           {company}
                         </p>
-                        <p className="text-xs text-muted-foreground">
+                        <p className="text-xs text-muted-foreground truncate">
                           {displayVariant}
                         </p>
                       </div>
@@ -708,17 +705,24 @@ export const Playground = () => {
               );
             })}
 
-            {/* Loading Skeletons */}
-            {(isLoading || isFetchingNextPage) && (
+            {/* Loading Skeletons - show on initial load or when fetching */}
+            {(isLoading || isFetchingNextPage || allCompanies.length < 20) && (
               <>
-                {[...Array(12)].map((_, i) => (
-                  <Card key={`skeleton-${i}`}>
+                {[...Array(35)].map((_, i) => (
+                  <Card key={`skeleton-${i}`} className="w-full min-w-0">
                     <CardContent className="p-4">
-                      <div className="flex flex-col items-center space-y-3">
-                        <Skeleton className="h-20 w-20 rounded-full" />
-                        <div className="space-y-2 w-full">
-                          <Skeleton className="h-4 w-full" />
-                          <Skeleton className="h-3 w-2/3 mx-auto" />
+                      <div className="flex flex-col items-center space-y-3 w-full min-w-0">
+                        <div className="relative">
+                          <Skeleton className={
+                            avatarSize === 40 ? "h-10 w-10 rounded-full" :
+                            avatarSize === 80 ? "h-20 w-20 rounded-full" :
+                            "h-30 w-30 rounded-full"
+                          } />
+                        </div>
+                        <div className="text-center space-y-1 w-full min-w-0 min-h-[3rem]">
+                          <Skeleton className="h-4 w-full max-w-[8rem] mx-auto" />
+                          <Skeleton className="h-4 w-full max-w-[6rem] mx-auto" />
+                          <Skeleton className="h-3 w-full max-w-[4rem] mx-auto" />
                         </div>
                       </div>
                     </CardContent>
