@@ -261,19 +261,3 @@ MIT © [rohenaz](https://github.com/rohenaz)
 
 Contributions are welcome! Please feel free to submit a Pull Request.
 
-## 📈 Changelog
-
-### v0.0.2
-- Added server-side avatar generation with API support
-- Improved responsive grid layout in playground
-- Added editable company names from Fortune 500 dataset
-- Fixed critical cache key bug for consistent image generation
-- Separated sidebar navigation from page state
-- Enhanced shape handling with Tailwind classes
-- Added comprehensive examples and documentation
-
-### v0.0.1
-- Initial release with 10 avatar variants
-- Support for custom colors and modern CSS variables
-- shadcn/ui integration
-- TypeScript support

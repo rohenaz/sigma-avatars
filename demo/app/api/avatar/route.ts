@@ -88,7 +88,7 @@ export async function GET(request: NextRequest) {
         console.log(`Cache HIT for ${params.name}-${params.variant}.${format}`);
         // Return cached data with proper headers
         const contentType = format === 'svg' ? 'image/svg+xml' : `image/${format}`;
-        return new NextResponse(cached, {
+        return new NextResponse(cached as BodyInit, {
           status: 200,
           headers: {
             'Content-Type': contentType,
@@ -116,7 +116,7 @@ export async function GET(request: NextRequest) {
       try {
         const result = await inProgressConversions.get(conversionKey)!;
         const contentType = format === 'svg' ? 'image/svg+xml' : `image/${format}`;
-        return new NextResponse(result, {
+        return new NextResponse(result as BodyInit, {
           status: 200,
           headers: {
             'Content-Type': contentType,
@@ -240,7 +240,7 @@ export async function GET(request: NextRequest) {
     }
     
     // Return the image with proper headers
-    return new NextResponse(outputBuffer, {
+    return new NextResponse(outputBuffer as BodyInit, {
       status: 200,
       headers: {
         'Content-Type': contentType,
