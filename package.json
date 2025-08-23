@@ -7,7 +7,8 @@
   ],
   "scripts": {
     "dev": "cd demo && bun dev",
-    "build": "cd packages/sigma-avatars && bun run build",
+    "build": "bun run build:lib && bun run build:demo",
+    "build:lib": "cd packages/sigma-avatars && bun run build",
     "build:demo": "cd demo && bun run build",
     "lint": "biome check .",
     "lint:fix": "biome check --write .",
