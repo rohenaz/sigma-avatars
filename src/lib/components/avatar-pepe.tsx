@@ -192,7 +192,6 @@ export default function AvatarPepe({
   name,
   colors,
   title,
-  square,
   size,
   ...otherProps
 }: AvatarProps) {
@@ -231,9 +230,6 @@ export default function AvatarPepe({
 
   // Background pattern - 70% chance of having a pattern (increased!)
   const bgPattern = getUnit(n + 205, 100) < 70 ? getUnit(n + 206, 5) : -1; // 0=v-stripes, 1=h-stripes, 2=dots, 3=checkerboard, 4=diagonal, -1=none
-
-  // Transparent background - 10% chance when not full-face mode
-  const hasTransparentBg = !isFullFace && getUnit(n + 207, 100) < 10;
 
   // Build color pools that mix classic Pepe colors with theme colors
   // Classic colors are weighted more heavily by appearing multiple times
@@ -489,24 +485,21 @@ export default function AvatarPepe({
         </defs>
       )}
 
-      {/* container shape via mask -> square mode works */}
       <mask id={maskID}>
         <rect
           fill="#fff"
           height={SIZE}
-          rx={square ? 0 : SIZE * 2}
+          
           width={SIZE}
         />
       </mask>
 
       <g mask={`url(#${maskID})`}>
-        {/* background base color - skip if transparent */}
-        {!hasTransparentBg && (
-          <rect height={SIZE} style={{ fill: String(bg) }} width={SIZE} />
-        )}
+        {/* Solid fallback background from palette - always visible */}
+        <rect height={SIZE} style={{ fill: String(bg) }} width={SIZE} />
 
-        {/* pattern overlay on background - shows for both normal and full-face, skip if transparent */}
-        {!hasTransparentBg && bgPattern >= 0 && (
+        {/* pattern overlay on background - shows for both normal and full-face */}
+        {bgPattern >= 0 && (
           <rect fill={`url(#${patternID})`} height={SIZE} width={SIZE} />
         )}
 

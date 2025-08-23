@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/providers/theme-provider";
+import { QueryProvider } from "@/providers/query-provider";
 import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/app-sidebar";
 import { AppNavbar } from "@/components/app-navbar";
@@ -38,17 +39,19 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <SidebarContextProvider>
-            <SidebarProvider>
-              <SidebarInset>
-                <AppNavbar />
-                <main className="min-h-screen">
-                  {children}
-                </main>
-              </SidebarInset>
-              <AppSidebar side="right" />
-            </SidebarProvider>
-          </SidebarContextProvider>
+          <QueryProvider>
+            <SidebarContextProvider>
+              <SidebarProvider defaultOpen={false}>
+                <SidebarInset>
+                  <AppNavbar />
+                  <main className="min-h-screen">
+                    {children}
+                  </main>
+                </SidebarInset>
+                <AppSidebar side="right" />
+              </SidebarProvider>
+            </SidebarContextProvider>
+          </QueryProvider>
         </ThemeProvider>
       </body>
     </html>

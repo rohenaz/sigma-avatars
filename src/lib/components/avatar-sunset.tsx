@@ -20,7 +20,6 @@ const AvatarSunset = ({
   name,
   colors,
   title,
-  square,
   size,
   ...otherProps
 }: AvatarProps) => {
@@ -51,7 +50,7 @@ const AvatarSunset = ({
         <rect
           fill="#FFFFFF"
           height={SIZE}
-          rx={square ? undefined : SIZE * 2}
+          
           width={SIZE}
         />
       </mask>

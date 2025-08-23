@@ -7,7 +7,7 @@ interface SelectedAvatar {
   variant: string;
   colors?: string[];
   size: number;
-  square: boolean;
+  shape: 'circle' | 'square' | 'rounded';
   useApi: boolean;
 }
 
@@ -16,13 +16,16 @@ interface SidebarContextType {
   customName: string;
   copiedItem: string | null;
   currentColors: string[] | null;
+  selectedFormat: 'svg' | 'png' | 'webp';
   setSelectedAvatar: (avatar: SelectedAvatar | null) => void;
   setCustomName: (name: string) => void;
   setCopiedItem: (item: string | null) => void;
   setCurrentColors: (colors: string[]) => void;
+  setSelectedFormat: (format: 'svg' | 'png' | 'webp') => void;
   handleAvatarClick: (avatar: SelectedAvatar) => void;
   copyToClipboard: (text: string, id: string) => void;
   downloadSelectedAvatar: () => Promise<void>;
+  copySvgToClipboard: () => Promise<void>;
   handleNameChange: (newName: string) => void;
   handleVariantChange: (newVariant: string) => void;
 }
@@ -34,6 +37,7 @@ export function SidebarContextProvider({ children }: { children: React.ReactNode
   const [customName, setCustomName] = useState('');
   const [copiedItem, setCopiedItem] = useState<string | null>(null);
   const [currentColors, setCurrentColors] = useState<string[] | null>(null);
+  const [selectedFormat, setSelectedFormat] = useState<'svg' | 'png' | 'webp'>('svg');
 
   const handleAvatarClick = useCallback((avatar: SelectedAvatar) => {
     setSelectedAvatar(avatar);
@@ -49,12 +53,12 @@ export function SidebarContextProvider({ children }: { children: React.ReactNode
   const downloadSelectedAvatar = useCallback(async () => {
     if (!selectedAvatar) return;
 
-    const { name, variant, colors, size, square } = selectedAvatar;
+    const { name, variant, colors, size, shape } = selectedAvatar;
     const params = new URLSearchParams({
       name,
       variant,
       size: size.toString(),
-      square: square.toString(),
+      format: selectedFormat,
       ...(colors && colors.length > 0 && { 
         colors: colors.map(c => c.replace(/^#/, '')).join(',') 
       }),
@@ -62,10 +66,35 @@ export function SidebarContextProvider({ children }: { children: React.ReactNode
     const url = `/api/avatar?${params}`;
     const link = document.createElement('a');
     link.href = url;
-    link.download = `${name}-${variant}.svg`;
+    link.download = `${name}-${variant}.${selectedFormat}`;
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
+  }, [selectedAvatar, selectedFormat]);
+
+  const copySvgToClipboard = useCallback(async () => {
+    if (!selectedAvatar) return;
+
+    const { name, variant, colors, size, shape } = selectedAvatar;
+    const params = new URLSearchParams({
+      name,
+      variant,
+      size: size.toString(),
+      format: 'svg',
+      ...(colors && colors.length > 0 && { 
+        colors: colors.map(c => c.replace(/^#/, '')).join(',') 
+      }),
+    });
+    
+    try {
+      const response = await fetch(`/api/avatar?${params}`);
+      const svgText = await response.text();
+      await navigator.clipboard.writeText(svgText);
+      setCopiedItem('svg');
+      setTimeout(() => setCopiedItem(null), 2000);
+    } catch (error) {
+      console.error('Failed to copy SVG:', error);
+    }
   }, [selectedAvatar]);
 
   const handleNameChange = useCallback((newName: string) => {
@@ -86,13 +115,16 @@ export function SidebarContextProvider({ children }: { children: React.ReactNode
     customName,
     copiedItem,
     currentColors,
+    selectedFormat,
     setSelectedAvatar,
     setCustomName,
     setCopiedItem,
     setCurrentColors,
+    setSelectedFormat,
     handleAvatarClick,
     copyToClipboard,
     downloadSelectedAvatar,
+    copySvgToClipboard,
     handleNameChange,
     handleVariantChange,
   };

@@ -29,6 +29,7 @@ export type AvatarProps = {
   name: string;
   colors: Color[];
   title?: boolean;
-  square?: boolean;
   size?: number | string;
+  backgrounds?: string[]; // List of allowed background patterns (for variants that support them)
+  api?: string; // API endpoint to fetch avatar from
 } & SVGProps<SVGSVGElement>;

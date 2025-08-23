@@ -20,7 +20,6 @@ const AvatarPixel = ({
   name,
   colors,
   title,
-  square,
   size,
   ...otherProps
 }: AvatarProps) => {

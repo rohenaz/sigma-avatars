@@ -609,39 +609,41 @@ const PlayerCard = ({ player }) => (
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  <div className="flex gap-2">
-                    {colors.map((color, index) => (
-                      <div key={index} className="flex flex-col items-center gap-2">
-                        <div 
-                          className="w-12 h-12 rounded-lg border shadow-sm"
-                          style={{ backgroundColor: color }}
-                        />
-                        <span className="text-xs font-mono text-muted-foreground">
-                          {color}
-                        </span>
-                      </div>
-                    ))}
-                  </div>
-                  
-                  <div className="flex gap-3">
-                    <Avatar
-                      name={`${name} User 1`}
-                      variant={['beam', 'marble', 'pixel', 'sunset', 'ring'][paletteIndex % 5] as any}
-                      colors={colors}
-                      size={40}
-                    />
-                    <Avatar
-                      name={`${name} User 2`}
-                      variant={['bauhaus', 'fractal', 'mage', 'barcode', 'pepe'][paletteIndex % 5] as any}
-                      colors={colors}
-                      size={40}
-                    />
-                    <Avatar
-                      name={`${name} User 3`}
-                      variant={['marble', 'beam', 'sunset', 'pixel', 'ring'][(paletteIndex + 2) % 5] as any}
-                      colors={colors}
-                      size={40}
-                    />
+                  <div className="flex gap-6">
+                    <div className="flex flex-col gap-2 flex-1">
+                      {colors.map((color, index) => (
+                        <div key={index} className="flex items-center gap-3">
+                          <div 
+                            className="w-10 h-10 rounded-md border shadow-sm flex-shrink-0"
+                            style={{ backgroundColor: color }}
+                          />
+                          <span className="text-sm font-mono text-muted-foreground">
+                            {color}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                    
+                    <div className="flex flex-col gap-2 justify-center">
+                      <Avatar
+                        name={`${name} User 1`}
+                        variant={['beam', 'marble', 'pixel', 'sunset', 'ring'][paletteIndex % 5] as any}
+                        colors={colors}
+                        size={40}
+                      />
+                      <Avatar
+                        name={`${name} User 2`}
+                        variant={['bauhaus', 'fractal', 'mage', 'barcode', 'pepe'][paletteIndex % 5] as any}
+                        colors={colors}
+                        size={40}
+                      />
+                      <Avatar
+                        name={`${name} User 3`}
+                        variant={['marble', 'beam', 'sunset', 'pixel', 'ring'][(paletteIndex + 2) % 5] as any}
+                        colors={colors}
+                        size={40}
+                      />
+                    </div>
                   </div>
                   
                   <div className="relative">

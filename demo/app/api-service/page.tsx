@@ -55,11 +55,12 @@ export default function ApiServicePage() {
       description: 'Comma-separated list of hex colors (without #). Example: 264653,2a9d8f,e9c46a',
     },
     {
-      name: 'square',
-      type: 'boolean',
+      name: 'format',
+      type: 'string',
       required: false,
-      default: 'false',
-      description: 'Whether to render a square avatar instead of circular',
+      default: 'svg',
+      description: 'Output format for the avatar',
+      options: ['svg', 'png', 'webp'],
     },
   ];
 
@@ -80,9 +81,14 @@ export default function ApiServicePage() {
       description: 'Avatar with custom color palette',
     },
     {
-      title: 'Square Variant',
-      url: `${baseUrl}/api/avatar?name=Bob&variant=pixel&square=true`,
-      description: 'Square pixel art avatar',
+      title: 'Different Variant',
+      url: `${baseUrl}/api/avatar?name=Bob&variant=pixel`,
+      description: 'Pixel art style avatar',
+    },
+    {
+      title: 'PNG Format',
+      url: `${baseUrl}/api/avatar?name=Charlie&format=png`,
+      description: 'Avatar in PNG format',
     },
   ];
 

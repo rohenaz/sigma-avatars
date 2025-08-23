@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useMemo, useRef, useState, memo, useEffect } from 'react';
-import Avatar from '../../src/lib';
+import Avatar, { PATTERN_CATEGORIES, PATTERN_REGISTRY } from '../../src/lib';
 import colors from 'nice-color-palettes/1000';
 import Image from 'next/image';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -12,9 +12,24 @@ import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Separator } from '@/components/ui/separator';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
-import { Shuffle, Circle, Square } from 'lucide-react';
+import { Shuffle, Circle, Square, SquareIcon, Loader2, Building2 } from 'lucide-react';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { useInfiniteQuery } from '@tanstack/react-query';
+import { useInView } from 'react-intersection-observer';
+import { fetchCompanies } from '../lib/fortune500-data';
+import { Card, CardContent } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Skeleton } from '@/components/ui/skeleton';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+  SelectGroup,
+  SelectLabel,
+} from '@/components/ui/select';
 import { CodeBlock } from './code-block';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { AppSidebar } from './app-sidebar';
@@ -36,6 +51,20 @@ const variants = [
   'pepe'
 ] as const;
 
+// Different color palettes for variety
+const colorPalettes = [
+  ['#92A1C6', '#146A7C', '#F0AB3D', '#C271B4', '#C20D90'],
+  ['#f582ae', '#b8e994', '#ffd803', '#00cdac', '#8b5cf6'],
+  ['#ffc6ff', '#bdb2ff', '#a0c4ff', '#9bf6ff', '#caffbf'],
+  ['#f72585', '#b5179e', '#7209b7', '#560bad', '#480ca8'],
+  ['#ff6b6b', '#4ecdc4', '#45b7d1', '#96ceb4', '#ffeaa7'],
+  ['#6c5ce7', '#74b9ff', '#a29bfe', '#fd79a8', '#fdcb6e'],
+  ['#2d3436', '#636e72', '#b2bec3', '#dfe6e9', '#fdcb6e'],
+  ['#fab1a0', '#ff7675', '#fd79a8', '#fdcb6e', '#e17055'],
+  ['#00b894', '#00cec9', '#0984e3', '#6c5ce7', '#b2bec3'],
+  ['#ff9ff3', '#feca57', '#ff6b6b', '#48dbfb', '#00d2d3'],
+];
+
 type Variant = typeof variants[number];
 
 interface AvatarWrapperProps {
@@ -43,21 +72,20 @@ interface AvatarWrapperProps {
   variant: string;
   colors?: string[];
   size?: number;
-  square?: boolean;
+  shape?: 'circle' | 'square' | 'rounded';
   useApi?: boolean;
   onAvatarClick?: (avatarData: {
     name: string;
     variant: string;
     colors?: string[];
     size: number;
-    square: boolean;
+    shape: 'circle' | 'square' | 'rounded';
     useApi: boolean;
   }) => void;
 }
 
 const AvatarWrapper = memo(
-  ({ name, variant, colors, size, square, useApi = false, onAvatarClick }: AvatarWrapperProps) => {
-    const svgRef = useRef<SVGSVGElement>(null);
+  ({ name, variant, colors, size, shape = 'circle', useApi = false, onAvatarClick }: AvatarWrapperProps) => {
     const { selectedAvatar } = useSidebarContext();
     
     // Check if this avatar matches the currently selected one
@@ -67,7 +95,7 @@ const AvatarWrapper = memo(
 
     const handleClick = () => {
       if (onAvatarClick) {
-        onAvatarClick({ name, variant, colors, size: size || 80, square: square || false, useApi });
+        onAvatarClick({ name, variant, colors, size: size || 80, shape: shape || 'circle', useApi });
       }
     };
 
@@ -78,7 +106,6 @@ const AvatarWrapper = memo(
           name,
           variant,
           size: size?.toString() || '80',
-          square: square?.toString() || 'false',
           ...(colors && colors.length > 0 && { 
             colors: colors.map(c => c.replace(/^#/, '')).join(',') 
           }),
@@ -117,9 +144,7 @@ const AvatarWrapper = memo(
             const pngUrl = URL.createObjectURL(blob);
             const downloadLink = document.createElement('a');
             downloadLink.href = pngUrl;
-            downloadLink.download = `${name}-${variant}${
-              square ? '-square' : ''
-            }.png`;
+            downloadLink.download = `${name}-${variant}.png`;
             document.body.appendChild(downloadLink);
             downloadLink.click();
             document.body.removeChild(downloadLink);
@@ -138,7 +163,6 @@ const AvatarWrapper = memo(
         name,
         variant,
         size: size?.toString() || '80',
-        square: square?.toString() || 'false',
         title: 'false', // Don't include title in img tags
         // Pass colors without # like Boring Avatars API
         ...(colors && colors.length > 0 && { 
@@ -147,40 +171,25 @@ const AvatarWrapper = memo(
       });
       // Don't add cache buster - we want to leverage browser and server caching
       return `/api/avatar?${params}`;
-    }, [name, variant, size, square, colors, useApi]);
+    }, [name, variant, size, colors, useApi]);
 
     return (
       <div
-        className={`flex flex-col items-center gap-2 cursor-pointer transition-all hover:scale-105 ${
+        className={`flex flex-col items-center gap-2 cursor-pointer transition-colors ${
           isSelected 
-            ? 'ring-2 ring-primary ring-offset-2 bg-primary/5 rounded-lg p-2 -m-2' 
-            : ''
+            ? 'bg-primary/10 rounded-lg' 
+            : 'hover:bg-muted/50 rounded-lg'
         }`}
         onClick={handleClick}
       >
-        {useApi && apiUrl ? (
-          <div className="relative">
-            <Image
-              src={apiUrl}
-              alt={name}
-              width={size || 80}
-              height={size || 80}
-              className={square ? '' : 'rounded-full'}
-              unoptimized
-              loading="eager"
-              priority
-            />
-          </div>
-        ) : (
-          <Avatar
-            ref={svgRef}
-            name={name}
-            variant={variant}
-            colors={colors}
-            size={size}
-            square={square}
-          />
-        )}
+        <Avatar
+          name={name}
+          variant={variant}
+          colors={colors}
+          size={size}
+          api={useApi ? '/api/avatar' : undefined}
+          className={shape === 'square' ? 'rounded-none' : shape === 'rounded' ? 'rounded-md' : 'rounded-full'}
+        />
         <span className="text-xs text-muted-foreground truncate max-w-[8rem]">
           {name}
         </span>
@@ -303,11 +312,52 @@ export const Playground = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { setOpen: setSidebarOpen } = useSidebar();
-  const { handleAvatarClick: contextHandleAvatarClick, selectedAvatar, setCurrentColors } = useSidebarContext();
-  const [variant, setVariant] = useState<Variant>('beam');
+  const { handleAvatarClick: contextHandleAvatarClick, selectedAvatar, setCurrentColors, setSelectedAvatar } = useSidebarContext();
+  const [variant, setVariant] = useState<Variant | 'random'>('random');
   const [avatarSize, setAvatarSize] = useState<number>(80);
-  const [isSquare, setSquare] = useState(false);
+  const [shape, setShape] = useState<'circle' | 'square' | 'rounded'>('circle');
   const [useApi, setUseApi] = useState(false);
+  const [loadedCount, setLoadedCount] = useState(0);
+  
+  const { ref, inView } = useInView({
+    threshold: 0,
+    rootMargin: '100px',
+  });
+
+  const {
+    data,
+    error,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+    status,
+    isLoading,
+    refetch,
+  } = useInfiniteQuery({
+    queryKey: ['companies'],
+    queryFn: ({ pageParam = 0 }) => fetchCompanies(pageParam, 25),
+    getNextPageParam: (lastPage) => {
+      return lastPage.hasMore ? lastPage.currentPage + 1 : undefined;
+    },
+    initialPageParam: 0,
+  });
+
+  useEffect(() => {
+    if (inView && hasNextPage && !isFetchingNextPage) {
+      fetchNextPage();
+    }
+  }, [inView, hasNextPage, isFetchingNextPage, fetchNextPage]);
+
+  useEffect(() => {
+    if (data) {
+      const total = data.pages.reduce((acc, page) => acc + page.companies.length, 0);
+      setLoadedCount(total);
+    }
+  }, [data]);
+
+  const allCompanies = data?.pages.flatMap(page => page.companies) ?? [];
+  const totalCompanies = data?.pages[0]?.totalCount ?? 500;
+  const progress = (loadedCount / totalCompanies) * 100;
 
   const [dotColor0, setDotColor0] = useState<string>(paletteColors[8][0]);
   const [dotColor1, setDotColor1] = useState<string>(paletteColors[8][1]);
@@ -338,27 +388,28 @@ export const Playground = () => {
     const name = searchParams.get('name');
     const avatarVariant = searchParams.get('variant');
     const size = searchParams.get('size');
-    const square = searchParams.get('square');
+    const shapeParam = searchParams.get('shape');
     const api = searchParams.get('api');
     
     if (name) {
       const avatarData = {
         name,
-        variant: avatarVariant && variants.includes(avatarVariant as Variant) ? avatarVariant : variant,
+        variant: avatarVariant && (variants.includes(avatarVariant as Variant) || avatarVariant === 'random') ? avatarVariant : variant,
         colors: dotColors,
         size: size ? parseInt(size) : avatarSize,
-        square: square === 'true',
+        shape: shapeParam === 'square' ? 'square' : shapeParam === 'rounded' ? 'rounded' : 'circle',
         useApi: api === 'true' ? true : useApi
       };
       contextHandleAvatarClick(avatarData);
       setSidebarOpen(true);
       
       // Update state to match URL
-      if (avatarVariant && variants.includes(avatarVariant as Variant)) {
-        setVariant(avatarVariant as Variant);
+      if (avatarVariant && (variants.includes(avatarVariant as Variant) || avatarVariant === 'random')) {
+        setVariant(avatarVariant as Variant | 'random');
       }
       if (size) setAvatarSize(parseInt(size));
-      if (square === 'true') setSquare(true);
+      if (shapeParam === 'square') setShape('square');
+      else if (shapeParam === 'rounded') setShape('rounded');
       if (api === 'true') setUseApi(true);
     }
   }, [searchParams]);
@@ -375,7 +426,7 @@ export const Playground = () => {
     variant: string;
     colors?: string[];
     size: number;
-    square: boolean;
+    shape: 'circle' | 'square' | 'rounded';
     useApi: boolean;
   }) => {
     contextHandleAvatarClick(avatarData);
@@ -387,14 +438,14 @@ export const Playground = () => {
     name: string;
     variant: string;
     size: number;
-    square: boolean;
+    shape: 'circle' | 'square' | 'rounded';
     useApi: boolean;
   }) => {
     const params = new URLSearchParams();
     params.set('name', avatarData.name);
     params.set('variant', avatarData.variant);
     params.set('size', avatarData.size.toString());
-    params.set('square', avatarData.square.toString());
+    params.set('shape', avatarData.shape);
     params.set('api', avatarData.useApi.toString());
     
     const url = `/playground?${params.toString()}`;
@@ -415,11 +466,25 @@ export const Playground = () => {
             <div className="min-w-0 flex-1 overflow-hidden">
               <Tabs
                 value={variant}
-                onValueChange={(v) => setVariant(v as Variant)}
+                onValueChange={(v) => {
+                  const newVariant = v as Variant | 'random';
+                  setVariant(newVariant);
+                  // Update URL with new variant
+                  const params = new URLSearchParams(searchParams.toString());
+                  params.set('variant', newVariant);
+                  router.push(`?${params.toString()}`, { scroll: false });
+                }}
                 className="w-full"
               >
                 <ScrollArea className="w-full whitespace-nowrap">
                   <TabsList className="bg-muted/50 h-8 rounded-md px-1">
+                    <TabsTrigger
+                      key="random"
+                      value="random"
+                      className="h-7 px-2.5 text-xs capitalize data-[state=active]:bg-background"
+                    >
+                      random
+                    </TabsTrigger>
                     {variants.map((v) => (
                       <TabsTrigger
                         key={v}
@@ -464,22 +529,54 @@ export const Playground = () => {
               {/* Shape */}
               <ToggleGroup
                 type="single"
-                value={isSquare ? 'square' : 'round'}
-                onValueChange={(v) => setSquare(v === 'square')}
+                value={shape}
+                onValueChange={(v) => {
+                  const newShape = v as 'circle' | 'square' | 'rounded';
+                  setShape(newShape);
+                  // Update the selected avatar's shape if one is selected
+                  if (selectedAvatar) {
+                    const updatedAvatar = {
+                      ...selectedAvatar,
+                      shape: newShape
+                    };
+                    setSelectedAvatar(updatedAvatar);
+                    updateUrl(updatedAvatar);
+                  }
+                }}
                 className="h-8"
               >
                 <Tooltip>
                   <TooltipTrigger asChild>
-                    <ToggleGroupItem value="round" aria-label="Round" className="h-7 px-2">
+                    <ToggleGroupItem value="circle" aria-label="Circle" className="h-7 px-2">
                       <Circle className="size-3.5" />
                     </ToggleGroupItem>
                   </TooltipTrigger>
-                  <TooltipContent sideOffset={6}>Round</TooltipContent>
+                  <TooltipContent sideOffset={6}>Circle</TooltipContent>
+                </Tooltip>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <ToggleGroupItem value="rounded" aria-label="Rounded" className="h-7 px-2">
+                      <Square className="size-3.5" />
+                    </ToggleGroupItem>
+                  </TooltipTrigger>
+                  <TooltipContent sideOffset={6}>Rounded</TooltipContent>
                 </Tooltip>
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <ToggleGroupItem value="square" aria-label="Square" className="h-7 px-2">
-                      <Square className="size-3.5" />
+                      <svg 
+                        width="14" 
+                        height="14" 
+                        viewBox="0 0 24 24" 
+                        fill="none" 
+                        stroke="currentColor" 
+                        strokeWidth="2" 
+                        strokeLinecap="round" 
+                        strokeLinejoin="round"
+                        className="size-3.5"
+                      >
+                        <rect x="3" y="3" width="18" height="18" />
+                      </svg>
                     </ToggleGroupItem>
                   </TooltipTrigger>
                   <TooltipContent sideOffset={6}>Square</TooltipContent>
@@ -530,24 +627,126 @@ export const Playground = () => {
           </div>
         </div>
 
-        {/* Avatar grid - Fixed responsive columns to prevent resizing when sidebar opens */}
-        <div className="grid gap-4 p-6 grid-cols-4 sm:grid-cols-6 md:grid-cols-8 lg:grid-cols-10 xl:grid-cols-12">
-          {useMemo(
-            () =>
-              exampleNames.slice(0, 100).map((exampleName, index) => (
-                <AvatarWrapper
-                  key={`${variant}-${index}-${useApi}`}
-                  name={exampleName}
-                  variant={variant}
-                  colors={dotColors}
-                  size={avatarSize}
-                  square={isSquare}
-                  useApi={useApi}
-                  onAvatarClick={handleAvatarClick}
+        {/* Company Grid with infinite scroll */}
+        <div className="max-w-6xl mx-auto px-4 py-8">
+          {/* Header */}
+          <div className="mb-8">
+            <div className="flex items-center gap-3 mb-4">
+              <Building2 className="h-8 w-8" />
+              <h1 className="text-3xl font-bold">Fortune 500 Avatar Gallery</h1>
+            </div>
+            <p className="text-muted-foreground mb-4">
+              Infinite scroll demonstration with {totalCompanies} companies
+            </p>
+            
+            {/* Progress Bar */}
+            <div className="space-y-2">
+              <div className="flex justify-between text-sm">
+                <span className="text-muted-foreground">
+                  Loaded {loadedCount} of {totalCompanies} companies
+                </span>
+                <span className="font-medium">{Math.round(progress)}%</span>
+              </div>
+              <div className="h-2 bg-muted rounded-full overflow-hidden">
+                <div 
+                  className="h-full bg-primary transition-all duration-300 ease-out"
+                  style={{ width: `${progress}%` }}
                 />
-              )),
-            [variant, dotColors, avatarSize, isSquare, useApi]
-          )}
+              </div>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
+            {allCompanies.map((company, index) => {
+              const variantIndex = index % variants.length;
+              const displayVariant = variant === 'random' ? variants[variantIndex] : variant;
+              const paletteIndex = Math.floor(index / 50) % colorPalettes.length;
+              const avatarColors = variant === 'random' ? colorPalettes[paletteIndex] : dotColors;
+
+              return (
+                <Card 
+                  key={`${company}-${index}`} 
+                  className="group hover:shadow-lg transition-shadow cursor-pointer"
+                  onClick={() => handleAvatarClick({
+                    name: company,
+                    variant: displayVariant, // Use the actual variant, not 'random'
+                    colors: avatarColors,
+                    size: 120,
+                    shape: shape,
+                    useApi: useApi
+                  })}
+                >
+                  <CardContent className="p-4">
+                    <div className="flex flex-col items-center space-y-3">
+                      <div className="relative">
+                        <Avatar
+                          name={company}
+                          variant={displayVariant}
+                          colors={avatarColors}
+                          size={80}
+                          className={shape === 'square' ? 'rounded-none' : shape === 'rounded' ? 'rounded-md' : 'rounded-full'}
+                          api={useApi ? '/api/avatar' : undefined}
+                        />
+                        <Badge 
+                          variant="secondary" 
+                          className="absolute -bottom-2 -right-2 text-xs opacity-0 group-hover:opacity-100 transition-opacity"
+                        >
+                          #{index + 1}
+                        </Badge>
+                      </div>
+                      <div className="text-center">
+                        <p className="text-sm font-medium line-clamp-2">
+                          {company}
+                        </p>
+                        <p className="text-xs text-muted-foreground">
+                          {displayVariant}
+                        </p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              );
+            })}
+
+            {/* Loading Skeletons */}
+            {(isLoading || isFetchingNextPage) && (
+              <>
+                {[...Array(12)].map((_, i) => (
+                  <Card key={`skeleton-${i}`}>
+                    <CardContent className="p-4">
+                      <div className="flex flex-col items-center space-y-3">
+                        <Skeleton className="h-20 w-20 rounded-full" />
+                        <div className="space-y-2 w-full">
+                          <Skeleton className="h-4 w-full" />
+                          <Skeleton className="h-3 w-2/3 mx-auto" />
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </>
+            )}
+          </div>
+
+          {/* Infinite Scroll Trigger */}
+          <div ref={ref} className="h-20 flex items-center justify-center mt-8">
+            {isFetchingNextPage && (
+              <div className="flex items-center gap-2">
+                <Loader2 className="h-5 w-5 animate-spin" />
+                <span className="text-muted-foreground">Loading more companies...</span>
+              </div>
+            )}
+            {!hasNextPage && allCompanies.length > 0 && (
+              <div className="text-center">
+                <Badge variant="outline" className="text-lg px-4 py-2">
+                  All {totalCompanies} companies loaded!
+                </Badge>
+                <p className="text-sm text-muted-foreground mt-2">
+                  You've reached the end of the Fortune 500
+                </p>
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </TooltipProvider>

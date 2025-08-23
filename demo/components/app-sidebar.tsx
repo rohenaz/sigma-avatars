@@ -7,7 +7,14 @@ import Avatar from '../../src/lib';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Copy, Check, Download } from 'lucide-react';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Copy, Check, Download, FileImage } from 'lucide-react';
 import { CodeBlock } from './code-block';
 import {
   Sidebar,
@@ -27,16 +34,19 @@ export function AppSidebar(props: AppSidebarProps) {
     selectedAvatar, 
     customName, 
     currentColors,
+    selectedFormat,
+    setSelectedFormat,
     handleNameChange, 
     handleVariantChange,
-    downloadSelectedAvatar, 
+    downloadSelectedAvatar,
+    copySvgToClipboard,
     copyToClipboard, 
     copiedItem 
   } = useSidebarContext();
   const generateCodeSnippet = (avatarData: typeof selectedAvatar) => {
     if (!avatarData) return '';
     
-      const { name, variant, colors, size, square } = avatarData;
+      const { name, variant, colors, size, shape } = avatarData;
     const colorsProp = colors && colors.length > 0 
       ? `\n  colors={${JSON.stringify(colors)}}`
       : '';
@@ -46,19 +56,19 @@ export function AppSidebar(props: AppSidebarProps) {
 <Avatar
   name="${name}"
   variant="${variant}"
-  size={${size}}${colorsProp}${square ? '\n  square' : ''}
+  size={${size}}${colorsProp}
 />`;
   };
 
   const generateApiUrl = (avatarData: typeof selectedAvatar) => {
     if (!avatarData) return '';
     
-    const { name, variant, colors, size, square } = avatarData;
+    const { name, variant, colors, size, shape } = avatarData;
     const params = new URLSearchParams({
       name,
       variant,
       size: size.toString(),
-      square: square.toString(),
+      format: selectedFormat,
       ...(colors && colors.length > 0 && { 
         colors: colors.map(c => c.replace(/^#/, '')).join(',') 
       }),
@@ -74,15 +84,15 @@ export function AppSidebar(props: AppSidebarProps) {
       name: selectedAvatar.name,
       variant: selectedAvatar.variant,
       size: selectedAvatar.size.toString(),
-      square: selectedAvatar.square.toString(),
       title: 'false', // Don't include title in img tags
+      format: selectedFormat,
       // Pass colors without # like Boring Avatars API
       ...(selectedAvatar.colors && selectedAvatar.colors.length > 0 && { 
         colors: selectedAvatar.colors.map(c => c.replace(/^#/, '')).join(',')
       }),
     });
     return `/api/avatar?${params}`;
-  }, [selectedAvatar]);
+  }, [selectedAvatar, selectedFormat]);
 
   if (!selectedAvatar) {
     return (
@@ -122,25 +132,71 @@ export function AppSidebar(props: AppSidebarProps) {
         
         {/* Avatar Preview */}
         <div className="flex justify-center">
-          <div className="bg-muted rounded-lg p-4">
+          <div className="bg-muted rounded-lg p-6">
             {selectedAvatar.useApi && apiUrl ? (
               <Image
                 src={apiUrl}
                 alt={`${selectedAvatar.name} avatar`}
-                width={selectedAvatar.size}
-                height={selectedAvatar.size}
-                className={selectedAvatar.square ? '' : 'rounded-full'}
+                width={120}
+                height={120}
+                className={selectedAvatar.shape === 'square' ? 'rounded-none' : selectedAvatar.shape === 'rounded' ? 'rounded-md' : 'rounded-full'}
               />
             ) : (
               <Avatar
                 name={selectedAvatar.name}
                 variant={selectedAvatar.variant}
                 colors={currentColors || selectedAvatar.colors}
-                size={selectedAvatar.size}
-                square={selectedAvatar.square}
+                size={120}
+                className={selectedAvatar.shape === 'square' ? 'rounded-none' : selectedAvatar.shape === 'rounded' ? 'rounded-md' : 'rounded-full'}
               />
             )}
           </div>
+        </div>
+
+        {/* Format Selector */}
+        <div className="grid gap-2">
+          <div className="flex items-center justify-between">
+            <Label htmlFor="format-select" className="text-sm font-medium">
+              Format & Size
+            </Label>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={copySvgToClipboard}
+              title="Copy SVG"
+            >
+              {copiedItem === 'svg' ? (
+                <Check className="h-4 w-4" />
+              ) : (
+                <Copy className="h-4 w-4" />
+              )}
+            </Button>
+          </div>
+          <Select value={selectedFormat} onValueChange={(value) => setSelectedFormat(value as 'svg' | 'png' | 'webp')}>
+            <SelectTrigger id="format-select">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="svg">
+                <div className="flex items-center justify-between w-full">
+                  <span>SVG</span>
+                  <span className="text-xs text-muted-foreground ml-2">~2-3 KB</span>
+                </div>
+              </SelectItem>
+              <SelectItem value="png">
+                <div className="flex items-center justify-between w-full">
+                  <span>PNG</span>
+                  <span className="text-xs text-muted-foreground ml-2">~8-12 KB</span>
+                </div>
+              </SelectItem>
+              <SelectItem value="webp">
+                <div className="flex items-center justify-between w-full">
+                  <span>WebP</span>
+                  <span className="text-xs text-muted-foreground ml-2">~4-6 KB</span>
+                </div>
+              </SelectItem>
+            </SelectContent>
+          </Select>
         </div>
 
         {/* Variant Selector */}
@@ -163,7 +219,7 @@ export function AppSidebar(props: AppSidebarProps) {
                   variant={variant}
                   colors={currentColors || selectedAvatar.colors}
                   size={32}
-                  square={selectedAvatar.square}
+                  className={selectedAvatar.shape === 'square' ? 'rounded-none' : selectedAvatar.shape === 'rounded' ? 'rounded-md' : 'rounded-full'}
                 />
                 {selectedAvatar.variant === variant && (
                   <div className="absolute -top-1 -right-1 w-3 h-3 bg-primary rounded-full" />
@@ -225,7 +281,7 @@ export function AppSidebar(props: AppSidebarProps) {
           size="lg"
         >
           <Download className="h-4 w-4 mr-2" />
-          Download SVG
+          Download {selectedFormat.toUpperCase()}
         </Button>
       </SidebarFooter>
       

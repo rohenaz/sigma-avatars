@@ -1,22 +1,10 @@
 import * as React from 'react';
 import { generateId, getRandomColor, getUnit, hashCode } from '../utilities';
+import { ALL_PATTERNS, selectPattern, renderBackground } from '../backgrounds';
 import type { AvatarProps } from './types';
 
 const SIZE = 80;
 
-// Generate marble-style sky background using same logic as marble variant
-function generateMarbleSky(name: string, colors: string[]) {
-  const num = hashCode(name);
-  const ELEMENTS = 3;
-
-  return Array.from({ length: ELEMENTS }, (_, i) => ({
-    color: getRandomColor(num + i, colors, colors.length),
-    translateX: getUnit(num * (i + 1), SIZE / 10, 1),
-    translateY: getUnit(num * (i + 1), SIZE / 10, 2),
-    scale: 1.2 + getUnit(num * (i + 1), SIZE / 20) / 10,
-    rotate: getUnit(num * (i + 1), 360, 1),
-  }));
-}
 
 // Color helpers for anime-style shading
 function hexToRgb(hex: string) {
@@ -67,11 +55,12 @@ const AvatarMage = ({
   name,
   colors,
   title,
-  square,
   size,
   ...otherProps
 }: AvatarProps) => {
   const maskID = generateId(name, 'mask');
+  const filterID = generateId(name, 'filter');
+  const patternID = generateId(name, 'pattern');
   const num = hashCode(name);
 
   // Deterministic parameters
@@ -148,8 +137,6 @@ const AvatarMage = ({
   const showCollar = getUnit(num + 131, 10) < 3; // 30% chance
   const collarColor = getRandomColor(num + 133, colors, colors.length);
 
-  // Generate marble-style sky background
-  const marbleSky = generateMarbleSky(name, colors);
 
   // Draw eye based on shape - more organic and mystical
   const drawEye = (cx: number, isLeft: boolean) => {
@@ -382,63 +369,29 @@ const AvatarMage = ({
         <rect
           fill="#FFFFFF"
           height={SIZE}
-          rx={square ? undefined : SIZE * 2}
+          
           width={SIZE}
         />
       </mask>
 
       <g mask={`url(#${maskID})`}>
-        {/* Base background */}
+        {/* Solid fallback background from palette - always visible */}
         <rect
-          height={SIZE}
-          style={{ fill: getRandomColor(num + 97, colors, colors.length) }}
           width={SIZE}
+          height={SIZE}
+          fill={getRandomColor(num * 23, colors, colors.length)}
         />
-
-        {/* Marble-style sky background using same shapes as marble variant */}
-        <path
-          d="M32.414 59.35L50.376 70.5H72.5v-71H33.728L26.5 13.381l19.057 27.08L32.414 59.35z"
-          filter={`url(#filter_${maskID})`}
-          style={{ fill: marbleSky[1].color }}
-          transform={
-            'translate(' +
-            marbleSky[1].translateX +
-            ' ' +
-            marbleSky[1].translateY +
-            ') rotate(' +
-            marbleSky[1].rotate +
-            ' ' +
-            SIZE / 2 +
-            ' ' +
-            SIZE / 2 +
-            ') scale(' +
-            marbleSky[2].scale +
-            ')'
+        
+        {/* Pattern overlay - may have transparency */}
+        {renderBackground(
+          selectPattern(num * 31 + 17, ALL_PATTERNS), // Use deterministic selection
+          {
+            size: SIZE,
+            colors: colors || ['#92A1C6', '#146A7C', '#F0AB3D', '#C271B4', '#C20D90'],
+            seed: num,
+            patternId: patternID
           }
-        />
-        <path
-          d="M22.216 24L0 46.75l14.108 38.129L78 86l-3.081-59.276-22.378 4.005 12.972 20.186-23.35 27.395L22.215 24z"
-          filter={`url(#filter_${maskID})`}
-          style={{
-            mixBlendMode: 'overlay',
-            fill: marbleSky[2].color,
-          }}
-          transform={
-            'translate(' +
-            marbleSky[2].translateX +
-            ' ' +
-            marbleSky[2].translateY +
-            ') rotate(' +
-            marbleSky[2].rotate +
-            ' ' +
-            SIZE / 2 +
-            ' ' +
-            SIZE / 2 +
-            ') scale(' +
-            marbleSky[2].scale +
-            ')'
-          }
-        />
+        )}
 
         {/* Collar - at bottom of avatar */}
         {showCollar && (
@@ -495,7 +448,7 @@ const AvatarMage = ({
         <filter
           colorInterpolationFilters="sRGB"
           filterUnits="userSpaceOnUse"
-          id={`filter_${maskID}`}
+          id={filterID}
         >
           <feFlood floodOpacity={0} result="BackgroundImageFix" />
           <feBlend in="SourceGraphic" in2="BackgroundImageFix" result="shape" />

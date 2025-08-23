@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { generateId, getUnit, hashCode } from '../utilities';
+import { generateId, getUnit, hashCode, getRandomColor } from '../utilities';
 import type { AvatarProps } from './types';
 
 const SIZE = 80;
@@ -285,16 +285,15 @@ const AvatarFractal = ({
   name,
   colors,
   title,
-  square,
   size,
   animate,
   ...otherProps
 }: FractalAvatarProps) => {
   const maskID = generateId(name, 'mask');
-  const clipID = React.useId();
-  const gradientBgID = React.useId();
-  const gradientFgID = React.useId();
-  const gradientAccentID = React.useId();
+  const clipID = generateId(name, 'clip');
+  const gradientBgID = generateId(name, 'gradient-bg');
+  const gradientFgID = generateId(name, 'gradient-fg');
+  const gradientAccentID = generateId(name, 'gradient-accent');
   const num = hashCode(name);
 
   // Decide if we use gradients or solid colors (20% chance for gradients)
@@ -318,54 +317,42 @@ const AvatarFractal = ({
   const fgFractal = FOREGROUND_FRACTALS[fgFractalIndex];
 
   // Vary parameters based on hash for more uniqueness - use larger prime multipliers
-  const bgIterations = React.useMemo(() => {
+  // Direct calculations instead of useMemo for SSR compatibility
+  const bgIterations = (() => {
     const variance = bgFractal.iterVariance || 1;
     const offset = getUnit(num * 53 + 3, variance * 2 + 1) - variance;
     return Math.max(1, bgFractal.iterations + offset);
-  }, [bgFractal, num]);
+  })();
 
-  const bgAngle = React.useMemo(() => {
+  const bgAngle = (() => {
     const variance = bgFractal.angleVariance || 10;
     const offset = (getUnit(num * 59 + 5, variance * 2) - variance) / 2;
     return bgFractal.angle + offset;
-  }, [bgFractal, num]);
+  })();
 
-  const fgIterations = React.useMemo(() => {
+  const fgIterations = (() => {
     const variance = fgFractal.iterVariance || 1;
     const offset = getUnit(num * 61 + 11, variance * 2 + 1) - variance;
     return Math.max(1, fgFractal.iterations + offset);
-  }, [fgFractal, num]);
+  })();
 
-  const fgAngle = React.useMemo(() => {
+  const fgAngle = (() => {
     const variance = fgFractal.angleVariance || 10;
     const offset = (getUnit(num * 67 + 13, variance * 2) - variance) / 2;
     return fgFractal.angle + offset;
-  }, [fgFractal, num]);
+  })();
 
   // Generate background fractal with varied parameters
-  const bgSystem = React.useMemo(
-    () => generateLSystem(bgFractal.axiom, bgFractal.rules, bgIterations),
-    [bgFractal, bgIterations]
-  );
-
-  const bgPath = React.useMemo(
-    () => lSystemToPath(bgSystem, bgAngle),
-    [bgSystem, bgAngle]
-  );
+  const bgSystem = generateLSystem(bgFractal.axiom, bgFractal.rules, bgIterations);
+  const bgPath = lSystemToPath(bgSystem, bgAngle);
 
   // Generate foreground fractal with varied parameters
-  const fgSystem = React.useMemo(
-    () => generateLSystem(fgFractal.axiom, fgFractal.rules, fgIterations),
-    [fgFractal, fgIterations]
-  );
-
-  const fgPath = React.useMemo(
-    () => lSystemToPath(fgSystem, fgAngle),
-    [fgSystem, fgAngle]
-  );
+  const fgSystem = generateLSystem(fgFractal.axiom, fgFractal.rules, fgIterations);
+  const fgPath = lSystemToPath(fgSystem, fgAngle);
 
   // More varied transforms - use prime multipliers for better distribution
-  const bgTransform = React.useMemo(() => {
+  // Direct calculations instead of useMemo for SSR compatibility
+  const bgTransform = (() => {
     const scaleVariance = 1.2 + getUnit(num * 71 + 17, 15) / 10; // 1.2 to 2.7 (reduced from 1.8-3.8)
     const fit = fitToBox(
       bgPath.minX,
@@ -379,9 +366,9 @@ const AvatarFractal = ({
     const offsetX = (getUnit(num * 79 + 29, 20) - 10) * 0.5; // Small position variance
     const offsetY = (getUnit(num * 83 + 31, 20) - 10) * 0.5;
     return `translate(${SIZE / 2 + offsetX}, ${SIZE / 2 + offsetY}) rotate(${rotation}) translate(${-SIZE / 2}, ${-SIZE / 2}) translate(${fit.translateX}, ${fit.translateY}) scale(${fit.scale})`;
-  }, [bgPath, num]);
+  })();
 
-  const fgTransform = React.useMemo(() => {
+  const fgTransform = (() => {
     const scaleVariance = 0.8 + getUnit(num * 89 + 23, 10) / 10; // 0.8 to 1.8 (reduced from 0.7-2.1)
     const fit = fitToBox(
       fgPath.minX,
@@ -396,7 +383,7 @@ const AvatarFractal = ({
     const offsetX = (getUnit(num * 101 + 73, 40) - 20) * 1.5; // -30 to +30 pixels
     const offsetY = (getUnit(num * 103 + 79, 40) - 20) * 1.5; // -30 to +30 pixels
     return `translate(${SIZE / 2 + offsetX}, ${SIZE / 2 + offsetY}) rotate(${rotation}) translate(${-SIZE / 2}, ${-SIZE / 2}) translate(${fit.translateX}, ${fit.translateY}) scale(${fit.scale})`;
-  }, [fgPath, num]);
+  })();
 
   // More varied stroke widths - use prime multipliers
   const bgCoverage = 0.1 + getUnit(num * 107 + 41, 15) / 100; // 0.1 to 0.25
@@ -417,7 +404,8 @@ const AvatarFractal = ({
   ); // reduced max from 4 to 2.5
 
   // Varied dash patterns - use prime multipliers
-  const fgDashPattern = React.useMemo(() => {
+  // Direct calculation instead of useMemo for SSR compatibility
+  const fgDashPattern = (() => {
     const useDash = getUnit(num * 113 + 47, 3) > 0; // 2/3 chance of dashes
     if (!useDash) return 'none';
 
@@ -426,7 +414,7 @@ const AvatarFractal = ({
     const dashRatio = 0.2 + getUnit(num * 131 + 59, 6) / 10; // 0.2 to 0.8
     const gapRatio = 0.2 + getUnit(num * 137 + 61, 4) / 10; // 0.2 to 0.6
     return `${unit * dashRatio} ${unit * gapRatio}`;
-  }, [fgPath.pathLength, num]);
+  })();
 
   // Vary opacity with more range - use prime multipliers
   const bgOpacity = 0.4 + getUnit(num * 139 + 67, 4) / 10; // 0.4 to 0.8 (increased minimum)
@@ -491,7 +479,7 @@ const AvatarFractal = ({
 
         {/* Clipping mask */}
         <clipPath id={clipID}>
-          <rect height={SIZE} rx={square ? 0 : SIZE * 2} width={SIZE} />
+          <rect height={SIZE}  width={SIZE} />
         </clipPath>
 
         {/* Mask for rounded corners */}
@@ -506,14 +494,23 @@ const AvatarFractal = ({
           <rect
             fill="#FFFFFF"
             height={SIZE}
-            rx={square ? undefined : SIZE * 2}
+            
             width={SIZE}
           />
         </mask>
       </defs>
 
       <g clipPath={`url(#${clipID})`} mask={`url(#${maskID})`}>
-        {/* Background color - rarely uses gradient (10% chance) */}
+        {/* Solid fallback background from palette - always visible */}
+        <rect
+          height={SIZE}
+          style={{
+            fill: getRandomColor(num * 19, colors, colors.length),
+          }}
+          width={SIZE}
+        />
+        
+        {/* Semi-transparent overlay - rarely uses gradient (10% chance) */}
         <rect
           height={SIZE}
           opacity={0.15}

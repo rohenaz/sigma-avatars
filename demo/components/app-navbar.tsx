@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import { ModeToggle } from './mode-toggle';
+import { SigmaLogo } from './sigma-logo';
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import React from "react";
 import {
@@ -51,11 +52,10 @@ export function AppNavbar() {
     >
       {/* Left side: Logo and nav links */}
       <div className="flex items-center gap-4">
-        <Link href="/" className="flex items-center space-x-2">
-          <span className="hidden font-bold sm:inline-block">
-            Sigma Avatars
-          </span>
+        <Link href="/" className="flex items-center">
+          <SigmaLogo />
         </Link>
+        <Separator orientation="vertical" className="h-6" />
         <nav className="hidden md:flex items-center space-x-4 text-sm font-medium">
           {navItems.map((item) => (
             <Link

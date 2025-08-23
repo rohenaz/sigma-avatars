@@ -18835,7 +18835,7 @@ var require_react_is_development = __commonJS((exports) => {
       var ContextProvider = REACT_PROVIDER_TYPE;
       var Element = REACT_ELEMENT_TYPE;
       var ForwardRef = REACT_FORWARD_REF_TYPE;
-      var Fragment2 = REACT_FRAGMENT_TYPE;
+      var Fragment3 = REACT_FRAGMENT_TYPE;
       var Lazy = REACT_LAZY_TYPE;
       var Memo = REACT_MEMO_TYPE;
       var Portal = REACT_PORTAL_TYPE;
@@ -18894,7 +18894,7 @@ var require_react_is_development = __commonJS((exports) => {
       exports.ContextProvider = ContextProvider;
       exports.Element = Element;
       exports.ForwardRef = ForwardRef;
-      exports.Fragment = Fragment2;
+      exports.Fragment = Fragment3;
       exports.Lazy = Lazy;
       exports.Memo = Memo;
       exports.Portal = Portal;
@@ -21052,103 +21052,987 @@ var defaultColors = [
   "#C20D90"
 ];
 
-// src/lib/components/avatar-barcode.tsx
+// src/lib/backgrounds.tsx
 var jsx_dev_runtime = __toESM(require_jsx_dev_runtime(), 1);
-var SIZE = 80;
-var MIN_STRIPE_WIDTH = 1;
-var MAX_STRIPE_WIDTH = 8;
-function generateBarcode(name, colors) {
-  const numFromName = hashCode(name);
-  const range = colors && colors.length;
-  const colorPattern = Math.abs(numFromName) % 8;
-  let activeColors = [];
-  switch (colorPattern) {
-    case 0:
-      activeColors = [colors[0], colors[1]];
-      break;
-    case 1:
-      activeColors = [colors[3], colors[4]];
-      break;
-    case 2:
-      activeColors = [colors[1], colors[2], colors[3]];
-      break;
-    case 3:
-      activeColors = [colors[0], colors[2], colors[4]];
-      break;
-    case 4:
-      activeColors = [colors[0], colors[1], colors[4]];
-      break;
-    case 5:
-      activeColors = colors;
-      break;
-    case 6:
-      activeColors = [colors[1], colors[2], colors[3]];
-      break;
-    case 7:
-      activeColors = [colors[0], colors[3], colors[4]];
-      break;
-    default:
-      activeColors = [colors[0], colors[1]];
-  }
-  const useAlternating = getBoolean(numFromName, 2);
-  const stripes = [];
-  let currentX = 0;
-  let stripeIndex = 0;
-  while (currentX < SIZE) {
-    const widthSeed = numFromName + stripeIndex * 997;
-    const colorSeed = numFromName + stripeIndex * 1009;
-    let stripeWidth;
-    if (stripeIndex % 3 === 0) {
-      stripeWidth = MIN_STRIPE_WIDTH + Math.abs(widthSeed) % (MAX_STRIPE_WIDTH * 2 - MIN_STRIPE_WIDTH);
-    } else {
-      stripeWidth = MIN_STRIPE_WIDTH + Math.abs(widthSeed) % (MAX_STRIPE_WIDTH - MIN_STRIPE_WIDTH);
-    }
-    const finalWidth = Math.min(stripeWidth, SIZE - currentX);
-    let stripeColor;
-    if (useAlternating) {
-      stripeColor = activeColors[stripeIndex % 2];
-    } else {
-      stripeColor = activeColors[Math.abs(colorSeed) % activeColors.length];
-    }
-    const lastStripe = stripes[stripes.length - 1];
-    if (!lastStripe || lastStripe.color !== stripeColor) {
-      stripes.push({
-        x: currentX,
-        width: finalWidth,
-        color: stripeColor
-      });
-    } else if (lastStripe) {
-      lastStripe.width += finalWidth;
-    }
-    currentX += finalWidth;
-    stripeIndex++;
-  }
-  const stripeCounts = new Map;
-  stripes.forEach((stripe) => {
-    stripeCounts.set(stripe.color, (stripeCounts.get(stripe.color) || 0) + stripe.width);
-  });
-  let backgroundColor = colors[0];
-  let minUsage = Infinity;
-  activeColors.forEach((color) => {
-    const usage = stripeCounts.get(color) || 0;
-    if (usage < minUsage) {
-      minUsage = usage;
-      backgroundColor = color;
-    }
-  });
-  return { stripes, backgroundColor, activeColors };
+function calculateTransform(seed, size, index = 0) {
+  const translateX = getUnit(seed * (index + 1), size / 10, 1);
+  const translateY = getUnit(seed * (index + 1), size / 10, 2);
+  const scale = 1.2 + getUnit(seed * (index + 1), size / 20) / 10;
+  const rotate = getUnit(seed * (index + 1), 360, 1);
+  return `translate(${translateX} ${translateY}) rotate(${rotate} ${size / 2} ${size / 2}) scale(${scale})`;
 }
+var marbleBlob1 = {
+  id: "marble-blob-1",
+  name: "Marble Blob 1",
+  type: "svg-path",
+  render: ({ size, colors, seed, filterUrl }) => {
+    const color = getRandomColor(seed + 1, colors, colors.length);
+    const transform = calculateTransform(seed, size, 1);
+    return /* @__PURE__ */ jsx_dev_runtime.jsxDEV("path", {
+      d: "M32.414 59.35L50.376 70.5H72.5v-71H33.728L26.5 13.381l19.057 27.08L32.414 59.35z",
+      filter: filterUrl,
+      style: { fill: color },
+      transform
+    }, undefined, false, undefined, this);
+  }
+};
+var marbleBlob2 = {
+  id: "marble-blob-2",
+  name: "Marble Blob 2",
+  type: "svg-path",
+  render: ({ size, colors, seed, filterUrl }) => {
+    const color = getRandomColor(seed + 2, colors, colors.length);
+    const transform = calculateTransform(seed, size, 2);
+    return /* @__PURE__ */ jsx_dev_runtime.jsxDEV("path", {
+      d: "M22.216 24L0 46.75l14.108 38.129L78 86l-3.081-59.276-22.378 4.005 12.972 20.186-23.35 27.395L22.215 24z",
+      filter: filterUrl,
+      style: {
+        fill: color,
+        mixBlendMode: "overlay"
+      },
+      transform
+    }, undefined, false, undefined, this);
+  }
+};
+var cloudShape = {
+  id: "cloud-shape",
+  name: "Cloud Shape",
+  type: "svg-path",
+  render: ({ size, colors, seed, filterUrl }) => {
+    const color = getRandomColor(seed + 3, colors, colors.length);
+    const transform = calculateTransform(seed, size, 3);
+    return /* @__PURE__ */ jsx_dev_runtime.jsxDEV("path", {
+      d: "M20 60 Q30 40 50 45 T80 50 Q85 55 80 65 Q70 75 50 70 Q35 68 25 75 Q15 70 20 60",
+      filter: filterUrl,
+      style: { fill: color, opacity: 0.7 },
+      transform
+    }, undefined, false, undefined, this);
+  }
+};
+var waveShape = {
+  id: "wave-shape",
+  name: "Wave Shape",
+  type: "svg-path",
+  render: ({ size, colors, seed, filterUrl }) => {
+    const color = getRandomColor(seed + 4, colors, colors.length);
+    const transform = calculateTransform(seed, size, 4);
+    return /* @__PURE__ */ jsx_dev_runtime.jsxDEV("path", {
+      d: "M0 40 Q20 20 40 40 T80 40 L80 80 L0 80 Z",
+      filter: filterUrl,
+      style: { fill: color, opacity: 0.6 },
+      transform
+    }, undefined, false, undefined, this);
+  }
+};
+var stripesVertical = {
+  id: "stripes-vertical",
+  name: "Vertical Stripes",
+  type: "pattern",
+  needsDefs: true,
+  render: ({ size, colors, seed, patternId }) => {
+    const color1 = getRandomColor(seed, colors, colors.length);
+    const color2 = getRandomColor(seed + 1, colors, colors.length);
+    return /* @__PURE__ */ jsx_dev_runtime.jsxDEV("pattern", {
+      id: patternId,
+      patternUnits: "userSpaceOnUse",
+      width: size * 0.2,
+      height: size,
+      children: [
+        /* @__PURE__ */ jsx_dev_runtime.jsxDEV("rect", {
+          width: size * 0.1,
+          height: size,
+          style: { fill: color1 }
+        }, undefined, false, undefined, this),
+        /* @__PURE__ */ jsx_dev_runtime.jsxDEV("rect", {
+          x: size * 0.1,
+          width: size * 0.1,
+          height: size,
+          style: { fill: color2 }
+        }, undefined, false, undefined, this)
+      ]
+    }, undefined, true, undefined, this);
+  }
+};
+var stripesHorizontal = {
+  id: "stripes-horizontal",
+  name: "Horizontal Stripes",
+  type: "pattern",
+  needsDefs: true,
+  render: ({ size, colors, seed, patternId }) => {
+    const color1 = getRandomColor(seed, colors, colors.length);
+    const color2 = getRandomColor(seed + 1, colors, colors.length);
+    return /* @__PURE__ */ jsx_dev_runtime.jsxDEV("pattern", {
+      id: patternId,
+      patternUnits: "userSpaceOnUse",
+      width: size,
+      height: size * 0.2,
+      children: [
+        /* @__PURE__ */ jsx_dev_runtime.jsxDEV("rect", {
+          width: size,
+          height: size * 0.1,
+          style: { fill: color1 }
+        }, undefined, false, undefined, this),
+        /* @__PURE__ */ jsx_dev_runtime.jsxDEV("rect", {
+          y: size * 0.1,
+          width: size,
+          height: size * 0.1,
+          style: { fill: color2 }
+        }, undefined, false, undefined, this)
+      ]
+    }, undefined, true, undefined, this);
+  }
+};
+var stripesDiagonal = {
+  id: "stripes-diagonal",
+  name: "Diagonal Stripes",
+  type: "pattern",
+  needsDefs: true,
+  render: ({ size, colors, seed, patternId }) => {
+    const color1 = getRandomColor(seed, colors, colors.length);
+    const color2 = getRandomColor(seed + 1, colors, colors.length);
+    return /* @__PURE__ */ jsx_dev_runtime.jsxDEV("pattern", {
+      id: patternId,
+      patternUnits: "userSpaceOnUse",
+      width: size * 0.2,
+      height: size * 0.2,
+      children: [
+        /* @__PURE__ */ jsx_dev_runtime.jsxDEV("rect", {
+          width: size * 0.2,
+          height: size * 0.2,
+          style: { fill: color1 }
+        }, undefined, false, undefined, this),
+        /* @__PURE__ */ jsx_dev_runtime.jsxDEV("path", {
+          d: `M0,${size * 0.2} L${size * 0.2},0 M0,0 L${size * 0.2},${size * 0.2}`,
+          style: {
+            stroke: color2,
+            strokeWidth: size * 0.08,
+            strokeLinecap: "square"
+          }
+        }, undefined, false, undefined, this)
+      ]
+    }, undefined, true, undefined, this);
+  }
+};
+var polkaDots = {
+  id: "polka-dots",
+  name: "Polka Dots",
+  type: "pattern",
+  needsDefs: true,
+  render: ({ size, colors, seed, patternId }) => {
+    const bgColor = getRandomColor(seed, colors, colors.length);
+    const dotColor = getRandomColor(seed + 1, colors, colors.length);
+    const dotSize = size * 0.06;
+    return /* @__PURE__ */ jsx_dev_runtime.jsxDEV("pattern", {
+      id: patternId,
+      patternUnits: "userSpaceOnUse",
+      width: size * 0.25,
+      height: size * 0.25,
+      children: [
+        /* @__PURE__ */ jsx_dev_runtime.jsxDEV("rect", {
+          width: size * 0.25,
+          height: size * 0.25,
+          style: { fill: bgColor }
+        }, undefined, false, undefined, this),
+        /* @__PURE__ */ jsx_dev_runtime.jsxDEV("circle", {
+          cx: size * 0.125,
+          cy: size * 0.125,
+          r: dotSize,
+          style: { fill: dotColor }
+        }, undefined, false, undefined, this),
+        /* @__PURE__ */ jsx_dev_runtime.jsxDEV("circle", {
+          cx: 0,
+          cy: 0,
+          r: dotSize,
+          style: { fill: dotColor }
+        }, undefined, false, undefined, this),
+        /* @__PURE__ */ jsx_dev_runtime.jsxDEV("circle", {
+          cx: size * 0.25,
+          cy: 0,
+          r: dotSize,
+          style: { fill: dotColor }
+        }, undefined, false, undefined, this),
+        /* @__PURE__ */ jsx_dev_runtime.jsxDEV("circle", {
+          cx: 0,
+          cy: size * 0.25,
+          r: dotSize,
+          style: { fill: dotColor }
+        }, undefined, false, undefined, this),
+        /* @__PURE__ */ jsx_dev_runtime.jsxDEV("circle", {
+          cx: size * 0.25,
+          cy: size * 0.25,
+          r: dotSize,
+          style: { fill: dotColor }
+        }, undefined, false, undefined, this)
+      ]
+    }, undefined, true, undefined, this);
+  }
+};
+var checkerboard = {
+  id: "checkerboard",
+  name: "Checkerboard",
+  type: "pattern",
+  needsDefs: true,
+  render: ({ size, colors, seed, patternId }) => {
+    const color1 = getRandomColor(seed, colors, colors.length);
+    const color2 = getRandomColor(seed + 1, colors, colors.length);
+    const squareSize = size * 0.1;
+    return /* @__PURE__ */ jsx_dev_runtime.jsxDEV("pattern", {
+      id: patternId,
+      patternUnits: "userSpaceOnUse",
+      width: squareSize * 2,
+      height: squareSize * 2,
+      children: [
+        /* @__PURE__ */ jsx_dev_runtime.jsxDEV("rect", {
+          width: squareSize,
+          height: squareSize,
+          style: { fill: color1 }
+        }, undefined, false, undefined, this),
+        /* @__PURE__ */ jsx_dev_runtime.jsxDEV("rect", {
+          x: squareSize,
+          y: squareSize,
+          width: squareSize,
+          height: squareSize,
+          style: { fill: color1 }
+        }, undefined, false, undefined, this),
+        /* @__PURE__ */ jsx_dev_runtime.jsxDEV("rect", {
+          x: squareSize,
+          width: squareSize,
+          height: squareSize,
+          style: { fill: color2 }
+        }, undefined, false, undefined, this),
+        /* @__PURE__ */ jsx_dev_runtime.jsxDEV("rect", {
+          y: squareSize,
+          width: squareSize,
+          height: squareSize,
+          style: { fill: color2 }
+        }, undefined, false, undefined, this)
+      ]
+    }, undefined, true, undefined, this);
+  }
+};
+var triangles = {
+  id: "triangles",
+  name: "Triangles",
+  type: "pattern",
+  needsDefs: true,
+  render: ({ size, colors, seed, patternId }) => {
+    const color1 = getRandomColor(seed, colors, colors.length);
+    const color2 = getRandomColor(seed + 1, colors, colors.length);
+    const triSize = size * 0.15;
+    return /* @__PURE__ */ jsx_dev_runtime.jsxDEV("pattern", {
+      id: patternId,
+      patternUnits: "userSpaceOnUse",
+      width: triSize,
+      height: triSize,
+      children: [
+        /* @__PURE__ */ jsx_dev_runtime.jsxDEV("polygon", {
+          points: `0,${triSize} ${triSize / 2},0 ${triSize},${triSize}`,
+          style: { fill: color1 }
+        }, undefined, false, undefined, this),
+        /* @__PURE__ */ jsx_dev_runtime.jsxDEV("polygon", {
+          points: `0,0 ${triSize / 2},0 0,${triSize}`,
+          style: { fill: color2 }
+        }, undefined, false, undefined, this),
+        /* @__PURE__ */ jsx_dev_runtime.jsxDEV("polygon", {
+          points: `${triSize},0 ${triSize},${triSize} ${triSize / 2},0`,
+          style: { fill: color2 }
+        }, undefined, false, undefined, this)
+      ]
+    }, undefined, true, undefined, this);
+  }
+};
+var hexagons = {
+  id: "hexagons",
+  name: "Hexagons",
+  type: "pattern",
+  needsDefs: true,
+  render: ({ size, colors, seed, patternId }) => {
+    const color1 = getRandomColor(seed, colors, colors.length);
+    const color2 = getRandomColor(seed + 1, colors, colors.length);
+    const hexSize = size * 0.1;
+    return /* @__PURE__ */ jsx_dev_runtime.jsxDEV("pattern", {
+      id: patternId,
+      patternUnits: "userSpaceOnUse",
+      width: hexSize * 3,
+      height: hexSize * 2.6,
+      children: /* @__PURE__ */ jsx_dev_runtime.jsxDEV("polygon", {
+        points: `${hexSize},0 ${hexSize * 2},0 ${hexSize * 2.5},${hexSize * 0.87} ${hexSize * 2},${hexSize * 1.73} ${hexSize},${hexSize * 1.73} ${hexSize * 0.5},${hexSize * 0.87}`,
+        style: { fill: color1, stroke: color2, strokeWidth: 1 }
+      }, undefined, false, undefined, this)
+    }, undefined, false, undefined, this);
+  }
+};
+var zigzag = {
+  id: "zigzag",
+  name: "Zigzag",
+  type: "pattern",
+  needsDefs: true,
+  render: ({ size, colors, seed, patternId }) => {
+    const color1 = getRandomColor(seed, colors, colors.length);
+    const color2 = getRandomColor(seed + 1, colors, colors.length);
+    const zSize = size * 0.2;
+    return /* @__PURE__ */ jsx_dev_runtime.jsxDEV("pattern", {
+      id: patternId,
+      patternUnits: "userSpaceOnUse",
+      width: zSize,
+      height: zSize,
+      children: [
+        /* @__PURE__ */ jsx_dev_runtime.jsxDEV("rect", {
+          width: zSize,
+          height: zSize,
+          style: { fill: color1 }
+        }, undefined, false, undefined, this),
+        /* @__PURE__ */ jsx_dev_runtime.jsxDEV("path", {
+          d: `M0,${zSize / 2} L${zSize / 4},0 L${zSize / 2},${zSize / 2} L${zSize * 3 / 4},0 L${zSize},${zSize / 2}`,
+          style: { stroke: color2, strokeWidth: zSize * 0.15, fill: "none" }
+        }, undefined, false, undefined, this)
+      ]
+    }, undefined, true, undefined, this);
+  }
+};
+var liquidCheese = {
+  id: "liquid-cheese",
+  name: "Liquid Cheese",
+  type: "svg-path",
+  render: ({ size, colors, seed }) => {
+    const color1 = getRandomColor(seed, colors, colors.length);
+    const color2 = getRandomColor(seed + 1, colors, colors.length);
+    const color3 = getRandomColor(seed + 2, colors, colors.length);
+    return /* @__PURE__ */ jsx_dev_runtime.jsxDEV(jsx_dev_runtime.Fragment, {
+      children: [
+        /* @__PURE__ */ jsx_dev_runtime.jsxDEV("rect", {
+          width: size,
+          height: size,
+          style: { fill: color1 }
+        }, undefined, false, undefined, this),
+        /* @__PURE__ */ jsx_dev_runtime.jsxDEV("path", {
+          d: `M0 ${size * 0.3}Q${size * 0.2} ${size * 0.1} ${size * 0.4} ${size * 0.2}T${size * 0.8} ${size * 0.3}T${size} ${size * 0.5}V${size}H0Z`,
+          style: { fill: color2, opacity: 0.8 }
+        }, undefined, false, undefined, this),
+        /* @__PURE__ */ jsx_dev_runtime.jsxDEV("path", {
+          d: `M0 ${size * 0.6}Q${size * 0.3} ${size * 0.4} ${size * 0.5} ${size * 0.5}T${size} ${size * 0.6}V${size}H0Z`,
+          style: { fill: color3, opacity: 0.6 }
+        }, undefined, false, undefined, this)
+      ]
+    }, undefined, true, undefined, this);
+  }
+};
+var waveyFingerprint = {
+  id: "wavey-fingerprint",
+  name: "Wavey Fingerprint",
+  type: "pattern",
+  needsDefs: true,
+  render: ({ size, colors, seed, patternId }) => {
+    const color1 = getRandomColor(seed, colors, colors.length);
+    const color2 = getRandomColor(seed + 1, colors, colors.length);
+    return /* @__PURE__ */ jsx_dev_runtime.jsxDEV("pattern", {
+      id: patternId,
+      patternUnits: "userSpaceOnUse",
+      width: size * 0.4,
+      height: size * 0.2,
+      children: [
+        /* @__PURE__ */ jsx_dev_runtime.jsxDEV("rect", {
+          width: size * 0.4,
+          height: size * 0.2,
+          style: { fill: color1 }
+        }, undefined, false, undefined, this),
+        [0, 0.05, 0.1, 0.15].map((offset, i2) => /* @__PURE__ */ jsx_dev_runtime.jsxDEV("path", {
+          d: `M0,${size * (0.1 + offset)} Q${size * 0.1},${size * (0.05 + offset)} ${size * 0.2},${size * (0.1 + offset)} T${size * 0.4},${size * (0.1 + offset)}`,
+          style: { stroke: color2, strokeWidth: size * 0.01, fill: "none", opacity: 1 - i2 * 0.2 }
+        }, i2, false, undefined, this))
+      ]
+    }, undefined, true, undefined, this);
+  }
+};
+var dragonScales = {
+  id: "dragon-scales",
+  name: "Dragon Scales",
+  type: "pattern",
+  needsDefs: true,
+  render: ({ size, colors, seed, patternId }) => {
+    const color1 = getRandomColor(seed, colors, colors.length);
+    const color2 = getRandomColor(seed + 1, colors, colors.length);
+    const scaleSize = size * 0.15;
+    return /* @__PURE__ */ jsx_dev_runtime.jsxDEV("pattern", {
+      id: patternId,
+      patternUnits: "userSpaceOnUse",
+      width: scaleSize,
+      height: scaleSize,
+      children: [
+        /* @__PURE__ */ jsx_dev_runtime.jsxDEV("rect", {
+          width: scaleSize,
+          height: scaleSize,
+          style: { fill: color1 }
+        }, undefined, false, undefined, this),
+        /* @__PURE__ */ jsx_dev_runtime.jsxDEV("path", {
+          d: `M0,${scaleSize} Q${scaleSize / 2},${scaleSize * 0.7} ${scaleSize},${scaleSize} L${scaleSize},0 Q${scaleSize / 2},${scaleSize * 0.3} 0,0 Z`,
+          style: { fill: color2, stroke: color1, strokeWidth: 1 }
+        }, undefined, false, undefined, this)
+      ]
+    }, undefined, true, undefined, this);
+  }
+};
+var confettiDoodles = {
+  id: "confetti-doodles",
+  name: "Confetti Doodles",
+  type: "svg-path",
+  render: ({ size, colors, seed }) => {
+    const shapes = [];
+    for (let i2 = 0;i2 < 20; i2++) {
+      const x2 = getUnit(seed + i2 * 2, size);
+      const y2 = getUnit(seed + i2 * 3, size);
+      const shapeSize = getUnit(seed + i2 * 5, size / 15, 1) + size / 30;
+      const color = getRandomColor(seed + i2, colors, colors.length);
+      const rotation = getUnit(seed + i2 * 7, 360);
+      if (i2 % 3 === 0) {
+        shapes.push(/* @__PURE__ */ jsx_dev_runtime.jsxDEV("rect", {
+          x: x2,
+          y: y2,
+          width: shapeSize,
+          height: shapeSize / 2,
+          style: { fill: color },
+          transform: `rotate(${rotation} ${x2 + shapeSize / 2} ${y2 + shapeSize / 4})`
+        }, i2, false, undefined, this));
+      } else if (i2 % 3 === 1) {
+        shapes.push(/* @__PURE__ */ jsx_dev_runtime.jsxDEV("circle", {
+          cx: x2,
+          cy: y2,
+          r: shapeSize / 2,
+          style: { fill: color }
+        }, i2, false, undefined, this));
+      } else {
+        shapes.push(/* @__PURE__ */ jsx_dev_runtime.jsxDEV("polygon", {
+          points: `${x2},${y2} ${x2 + shapeSize},${y2} ${x2 + shapeSize / 2},${y2 - shapeSize}`,
+          style: { fill: color },
+          transform: `rotate(${rotation} ${x2 + shapeSize / 2} ${y2})`
+        }, i2, false, undefined, this));
+      }
+    }
+    return /* @__PURE__ */ jsx_dev_runtime.jsxDEV(jsx_dev_runtime.Fragment, {
+      children: [
+        /* @__PURE__ */ jsx_dev_runtime.jsxDEV("rect", {
+          width: size,
+          height: size,
+          style: { fill: getRandomColor(seed, colors, colors.length) }
+        }, undefined, false, undefined, this),
+        shapes
+      ]
+    }, undefined, true, undefined, this);
+  }
+};
+var protrudingSquares = {
+  id: "protruding-squares",
+  name: "Protruding Squares",
+  type: "pattern",
+  needsDefs: true,
+  render: ({ size, colors, seed, patternId }) => {
+    const color1 = getRandomColor(seed, colors, colors.length);
+    const color2 = getRandomColor(seed + 1, colors, colors.length);
+    const color3 = getRandomColor(seed + 2, colors, colors.length);
+    const squareSize = size * 0.2;
+    return /* @__PURE__ */ jsx_dev_runtime.jsxDEV("pattern", {
+      id: patternId,
+      patternUnits: "userSpaceOnUse",
+      width: squareSize,
+      height: squareSize,
+      children: [
+        /* @__PURE__ */ jsx_dev_runtime.jsxDEV("rect", {
+          width: squareSize,
+          height: squareSize,
+          style: { fill: color1 }
+        }, undefined, false, undefined, this),
+        /* @__PURE__ */ jsx_dev_runtime.jsxDEV("rect", {
+          x: squareSize * 0.1,
+          y: squareSize * 0.1,
+          width: squareSize * 0.4,
+          height: squareSize * 0.4,
+          style: { fill: color2 }
+        }, undefined, false, undefined, this),
+        /* @__PURE__ */ jsx_dev_runtime.jsxDEV("rect", {
+          x: squareSize * 0.5,
+          y: squareSize * 0.5,
+          width: squareSize * 0.4,
+          height: squareSize * 0.4,
+          style: { fill: color3 }
+        }, undefined, false, undefined, this)
+      ]
+    }, undefined, true, undefined, this);
+  }
+};
+var diagonalLines = {
+  id: "diagonal-lines",
+  name: "Diagonal Lines",
+  type: "pattern",
+  needsDefs: true,
+  render: ({ size, colors, seed, patternId }) => {
+    const color1 = getRandomColor(seed, colors, colors.length);
+    const color2 = getRandomColor(seed + 1, colors, colors.length);
+    return /* @__PURE__ */ jsx_dev_runtime.jsxDEV("pattern", {
+      id: patternId,
+      patternUnits: "userSpaceOnUse",
+      width: size * 0.1,
+      height: size * 0.1,
+      patternTransform: `rotate(45)`,
+      children: [
+        /* @__PURE__ */ jsx_dev_runtime.jsxDEV("rect", {
+          width: size * 0.1,
+          height: size * 0.1,
+          style: { fill: color1 }
+        }, undefined, false, undefined, this),
+        /* @__PURE__ */ jsx_dev_runtime.jsxDEV("line", {
+          x1: 0,
+          y1: 0,
+          x2: 0,
+          y2: size * 0.1,
+          style: { stroke: color2, strokeWidth: size * 0.03 }
+        }, undefined, false, undefined, this)
+      ]
+    }, undefined, true, undefined, this);
+  }
+};
+var endlessConstellation = {
+  id: "endless-constellation",
+  name: "Endless Constellation",
+  type: "svg-path",
+  render: ({ size, colors, seed }) => {
+    const bgColor = getRandomColor(seed, colors, colors.length);
+    const starColor = getRandomColor(seed + 1, colors, colors.length);
+    const lineColor = getRandomColor(seed + 2, colors, colors.length);
+    const stars = [];
+    const connections = [];
+    const points = [];
+    for (let i2 = 0;i2 < 15; i2++) {
+      const x2 = getUnit(seed + i2 * 2, size);
+      const y2 = getUnit(seed + i2 * 3, size);
+      points.push({ x: x2, y: y2 });
+      const starSize = getUnit(seed + i2 * 5, 3, 1) + 1;
+      stars.push(/* @__PURE__ */ jsx_dev_runtime.jsxDEV("circle", {
+        cx: x2,
+        cy: y2,
+        r: starSize,
+        style: { fill: starColor }
+      }, `star-${i2}`, false, undefined, this));
+    }
+    for (let i2 = 0;i2 < points.length - 1; i2++) {
+      if (getUnit(seed + i2 * 7, 10) > 5) {
+        const next2 = (i2 + 1 + getUnit(seed + i2 * 11, 3)) % points.length;
+        connections.push(/* @__PURE__ */ jsx_dev_runtime.jsxDEV("line", {
+          x1: points[i2].x,
+          y1: points[i2].y,
+          x2: points[next2].x,
+          y2: points[next2].y,
+          style: { stroke: lineColor, strokeWidth: 0.5, opacity: 0.3 }
+        }, `line-${i2}`, false, undefined, this));
+      }
+    }
+    return /* @__PURE__ */ jsx_dev_runtime.jsxDEV(jsx_dev_runtime.Fragment, {
+      children: [
+        /* @__PURE__ */ jsx_dev_runtime.jsxDEV("rect", {
+          width: size,
+          height: size,
+          style: { fill: bgColor }
+        }, undefined, false, undefined, this),
+        connections,
+        stars
+      ]
+    }, undefined, true, undefined, this);
+  }
+};
+var radialGradient = {
+  id: "radial-gradient",
+  name: "Radial Gradient",
+  type: "gradient",
+  needsDefs: true,
+  render: ({ size, colors, seed, patternId }) => {
+    const color1 = getRandomColor(seed, colors, colors.length);
+    const color2 = getRandomColor(seed + 1, colors, colors.length);
+    return /* @__PURE__ */ jsx_dev_runtime.jsxDEV("radialGradient", {
+      id: patternId,
+      children: [
+        /* @__PURE__ */ jsx_dev_runtime.jsxDEV("stop", {
+          offset: "0%",
+          style: { stopColor: color1 }
+        }, undefined, false, undefined, this),
+        /* @__PURE__ */ jsx_dev_runtime.jsxDEV("stop", {
+          offset: "100%",
+          style: { stopColor: color2 }
+        }, undefined, false, undefined, this)
+      ]
+    }, undefined, true, undefined, this);
+  }
+};
+var barcodeStripes = {
+  id: "barcode-stripes",
+  name: "Barcode Stripes",
+  type: "svg-path",
+  render: ({ size, colors, seed }) => {
+    const stripes = [];
+    let currentX = 0;
+    let stripeIndex = 0;
+    const MIN_WIDTH = 1;
+    const MAX_WIDTH = 8;
+    while (currentX < size) {
+      const widthSeed = seed + stripeIndex * 997;
+      const colorSeed = seed + stripeIndex * 1009;
+      let stripeWidth;
+      if (stripeIndex % 3 === 0) {
+        stripeWidth = MIN_WIDTH + Math.abs(widthSeed) % (MAX_WIDTH * 2 - MIN_WIDTH);
+      } else {
+        stripeWidth = MIN_WIDTH + Math.abs(widthSeed) % (MAX_WIDTH - MIN_WIDTH);
+      }
+      const finalWidth = Math.min(stripeWidth, size - currentX);
+      const colorIndex = Math.abs(colorSeed) % colors.length;
+      const color = colors[colorIndex];
+      stripes.push(/* @__PURE__ */ jsx_dev_runtime.jsxDEV("rect", {
+        x: currentX,
+        y: 0,
+        width: finalWidth,
+        height: size,
+        fill: color
+      }, stripeIndex, false, undefined, this));
+      currentX += finalWidth;
+      stripeIndex++;
+    }
+    return /* @__PURE__ */ jsx_dev_runtime.jsxDEV(jsx_dev_runtime.Fragment, {
+      children: stripes
+    }, undefined, false, undefined, this);
+  }
+};
+var dotGrid = {
+  id: "dot-grid",
+  name: "Dot Grid",
+  type: "pattern",
+  needsDefs: true,
+  render: ({ size, colors, seed, patternId }) => {
+    const spacing = 15 + seed % 10;
+    const dotSize = 1.5 + seed % 3 * 0.5;
+    const color = getRandomColor(seed, colors, colors.length);
+    return /* @__PURE__ */ jsx_dev_runtime.jsxDEV("pattern", {
+      id: patternId,
+      patternUnits: "userSpaceOnUse",
+      width: spacing,
+      height: spacing,
+      children: /* @__PURE__ */ jsx_dev_runtime.jsxDEV("circle", {
+        cx: spacing / 2,
+        cy: spacing / 2,
+        r: dotSize,
+        fill: color,
+        opacity: "0.3"
+      }, undefined, false, undefined, this)
+    }, undefined, false, undefined, this);
+  }
+};
+var crossHatch = {
+  id: "cross-hatch",
+  name: "Cross Hatch",
+  type: "pattern",
+  needsDefs: true,
+  render: ({ size, colors, seed, patternId }) => {
+    const spacing = 8 + seed % 12;
+    const strokeWidth = 0.5 + seed % 10 * 0.1;
+    const color = getRandomColor(seed, colors, colors.length);
+    return /* @__PURE__ */ jsx_dev_runtime.jsxDEV("pattern", {
+      id: patternId,
+      patternUnits: "userSpaceOnUse",
+      width: spacing,
+      height: spacing,
+      children: /* @__PURE__ */ jsx_dev_runtime.jsxDEV("path", {
+        d: `M0,${spacing} L${spacing},0 M0,0 L${spacing},${spacing}`,
+        stroke: color,
+        strokeWidth,
+        opacity: "0.2"
+      }, undefined, false, undefined, this)
+    }, undefined, false, undefined, this);
+  }
+};
+var softCircles = {
+  id: "soft-circles",
+  name: "Soft Circles",
+  type: "pattern",
+  needsDefs: true,
+  render: ({ size, colors, seed, patternId }) => {
+    const patternSize = 40 + seed % 30;
+    const circleSize = patternSize * 0.35;
+    const color1 = getRandomColor(seed, colors, colors.length);
+    const color2 = getRandomColor(seed + 1, colors, colors.length);
+    return /* @__PURE__ */ jsx_dev_runtime.jsxDEV("pattern", {
+      id: patternId,
+      patternUnits: "userSpaceOnUse",
+      width: patternSize,
+      height: patternSize,
+      children: [
+        /* @__PURE__ */ jsx_dev_runtime.jsxDEV("circle", {
+          cx: patternSize / 2,
+          cy: patternSize / 2,
+          r: circleSize,
+          fill: color1,
+          opacity: "0.15"
+        }, undefined, false, undefined, this),
+        /* @__PURE__ */ jsx_dev_runtime.jsxDEV("circle", {
+          cx: 0,
+          cy: 0,
+          r: circleSize * 0.7,
+          fill: color2,
+          opacity: "0.1"
+        }, undefined, false, undefined, this),
+        /* @__PURE__ */ jsx_dev_runtime.jsxDEV("circle", {
+          cx: patternSize,
+          cy: 0,
+          r: circleSize * 0.7,
+          fill: color2,
+          opacity: "0.1"
+        }, undefined, false, undefined, this),
+        /* @__PURE__ */ jsx_dev_runtime.jsxDEV("circle", {
+          cx: 0,
+          cy: patternSize,
+          r: circleSize * 0.7,
+          fill: color2,
+          opacity: "0.1"
+        }, undefined, false, undefined, this),
+        /* @__PURE__ */ jsx_dev_runtime.jsxDEV("circle", {
+          cx: patternSize,
+          cy: patternSize,
+          r: circleSize * 0.7,
+          fill: color2,
+          opacity: "0.1"
+        }, undefined, false, undefined, this)
+      ]
+    }, undefined, true, undefined, this);
+  }
+};
+var overlappingCircles = {
+  id: "overlapping-circles",
+  name: "Overlapping Circles",
+  type: "pattern",
+  needsDefs: true,
+  render: ({ size, colors, seed, patternId }) => {
+    const patternSize = 35 + seed % 25;
+    const radius = patternSize * 0.4;
+    const color = getRandomColor(seed, colors, colors.length);
+    return /* @__PURE__ */ jsx_dev_runtime.jsxDEV("pattern", {
+      id: patternId,
+      patternUnits: "userSpaceOnUse",
+      width: patternSize,
+      height: patternSize,
+      children: [
+        /* @__PURE__ */ jsx_dev_runtime.jsxDEV("circle", {
+          cx: patternSize / 2,
+          cy: 0,
+          r: radius,
+          fill: "none",
+          stroke: color,
+          strokeWidth: "0.5",
+          opacity: "0.3"
+        }, undefined, false, undefined, this),
+        /* @__PURE__ */ jsx_dev_runtime.jsxDEV("circle", {
+          cx: 0,
+          cy: patternSize / 2,
+          r: radius,
+          fill: "none",
+          stroke: color,
+          strokeWidth: "0.5",
+          opacity: "0.3"
+        }, undefined, false, undefined, this),
+        /* @__PURE__ */ jsx_dev_runtime.jsxDEV("circle", {
+          cx: patternSize,
+          cy: patternSize / 2,
+          r: radius,
+          fill: "none",
+          stroke: color,
+          strokeWidth: "0.5",
+          opacity: "0.3"
+        }, undefined, false, undefined, this),
+        /* @__PURE__ */ jsx_dev_runtime.jsxDEV("circle", {
+          cx: patternSize / 2,
+          cy: patternSize,
+          r: radius,
+          fill: "none",
+          stroke: color,
+          strokeWidth: "0.5",
+          opacity: "0.3"
+        }, undefined, false, undefined, this)
+      ]
+    }, undefined, true, undefined, this);
+  }
+};
+var plusPattern = {
+  id: "plus-pattern",
+  name: "Plus Pattern",
+  type: "pattern",
+  needsDefs: true,
+  render: ({ size, colors, seed, patternId }) => {
+    const patternSize = 20 + seed % 15;
+    const plusSize = patternSize * 0.4;
+    const strokeWidth = 1 + seed % 10 * 0.2;
+    const color = getRandomColor(seed, colors, colors.length);
+    return /* @__PURE__ */ jsx_dev_runtime.jsxDEV("pattern", {
+      id: patternId,
+      patternUnits: "userSpaceOnUse",
+      width: patternSize,
+      height: patternSize,
+      children: /* @__PURE__ */ jsx_dev_runtime.jsxDEV("path", {
+        d: `M${patternSize / 2},${(patternSize - plusSize) / 2} v${plusSize} M${(patternSize - plusSize) / 2},${patternSize / 2} h${plusSize}`,
+        stroke: color,
+        strokeWidth,
+        opacity: "0.25",
+        strokeLinecap: "round"
+      }, undefined, false, undefined, this)
+    }, undefined, false, undefined, this);
+  }
+};
+var linearGradient = {
+  id: "linear-gradient",
+  name: "Linear Gradient",
+  type: "gradient",
+  needsDefs: true,
+  render: ({ size, colors, seed, patternId }) => {
+    const color1 = getRandomColor(seed, colors, colors.length);
+    const color2 = getRandomColor(seed + 1, colors, colors.length);
+    const angle = getUnit(seed, 360);
+    return /* @__PURE__ */ jsx_dev_runtime.jsxDEV("linearGradient", {
+      id: patternId,
+      x1: "0%",
+      y1: "0%",
+      x2: `${Math.cos(angle * Math.PI / 180) * 100}%`,
+      y2: `${Math.sin(angle * Math.PI / 180) * 100}%`,
+      children: [
+        /* @__PURE__ */ jsx_dev_runtime.jsxDEV("stop", {
+          offset: "0%",
+          style: { stopColor: color1 }
+        }, undefined, false, undefined, this),
+        /* @__PURE__ */ jsx_dev_runtime.jsxDEV("stop", {
+          offset: "100%",
+          style: { stopColor: color2 }
+        }, undefined, false, undefined, this)
+      ]
+    }, undefined, true, undefined, this);
+  }
+};
+var ORGANIC_PATTERNS = [
+  marbleBlob1,
+  marbleBlob2,
+  cloudShape,
+  waveShape,
+  liquidCheese
+];
+var GEOMETRIC_PATTERNS = [
+  stripesVertical,
+  stripesHorizontal,
+  stripesDiagonal,
+  diagonalLines,
+  polkaDots,
+  checkerboard,
+  triangles,
+  hexagons,
+  zigzag,
+  protrudingSquares,
+  waveyFingerprint,
+  dragonScales,
+  barcodeStripes,
+  dotGrid,
+  crossHatch,
+  softCircles,
+  overlappingCircles,
+  plusPattern
+];
+var GRADIENT_PATTERNS = [
+  radialGradient,
+  linearGradient
+];
+var DECORATIVE_PATTERNS = [
+  confettiDoodles,
+  endlessConstellation
+];
+var ALL_PATTERNS = [
+  ...ORGANIC_PATTERNS,
+  ...GEOMETRIC_PATTERNS,
+  ...GRADIENT_PATTERNS,
+  ...DECORATIVE_PATTERNS
+];
+var PATTERN_REGISTRY = {
+  "marble-blob-1": marbleBlob1,
+  "marble-blob-2": marbleBlob2,
+  "cloud-shape": cloudShape,
+  "wave-shape": waveShape,
+  "liquid-cheese": liquidCheese,
+  "stripes-vertical": stripesVertical,
+  "stripes-horizontal": stripesHorizontal,
+  "stripes-diagonal": stripesDiagonal,
+  "diagonal-lines": diagonalLines,
+  "polka-dots": polkaDots,
+  checkerboard,
+  triangles,
+  hexagons,
+  zigzag,
+  "protruding-squares": protrudingSquares,
+  "wavey-fingerprint": waveyFingerprint,
+  "dragon-scales": dragonScales,
+  "radial-gradient": radialGradient,
+  "linear-gradient": linearGradient,
+  "confetti-doodles": confettiDoodles,
+  "endless-constellation": endlessConstellation,
+  "barcode-stripes": barcodeStripes,
+  "dot-grid": dotGrid,
+  "cross-hatch": crossHatch,
+  "soft-circles": softCircles,
+  "overlapping-circles": overlappingCircles,
+  "plus-pattern": plusPattern
+};
+var PATTERN_NAMES = Object.keys(PATTERN_REGISTRY);
+function selectPattern(seed, patterns = ALL_PATTERNS) {
+  if (patterns.length === 0)
+    return null;
+  return patterns[Math.abs(seed) % patterns.length];
+}
+function renderBackground(pattern, props) {
+  if (!pattern)
+    return null;
+  if (pattern.needsDefs) {
+    return /* @__PURE__ */ jsx_dev_runtime.jsxDEV(jsx_dev_runtime.Fragment, {
+      children: [
+        /* @__PURE__ */ jsx_dev_runtime.jsxDEV("defs", {
+          children: pattern.render(props)
+        }, undefined, false, undefined, this),
+        /* @__PURE__ */ jsx_dev_runtime.jsxDEV("rect", {
+          width: props.size,
+          height: props.size,
+          fill: `url(#${props.patternId})`
+        }, undefined, false, undefined, this)
+      ]
+    }, undefined, true, undefined, this);
+  }
+  return pattern.render(props);
+}
+function renderMarbleBackground(props) {
+  const { size, colors, seed } = props;
+  const color1 = getRandomColor(seed, colors, colors.length);
+  return /* @__PURE__ */ jsx_dev_runtime.jsxDEV(jsx_dev_runtime.Fragment, {
+    children: [
+      /* @__PURE__ */ jsx_dev_runtime.jsxDEV("rect", {
+        height: size,
+        width: size,
+        style: { fill: color1 }
+      }, undefined, false, undefined, this),
+      marbleBlob1.render(props),
+      marbleBlob2.render(props)
+    ]
+  }, undefined, true, undefined, this);
+}
+
+// src/lib/components/avatar-barcode.tsx
+var jsx_dev_runtime2 = __toESM(require_jsx_dev_runtime(), 1);
+var SIZE = 80;
 var AvatarBarcode = ({
   name,
   colors,
   title,
-  square,
   size,
   ...otherProps
 }) => {
-  const { stripes, backgroundColor } = generateBarcode(name, colors);
+  const numFromName = hashCode(name);
   const maskID = generateId(name, "mask");
-  return /* @__PURE__ */ jsx_dev_runtime.jsxDEV("svg", {
+  const patternID = generateId(name, "pattern");
+  return /* @__PURE__ */ jsx_dev_runtime2.jsxDEV("svg", {
     fill: "none",
     height: size,
     role: "img",
@@ -21157,47 +22041,38 @@ var AvatarBarcode = ({
     xmlns: "http://www.w3.org/2000/svg",
     ...otherProps,
     children: [
-      title && /* @__PURE__ */ jsx_dev_runtime.jsxDEV("title", {
+      title && /* @__PURE__ */ jsx_dev_runtime2.jsxDEV("title", {
         children: name
       }, undefined, false, undefined, this),
-      /* @__PURE__ */ jsx_dev_runtime.jsxDEV("mask", {
+      /* @__PURE__ */ jsx_dev_runtime2.jsxDEV("mask", {
         height: SIZE,
         id: maskID,
         maskUnits: "userSpaceOnUse",
         width: SIZE,
         x: 0,
         y: 0,
-        children: /* @__PURE__ */ jsx_dev_runtime.jsxDEV("rect", {
+        children: /* @__PURE__ */ jsx_dev_runtime2.jsxDEV("rect", {
           fill: "#FFFFFF",
           height: SIZE,
-          rx: square ? undefined : SIZE * 2,
           width: SIZE
         }, undefined, false, undefined, this)
       }, undefined, false, undefined, this),
-      /* @__PURE__ */ jsx_dev_runtime.jsxDEV("g", {
+      /* @__PURE__ */ jsx_dev_runtime2.jsxDEV("g", {
         mask: `url(#${maskID})`,
-        children: [
-          /* @__PURE__ */ jsx_dev_runtime.jsxDEV("rect", {
-            height: SIZE,
-            width: SIZE,
-            fill: backgroundColor
-          }, undefined, false, undefined, this),
-          stripes.map((stripe, index) => /* @__PURE__ */ jsx_dev_runtime.jsxDEV("rect", {
-            x: stripe.x,
-            y: 0,
-            width: stripe.width,
-            height: SIZE,
-            fill: stripe.color
-          }, index, false, undefined, this))
-        ]
-      }, undefined, true, undefined, this)
+        children: renderBackground(barcodeStripes, {
+          size: SIZE,
+          colors,
+          seed: numFromName,
+          patternId: patternID
+        })
+      }, undefined, false, undefined, this)
     ]
   }, undefined, true, undefined, this);
 };
 var avatar_barcode_default = AvatarBarcode;
 
 // src/lib/components/avatar-bauhaus.tsx
-var jsx_dev_runtime2 = __toESM(require_jsx_dev_runtime(), 1);
+var jsx_dev_runtime3 = __toESM(require_jsx_dev_runtime(), 1);
 var ELEMENTS = 4;
 var SIZE2 = 80;
 function generateColors(name, colors) {
@@ -21216,13 +22091,12 @@ var AvatarBauhaus = ({
   name,
   colors,
   title,
-  square,
   size,
   ...otherProps
 }) => {
   const properties = generateColors(name, colors);
   const maskID = generateId(name, "mask");
-  return /* @__PURE__ */ jsx_dev_runtime2.jsxDEV("svg", {
+  return /* @__PURE__ */ jsx_dev_runtime3.jsxDEV("svg", {
     fill: "none",
     height: size,
     role: "img",
@@ -21231,32 +22105,31 @@ var AvatarBauhaus = ({
     xmlns: "http://www.w3.org/2000/svg",
     ...otherProps,
     children: [
-      title && /* @__PURE__ */ jsx_dev_runtime2.jsxDEV("title", {
+      title && /* @__PURE__ */ jsx_dev_runtime3.jsxDEV("title", {
         children: name
       }, undefined, false, undefined, this),
-      /* @__PURE__ */ jsx_dev_runtime2.jsxDEV("mask", {
+      /* @__PURE__ */ jsx_dev_runtime3.jsxDEV("mask", {
         height: SIZE2,
         id: maskID,
         maskUnits: "userSpaceOnUse",
         width: SIZE2,
         x: 0,
         y: 0,
-        children: /* @__PURE__ */ jsx_dev_runtime2.jsxDEV("rect", {
+        children: /* @__PURE__ */ jsx_dev_runtime3.jsxDEV("rect", {
           fill: "#FFFFFF",
           height: SIZE2,
-          rx: square ? undefined : SIZE2 * 2,
           width: SIZE2
         }, undefined, false, undefined, this)
       }, undefined, false, undefined, this),
-      /* @__PURE__ */ jsx_dev_runtime2.jsxDEV("g", {
+      /* @__PURE__ */ jsx_dev_runtime3.jsxDEV("g", {
         mask: `url(#${maskID})`,
         children: [
-          /* @__PURE__ */ jsx_dev_runtime2.jsxDEV("rect", {
+          /* @__PURE__ */ jsx_dev_runtime3.jsxDEV("rect", {
             height: SIZE2,
             style: { fill: properties[0].color },
             width: SIZE2
           }, undefined, false, undefined, this),
-          /* @__PURE__ */ jsx_dev_runtime2.jsxDEV("rect", {
+          /* @__PURE__ */ jsx_dev_runtime3.jsxDEV("rect", {
             height: properties[1].isSquare ? SIZE2 : SIZE2 / 8,
             style: { fill: properties[1].color },
             transform: "translate(" + properties[1].translateX + " " + properties[1].translateY + ") rotate(" + properties[1].rotate + " " + SIZE2 / 2 + " " + SIZE2 / 2 + ")",
@@ -21264,14 +22137,14 @@ var AvatarBauhaus = ({
             x: (SIZE2 - 60) / 2,
             y: (SIZE2 - 20) / 2
           }, undefined, false, undefined, this),
-          /* @__PURE__ */ jsx_dev_runtime2.jsxDEV("circle", {
+          /* @__PURE__ */ jsx_dev_runtime3.jsxDEV("circle", {
             cx: SIZE2 / 2,
             cy: SIZE2 / 2,
             r: SIZE2 / 5,
             style: { fill: properties[2].color },
             transform: "translate(" + properties[2].translateX + " " + properties[2].translateY + ")"
           }, undefined, false, undefined, this),
-          /* @__PURE__ */ jsx_dev_runtime2.jsxDEV("line", {
+          /* @__PURE__ */ jsx_dev_runtime3.jsxDEV("line", {
             strokeWidth: 2,
             style: { stroke: properties[3].color },
             transform: "translate(" + properties[3].translateX + " " + properties[3].translateY + ") rotate(" + properties[3].rotate + " " + SIZE2 / 2 + " " + SIZE2 / 2 + ")",
@@ -21288,7 +22161,7 @@ var AvatarBauhaus = ({
 var avatar_bauhaus_default = AvatarBauhaus;
 
 // src/lib/components/avatar-beam.tsx
-var jsx_dev_runtime3 = __toESM(require_jsx_dev_runtime(), 1);
+var jsx_dev_runtime4 = __toESM(require_jsx_dev_runtime(), 1);
 var SIZE3 = 36;
 function generateData(name, colors) {
   const numFromName = hashCode(name);
@@ -21320,13 +22193,12 @@ var AvatarBeam = ({
   name,
   colors,
   title,
-  square,
   size,
   ...otherProps
 }) => {
   const data = generateData(name, colors);
   const maskID = generateId(name, "mask");
-  return /* @__PURE__ */ jsx_dev_runtime3.jsxDEV("svg", {
+  return /* @__PURE__ */ jsx_dev_runtime4.jsxDEV("svg", {
     fill: "none",
     height: size,
     role: "img",
@@ -21335,32 +22207,31 @@ var AvatarBeam = ({
     xmlns: "http://www.w3.org/2000/svg",
     ...otherProps,
     children: [
-      title && /* @__PURE__ */ jsx_dev_runtime3.jsxDEV("title", {
+      title && /* @__PURE__ */ jsx_dev_runtime4.jsxDEV("title", {
         children: name
       }, undefined, false, undefined, this),
-      /* @__PURE__ */ jsx_dev_runtime3.jsxDEV("mask", {
+      /* @__PURE__ */ jsx_dev_runtime4.jsxDEV("mask", {
         height: SIZE3,
         id: maskID,
         maskUnits: "userSpaceOnUse",
         width: SIZE3,
         x: 0,
         y: 0,
-        children: /* @__PURE__ */ jsx_dev_runtime3.jsxDEV("rect", {
+        children: /* @__PURE__ */ jsx_dev_runtime4.jsxDEV("rect", {
           fill: "#FFFFFF",
           height: SIZE3,
-          rx: square ? undefined : SIZE3 * 2,
           width: SIZE3
         }, undefined, false, undefined, this)
       }, undefined, false, undefined, this),
-      /* @__PURE__ */ jsx_dev_runtime3.jsxDEV("g", {
+      /* @__PURE__ */ jsx_dev_runtime4.jsxDEV("g", {
         mask: `url(#${maskID})`,
         children: [
-          /* @__PURE__ */ jsx_dev_runtime3.jsxDEV("rect", {
+          /* @__PURE__ */ jsx_dev_runtime4.jsxDEV("rect", {
             height: SIZE3,
             style: { fill: data.backgroundColor },
             width: SIZE3
           }, undefined, false, undefined, this),
-          /* @__PURE__ */ jsx_dev_runtime3.jsxDEV("rect", {
+          /* @__PURE__ */ jsx_dev_runtime4.jsxDEV("rect", {
             height: SIZE3,
             rx: data.isCircle ? SIZE3 : SIZE3 / 6,
             style: {
@@ -21372,22 +22243,22 @@ var AvatarBeam = ({
             x: "0",
             y: "0"
           }, undefined, false, undefined, this),
-          /* @__PURE__ */ jsx_dev_runtime3.jsxDEV("g", {
+          /* @__PURE__ */ jsx_dev_runtime4.jsxDEV("g", {
             style: {
               transformOrigin: `${SIZE3 / 2}px ${SIZE3 / 2}px`
             },
             transform: "translate(" + data.faceTranslateX + " " + data.faceTranslateY + ") rotate(" + data.faceRotate + ")",
             children: [
-              data.isMouthOpen ? /* @__PURE__ */ jsx_dev_runtime3.jsxDEV("path", {
+              data.isMouthOpen ? /* @__PURE__ */ jsx_dev_runtime4.jsxDEV("path", {
                 d: "M15 " + (19 + data.mouthSpread) + "c2 1 4 1 6 0",
                 fill: "none",
                 strokeLinecap: "round",
                 style: { stroke: data.faceColor }
-              }, undefined, false, undefined, this) : /* @__PURE__ */ jsx_dev_runtime3.jsxDEV("path", {
+              }, undefined, false, undefined, this) : /* @__PURE__ */ jsx_dev_runtime4.jsxDEV("path", {
                 d: "M13," + (19 + data.mouthSpread) + " a1,0.75 0 0,0 10,0",
                 style: { fill: data.faceColor }
               }, undefined, false, undefined, this),
-              /* @__PURE__ */ jsx_dev_runtime3.jsxDEV("rect", {
+              /* @__PURE__ */ jsx_dev_runtime4.jsxDEV("rect", {
                 height: 2,
                 rx: 1,
                 stroke: "none",
@@ -21396,7 +22267,7 @@ var AvatarBeam = ({
                 x: 14 - data.eyeSpread,
                 y: 14
               }, undefined, false, undefined, this),
-              /* @__PURE__ */ jsx_dev_runtime3.jsxDEV("rect", {
+              /* @__PURE__ */ jsx_dev_runtime4.jsxDEV("rect", {
                 height: 2,
                 rx: 1,
                 stroke: "none",
@@ -21415,8 +22286,7 @@ var AvatarBeam = ({
 var avatar_beam_default = AvatarBeam;
 
 // src/lib/components/avatar-fractal.tsx
-var React = __toESM(require_react(), 1);
-var jsx_dev_runtime4 = __toESM(require_jsx_dev_runtime(), 1);
+var jsx_dev_runtime5 = __toESM(require_jsx_dev_runtime(), 1);
 var SIZE4 = 80;
 var BACKGROUND_FRACTALS = [
   {
@@ -21630,16 +22500,15 @@ var AvatarFractal = ({
   name,
   colors,
   title,
-  square,
   size,
   animate,
   ...otherProps
 }) => {
   const maskID = generateId(name, "mask");
-  const clipID = React.useId();
-  const gradientBgID = React.useId();
-  const gradientFgID = React.useId();
-  const gradientAccentID = React.useId();
+  const clipID = generateId(name, "clip");
+  const gradientBgID = generateId(name, "gradient-bg");
+  const gradientFgID = generateId(name, "gradient-fg");
+  const gradientAccentID = generateId(name, "gradient-accent");
   const num = hashCode(name);
   const useGradients = getUnit(num * 241, 100) < 20;
   const bgColorIndex = getUnit(num * 257, Math.min(colors.length, 3));
@@ -21653,51 +22522,51 @@ var AvatarFractal = ({
   const fgFractalIndex = getUnit(num * 37 + 7, FOREGROUND_FRACTALS.length);
   const bgFractal = BACKGROUND_FRACTALS[bgFractalIndex];
   const fgFractal = FOREGROUND_FRACTALS[fgFractalIndex];
-  const bgIterations = React.useMemo(() => {
+  const bgIterations = (() => {
     const variance = bgFractal.iterVariance || 1;
     const offset = getUnit(num * 53 + 3, variance * 2 + 1) - variance;
     return Math.max(1, bgFractal.iterations + offset);
-  }, [bgFractal, num]);
-  const bgAngle = React.useMemo(() => {
+  })();
+  const bgAngle = (() => {
     const variance = bgFractal.angleVariance || 10;
     const offset = (getUnit(num * 59 + 5, variance * 2) - variance) / 2;
     return bgFractal.angle + offset;
-  }, [bgFractal, num]);
-  const fgIterations = React.useMemo(() => {
+  })();
+  const fgIterations = (() => {
     const variance = fgFractal.iterVariance || 1;
     const offset = getUnit(num * 61 + 11, variance * 2 + 1) - variance;
     return Math.max(1, fgFractal.iterations + offset);
-  }, [fgFractal, num]);
-  const fgAngle = React.useMemo(() => {
+  })();
+  const fgAngle = (() => {
     const variance = fgFractal.angleVariance || 10;
     const offset = (getUnit(num * 67 + 13, variance * 2) - variance) / 2;
     return fgFractal.angle + offset;
-  }, [fgFractal, num]);
-  const bgSystem = React.useMemo(() => generateLSystem(bgFractal.axiom, bgFractal.rules, bgIterations), [bgFractal, bgIterations]);
-  const bgPath = React.useMemo(() => lSystemToPath(bgSystem, bgAngle), [bgSystem, bgAngle]);
-  const fgSystem = React.useMemo(() => generateLSystem(fgFractal.axiom, fgFractal.rules, fgIterations), [fgFractal, fgIterations]);
-  const fgPath = React.useMemo(() => lSystemToPath(fgSystem, fgAngle), [fgSystem, fgAngle]);
-  const bgTransform = React.useMemo(() => {
+  })();
+  const bgSystem = generateLSystem(bgFractal.axiom, bgFractal.rules, bgIterations);
+  const bgPath = lSystemToPath(bgSystem, bgAngle);
+  const fgSystem = generateLSystem(fgFractal.axiom, fgFractal.rules, fgIterations);
+  const fgPath = lSystemToPath(fgSystem, fgAngle);
+  const bgTransform = (() => {
     const scaleVariance = 1.2 + getUnit(num * 71 + 17, 15) / 10;
     const fit = fitToBox(bgPath.minX, bgPath.maxX, bgPath.minY, bgPath.maxY, SIZE4, scaleVariance);
     const rotation = getUnit(num * 73 + 19, 60) - 30;
     const offsetX = (getUnit(num * 79 + 29, 20) - 10) * 0.5;
     const offsetY = (getUnit(num * 83 + 31, 20) - 10) * 0.5;
     return `translate(${SIZE4 / 2 + offsetX}, ${SIZE4 / 2 + offsetY}) rotate(${rotation}) translate(${-SIZE4 / 2}, ${-SIZE4 / 2}) translate(${fit.translateX}, ${fit.translateY}) scale(${fit.scale})`;
-  }, [bgPath, num]);
-  const fgTransform = React.useMemo(() => {
+  })();
+  const fgTransform = (() => {
     const scaleVariance = 0.8 + getUnit(num * 89 + 23, 10) / 10;
     const fit = fitToBox(fgPath.minX, fgPath.maxX, fgPath.minY, fgPath.maxY, SIZE4, scaleVariance);
     const rotation = getUnit(num * 97 + 37, 180) - 90;
     const offsetX = (getUnit(num * 101 + 73, 40) - 20) * 1.5;
     const offsetY = (getUnit(num * 103 + 79, 40) - 20) * 1.5;
     return `translate(${SIZE4 / 2 + offsetX}, ${SIZE4 / 2 + offsetY}) rotate(${rotation}) translate(${-SIZE4 / 2}, ${-SIZE4 / 2}) translate(${fit.translateX}, ${fit.translateY}) scale(${fit.scale})`;
-  }, [fgPath, num]);
+  })();
   const bgCoverage = 0.1 + getUnit(num * 107 + 41, 15) / 100;
   const fgCoverage = 0.05 + getUnit(num * 109 + 43, 10) / 100;
   const bgStrokeWidth = strokeWidthForCoverage(bgPath.pathLength, SIZE4, bgCoverage, 0.5, 4);
   const fgStrokeWidth = strokeWidthForCoverage(fgPath.pathLength, SIZE4, fgCoverage, 0.3, 2.5);
-  const fgDashPattern = React.useMemo(() => {
+  const fgDashPattern = (() => {
     const useDash = getUnit(num * 113 + 47, 3) > 0;
     if (!useDash)
       return "none";
@@ -21706,10 +22575,10 @@ var AvatarFractal = ({
     const dashRatio = 0.2 + getUnit(num * 131 + 59, 6) / 10;
     const gapRatio = 0.2 + getUnit(num * 137 + 61, 4) / 10;
     return `${unit * dashRatio} ${unit * gapRatio}`;
-  }, [fgPath.pathLength, num]);
+  })();
   const bgOpacity = 0.4 + getUnit(num * 139 + 67, 4) / 10;
   const fgOpacity = getUnit(num * 149, 100) < 10 ? 0.6 + getUnit(num * 151 + 71, 3) / 10 : 1;
-  return /* @__PURE__ */ jsx_dev_runtime4.jsxDEV("svg", {
+  return /* @__PURE__ */ jsx_dev_runtime5.jsxDEV("svg", {
     fill: "none",
     height: size,
     role: "img",
@@ -21718,101 +22587,106 @@ var AvatarFractal = ({
     xmlns: "http://www.w3.org/2000/svg",
     ...otherProps,
     children: [
-      title && /* @__PURE__ */ jsx_dev_runtime4.jsxDEV("title", {
+      title && /* @__PURE__ */ jsx_dev_runtime5.jsxDEV("title", {
         children: name
       }, undefined, false, undefined, this),
-      /* @__PURE__ */ jsx_dev_runtime4.jsxDEV("defs", {
+      /* @__PURE__ */ jsx_dev_runtime5.jsxDEV("defs", {
         children: [
-          /* @__PURE__ */ jsx_dev_runtime4.jsxDEV("linearGradient", {
+          /* @__PURE__ */ jsx_dev_runtime5.jsxDEV("linearGradient", {
             id: gradientBgID,
             x1: "0%",
             x2: "100%",
             y1: "0%",
             y2: "100%",
             children: [
-              /* @__PURE__ */ jsx_dev_runtime4.jsxDEV("stop", {
+              /* @__PURE__ */ jsx_dev_runtime5.jsxDEV("stop", {
                 offset: "0%",
                 style: { stopColor: colors[0] }
               }, undefined, false, undefined, this),
-              /* @__PURE__ */ jsx_dev_runtime4.jsxDEV("stop", {
+              /* @__PURE__ */ jsx_dev_runtime5.jsxDEV("stop", {
                 offset: "50%",
                 style: { stopColor: colors[1] || colors[0] }
               }, undefined, false, undefined, this),
-              /* @__PURE__ */ jsx_dev_runtime4.jsxDEV("stop", {
+              /* @__PURE__ */ jsx_dev_runtime5.jsxDEV("stop", {
                 offset: "100%",
                 style: { stopColor: colors[2] || colors[1] || colors[0] }
               }, undefined, false, undefined, this)
             ]
           }, undefined, true, undefined, this),
-          /* @__PURE__ */ jsx_dev_runtime4.jsxDEV("linearGradient", {
+          /* @__PURE__ */ jsx_dev_runtime5.jsxDEV("linearGradient", {
             id: gradientFgID,
             x1: "0%",
             x2: "100%",
             y1: "0%",
             y2: "100%",
             children: [
-              /* @__PURE__ */ jsx_dev_runtime4.jsxDEV("stop", {
+              /* @__PURE__ */ jsx_dev_runtime5.jsxDEV("stop", {
                 offset: "0%",
                 style: { stopColor: colors[2] || colors[1] || colors[0] }
               }, undefined, false, undefined, this),
-              /* @__PURE__ */ jsx_dev_runtime4.jsxDEV("stop", {
+              /* @__PURE__ */ jsx_dev_runtime5.jsxDEV("stop", {
                 offset: "50%",
                 style: { stopColor: colors[3] || colors[2] || colors[0] }
               }, undefined, false, undefined, this),
-              /* @__PURE__ */ jsx_dev_runtime4.jsxDEV("stop", {
+              /* @__PURE__ */ jsx_dev_runtime5.jsxDEV("stop", {
                 offset: "100%",
                 style: { stopColor: colors[4] || colors[3] || colors[0] }
               }, undefined, false, undefined, this)
             ]
           }, undefined, true, undefined, this),
-          /* @__PURE__ */ jsx_dev_runtime4.jsxDEV("radialGradient", {
+          /* @__PURE__ */ jsx_dev_runtime5.jsxDEV("radialGradient", {
             cx: "50%",
             cy: "50%",
             id: gradientAccentID,
             r: "50%",
             children: [
-              /* @__PURE__ */ jsx_dev_runtime4.jsxDEV("stop", {
+              /* @__PURE__ */ jsx_dev_runtime5.jsxDEV("stop", {
                 offset: "0%",
                 style: {
                   stopColor: colors[4] || colors[3] || colors[0],
                   stopOpacity: 0.8
                 }
               }, undefined, false, undefined, this),
-              /* @__PURE__ */ jsx_dev_runtime4.jsxDEV("stop", {
+              /* @__PURE__ */ jsx_dev_runtime5.jsxDEV("stop", {
                 offset: "100%",
                 style: { stopColor: colors[0], stopOpacity: 0.2 }
               }, undefined, false, undefined, this)
             ]
           }, undefined, true, undefined, this),
-          /* @__PURE__ */ jsx_dev_runtime4.jsxDEV("clipPath", {
+          /* @__PURE__ */ jsx_dev_runtime5.jsxDEV("clipPath", {
             id: clipID,
-            children: /* @__PURE__ */ jsx_dev_runtime4.jsxDEV("rect", {
+            children: /* @__PURE__ */ jsx_dev_runtime5.jsxDEV("rect", {
               height: SIZE4,
-              rx: square ? 0 : SIZE4 * 2,
               width: SIZE4
             }, undefined, false, undefined, this)
           }, undefined, false, undefined, this),
-          /* @__PURE__ */ jsx_dev_runtime4.jsxDEV("mask", {
+          /* @__PURE__ */ jsx_dev_runtime5.jsxDEV("mask", {
             height: SIZE4,
             id: maskID,
             maskUnits: "userSpaceOnUse",
             width: SIZE4,
             x: 0,
             y: 0,
-            children: /* @__PURE__ */ jsx_dev_runtime4.jsxDEV("rect", {
+            children: /* @__PURE__ */ jsx_dev_runtime5.jsxDEV("rect", {
               fill: "#FFFFFF",
               height: SIZE4,
-              rx: square ? undefined : SIZE4 * 2,
               width: SIZE4
             }, undefined, false, undefined, this)
           }, undefined, false, undefined, this)
         ]
       }, undefined, true, undefined, this),
-      /* @__PURE__ */ jsx_dev_runtime4.jsxDEV("g", {
+      /* @__PURE__ */ jsx_dev_runtime5.jsxDEV("g", {
         clipPath: `url(#${clipID})`,
         mask: `url(#${maskID})`,
         children: [
-          /* @__PURE__ */ jsx_dev_runtime4.jsxDEV("rect", {
+          /* @__PURE__ */ jsx_dev_runtime5.jsxDEV("rect", {
+            height: SIZE4,
+            style: {
+              fill: getRandomColor(num * 19, colors, colors.length)
+            },
+            width: SIZE4
+          }, undefined, false, undefined, this),
+          /* @__PURE__ */ jsx_dev_runtime5.jsxDEV("rect", {
             height: SIZE4,
             opacity: 0.15,
             style: {
@@ -21820,7 +22694,7 @@ var AvatarFractal = ({
             },
             width: SIZE4
           }, undefined, false, undefined, this),
-          /* @__PURE__ */ jsx_dev_runtime4.jsxDEV("path", {
+          /* @__PURE__ */ jsx_dev_runtime5.jsxDEV("path", {
             d: bgPath.path,
             style: {
               fill: "none",
@@ -21832,7 +22706,7 @@ var AvatarFractal = ({
             },
             transform: bgTransform
           }, undefined, false, undefined, this),
-          /* @__PURE__ */ jsx_dev_runtime4.jsxDEV("path", {
+          /* @__PURE__ */ jsx_dev_runtime5.jsxDEV("path", {
             d: fgPath.path,
             pathLength: fgPath.pathLength,
             style: {
@@ -21855,7 +22729,7 @@ var AvatarFractal = ({
             const dotX = SIZE4 / 2 + Math.cos(angle) * radius;
             const dotY = SIZE4 / 2 + Math.sin(angle) * radius;
             const dotSize = 0.5 + getUnit(num * 167 + i2 * 29, 4) / 2;
-            return /* @__PURE__ */ jsx_dev_runtime4.jsxDEV("circle", {
+            return /* @__PURE__ */ jsx_dev_runtime5.jsxDEV("circle", {
               cx: dotX,
               cy: dotY,
               r: dotSize,
@@ -21873,19 +22747,8 @@ var AvatarFractal = ({
 var avatar_fractal_default = AvatarFractal;
 
 // src/lib/components/avatar-mage.tsx
-var jsx_dev_runtime5 = __toESM(require_jsx_dev_runtime(), 1);
+var jsx_dev_runtime6 = __toESM(require_jsx_dev_runtime(), 1);
 var SIZE5 = 80;
-function generateMarbleSky(name, colors) {
-  const num = hashCode(name);
-  const ELEMENTS2 = 3;
-  return Array.from({ length: ELEMENTS2 }, (_2, i2) => ({
-    color: getRandomColor(num + i2, colors, colors.length),
-    translateX: getUnit(num * (i2 + 1), SIZE5 / 10, 1),
-    translateY: getUnit(num * (i2 + 1), SIZE5 / 10, 2),
-    scale: 1.2 + getUnit(num * (i2 + 1), SIZE5 / 20) / 10,
-    rotate: getUnit(num * (i2 + 1), 360, 1)
-  }));
-}
 function getEyeColor(num, colors) {
   const brightColors = colors.filter((c2) => {
     if (!c2.startsWith("#") || c2.length !== 7)
@@ -21909,11 +22772,12 @@ var AvatarMage = ({
   name,
   colors,
   title,
-  square,
   size,
   ...otherProps
 }) => {
   const maskID = generateId(name, "mask");
+  const filterID = generateId(name, "filter");
+  const patternID = generateId(name, "pattern");
   const num = hashCode(name);
   const faceColor = "#000000";
   const eyeColor = getEyeColor(num + 17, colors);
@@ -21959,14 +22823,13 @@ var AvatarMage = ({
   const mouthWidth = SIZE5 * (0.06 + getUnit(num + 73, 4) / 100);
   const showCollar = getUnit(num + 131, 10) < 3;
   const collarColor = getRandomColor(num + 133, colors, colors.length);
-  const marbleSky = generateMarbleSky(name, colors);
   const drawEye = (cx, isLeft) => {
     const cy = faceY + (isLeft ? -eyeVerticalOffset / 2 : eyeVerticalOffset / 2);
     const eyeAngle = isLeft ? -eyeTilt : eyeTilt;
     const elements = [];
     const eyeTransform = `rotate(${eyeAngle} ${cx} ${cy})`;
     if (eyeGlow > 0) {
-      elements.push(/* @__PURE__ */ jsx_dev_runtime5.jsxDEV("ellipse", {
+      elements.push(/* @__PURE__ */ jsx_dev_runtime6.jsxDEV("ellipse", {
         cx,
         cy,
         rx: eyeWidth * 1.8,
@@ -21980,7 +22843,7 @@ var AvatarMage = ({
     }
     switch (eyeShape) {
       case 0:
-        elements.push(/* @__PURE__ */ jsx_dev_runtime5.jsxDEV("path", {
+        elements.push(/* @__PURE__ */ jsx_dev_runtime6.jsxDEV("path", {
           d: `M ${cx - eyeWidth} ${cy}
                 C ${cx - eyeWidth * 0.8} ${cy - eyeHeight * 0.9} 
                   ${cx + eyeWidth * 0.4} ${cy - eyeHeight * 1.1}
@@ -21994,7 +22857,7 @@ var AvatarMage = ({
           style: { fill: eyeColor }
         }, `eye-${cx}`, false, undefined, this));
         if (needsPupil) {
-          elements.push(/* @__PURE__ */ jsx_dev_runtime5.jsxDEV("ellipse", {
+          elements.push(/* @__PURE__ */ jsx_dev_runtime6.jsxDEV("ellipse", {
             cx: cx + eyeWidth * 0.1,
             cy: cy - eyeHeight * 0.2,
             rx: eyeWidth * 0.25,
@@ -22004,7 +22867,7 @@ var AvatarMage = ({
         }
         break;
       case 1:
-        elements.push(/* @__PURE__ */ jsx_dev_runtime5.jsxDEV("path", {
+        elements.push(/* @__PURE__ */ jsx_dev_runtime6.jsxDEV("path", {
           d: `M ${cx} ${cy - eyeHeight}
                 Q ${cx - eyeWidth * 0.35} ${cy - eyeHeight * 0.5} ${cx - eyeWidth * 0.3} ${cy}
                 Q ${cx - eyeWidth * 0.35} ${cy + eyeHeight * 0.5} ${cx} ${cy + eyeHeight}
@@ -22014,7 +22877,7 @@ var AvatarMage = ({
           style: { fill: eyeColor }
         }, `eye-${cx}`, false, undefined, this));
         if (needsPupil) {
-          elements.push(/* @__PURE__ */ jsx_dev_runtime5.jsxDEV("ellipse", {
+          elements.push(/* @__PURE__ */ jsx_dev_runtime6.jsxDEV("ellipse", {
             cx,
             cy,
             rx: eyeWidth * 0.15,
@@ -22024,7 +22887,7 @@ var AvatarMage = ({
         }
         break;
       case 2:
-        elements.push(/* @__PURE__ */ jsx_dev_runtime5.jsxDEV("path", {
+        elements.push(/* @__PURE__ */ jsx_dev_runtime6.jsxDEV("path", {
           d: `M ${cx - eyeWidth} ${cy + eyeHeight * 0.3}
                 C ${cx - eyeWidth * 0.5} ${cy - eyeHeight * 0.2}
                   ${cx} ${cy - eyeHeight * 0.8}
@@ -22042,7 +22905,7 @@ var AvatarMage = ({
         }, `eye-${cx}`, false, undefined, this));
         break;
       case 3:
-        elements.push(/* @__PURE__ */ jsx_dev_runtime5.jsxDEV("path", {
+        elements.push(/* @__PURE__ */ jsx_dev_runtime6.jsxDEV("path", {
           d: `M ${cx - eyeWidth * 0.8} ${cy - eyeHeight * 0.6}
                 C ${cx - eyeWidth * 0.3} ${cy - eyeHeight * 0.8}
                   ${cx + eyeWidth * 0.2} ${cy - eyeHeight * 0.7}
@@ -22061,7 +22924,7 @@ var AvatarMage = ({
         break;
       case 4:
       default:
-        elements.push(/* @__PURE__ */ jsx_dev_runtime5.jsxDEV("ellipse", {
+        elements.push(/* @__PURE__ */ jsx_dev_runtime6.jsxDEV("ellipse", {
           cx,
           cy,
           rx: eyeWidth * 0.7,
@@ -22071,7 +22934,7 @@ var AvatarMage = ({
             filter: "brightness(1.2)"
           }
         }, `eye-${cx}`, false, undefined, this));
-        elements.push(/* @__PURE__ */ jsx_dev_runtime5.jsxDEV("ellipse", {
+        elements.push(/* @__PURE__ */ jsx_dev_runtime6.jsxDEV("ellipse", {
           cx,
           cy,
           rx: eyeWidth * 0.6,
@@ -22083,7 +22946,7 @@ var AvatarMage = ({
           }
         }, `inner-glow-${cx}`, false, undefined, this));
         if (needsPupil) {
-          elements.push(/* @__PURE__ */ jsx_dev_runtime5.jsxDEV("ellipse", {
+          elements.push(/* @__PURE__ */ jsx_dev_runtime6.jsxDEV("ellipse", {
             cx,
             cy,
             rx: eyeWidth * 0.3,
@@ -22091,7 +22954,7 @@ var AvatarMage = ({
             style: { fill: "#000000" }
           }, `pupil-${cx}`, false, undefined, this));
         } else {
-          elements.push(/* @__PURE__ */ jsx_dev_runtime5.jsxDEV("ellipse", {
+          elements.push(/* @__PURE__ */ jsx_dev_runtime6.jsxDEV("ellipse", {
             cx,
             cy: cy - eyeHeight * 0.1,
             rx: eyeWidth * 0.3,
@@ -22104,12 +22967,12 @@ var AvatarMage = ({
         }
         break;
     }
-    return /* @__PURE__ */ jsx_dev_runtime5.jsxDEV("g", {
+    return /* @__PURE__ */ jsx_dev_runtime6.jsxDEV("g", {
       transform: eyeTransform,
       children: elements
     }, `eye-group-${cx}`, false, undefined, this);
   };
-  return /* @__PURE__ */ jsx_dev_runtime5.jsxDEV("svg", {
+  return /* @__PURE__ */ jsx_dev_runtime6.jsxDEV("svg", {
     fill: "none",
     height: size,
     role: "img",
@@ -22118,47 +22981,37 @@ var AvatarMage = ({
     xmlns: "http://www.w3.org/2000/svg",
     ...otherProps,
     children: [
-      title && /* @__PURE__ */ jsx_dev_runtime5.jsxDEV("title", {
+      title && /* @__PURE__ */ jsx_dev_runtime6.jsxDEV("title", {
         children: name
       }, undefined, false, undefined, this),
-      /* @__PURE__ */ jsx_dev_runtime5.jsxDEV("mask", {
+      /* @__PURE__ */ jsx_dev_runtime6.jsxDEV("mask", {
         height: SIZE5,
         id: maskID,
         maskUnits: "userSpaceOnUse",
         width: SIZE5,
         x: 0,
         y: 0,
-        children: /* @__PURE__ */ jsx_dev_runtime5.jsxDEV("rect", {
+        children: /* @__PURE__ */ jsx_dev_runtime6.jsxDEV("rect", {
           fill: "#FFFFFF",
           height: SIZE5,
-          rx: square ? undefined : SIZE5 * 2,
           width: SIZE5
         }, undefined, false, undefined, this)
       }, undefined, false, undefined, this),
-      /* @__PURE__ */ jsx_dev_runtime5.jsxDEV("g", {
+      /* @__PURE__ */ jsx_dev_runtime6.jsxDEV("g", {
         mask: `url(#${maskID})`,
         children: [
-          /* @__PURE__ */ jsx_dev_runtime5.jsxDEV("rect", {
+          /* @__PURE__ */ jsx_dev_runtime6.jsxDEV("rect", {
+            width: SIZE5,
             height: SIZE5,
-            style: { fill: getRandomColor(num + 97, colors, colors.length) },
-            width: SIZE5
+            fill: getRandomColor(num * 23, colors, colors.length)
           }, undefined, false, undefined, this),
-          /* @__PURE__ */ jsx_dev_runtime5.jsxDEV("path", {
-            d: "M32.414 59.35L50.376 70.5H72.5v-71H33.728L26.5 13.381l19.057 27.08L32.414 59.35z",
-            filter: `url(#filter_${maskID})`,
-            style: { fill: marbleSky[1].color },
-            transform: "translate(" + marbleSky[1].translateX + " " + marbleSky[1].translateY + ") rotate(" + marbleSky[1].rotate + " " + SIZE5 / 2 + " " + SIZE5 / 2 + ") scale(" + marbleSky[2].scale + ")"
-          }, undefined, false, undefined, this),
-          /* @__PURE__ */ jsx_dev_runtime5.jsxDEV("path", {
-            d: "M22.216 24L0 46.75l14.108 38.129L78 86l-3.081-59.276-22.378 4.005 12.972 20.186-23.35 27.395L22.215 24z",
-            filter: `url(#filter_${maskID})`,
-            style: {
-              mixBlendMode: "overlay",
-              fill: marbleSky[2].color
-            },
-            transform: "translate(" + marbleSky[2].translateX + " " + marbleSky[2].translateY + ") rotate(" + marbleSky[2].rotate + " " + SIZE5 / 2 + " " + SIZE5 / 2 + ") scale(" + marbleSky[2].scale + ")"
-          }, undefined, false, undefined, this),
-          showCollar && /* @__PURE__ */ jsx_dev_runtime5.jsxDEV("path", {
+          renderBackground(selectPattern(num * 31 + 17, ALL_PATTERNS), {
+            size: SIZE5,
+            colors: colors || ["#92A1C6", "#146A7C", "#F0AB3D", "#C271B4", "#C20D90"],
+            seed: num,
+            patternId: patternID
+          }),
+          showCollar && /* @__PURE__ */ jsx_dev_runtime6.jsxDEV("path", {
             d: `M 0 ${SIZE5 * 0.75}
                 C ${SIZE5 * 0.1} ${SIZE5 * 0.7}
                   ${SIZE5 * 0.2} ${SIZE5 * 0.68}
@@ -22171,10 +23024,10 @@ var AvatarMage = ({
                 Z`,
             style: { fill: collarColor }
           }, undefined, false, undefined, this),
-          /* @__PURE__ */ jsx_dev_runtime5.jsxDEV("g", {
+          /* @__PURE__ */ jsx_dev_runtime6.jsxDEV("g", {
             transform: `rotate(${headTilt} ${SIZE5 / 2} ${SIZE5 / 2})`,
             children: [
-              /* @__PURE__ */ jsx_dev_runtime5.jsxDEV("ellipse", {
+              /* @__PURE__ */ jsx_dev_runtime6.jsxDEV("ellipse", {
                 cx: SIZE5 / 2,
                 cy: faceY + 15,
                 rx: faceRx,
@@ -22183,7 +23036,7 @@ var AvatarMage = ({
               }, undefined, false, undefined, this),
               drawEye(SIZE5 / 2 - spacingScaled, true),
               drawEye(SIZE5 / 2 + spacingScaled, false),
-              showMouth && /* @__PURE__ */ jsx_dev_runtime5.jsxDEV("line", {
+              showMouth && /* @__PURE__ */ jsx_dev_runtime6.jsxDEV("line", {
                 style: {
                   stroke: eyeColor === "#FFFF00" ? "#FFFFFF" : eyeColor,
                   strokeWidth: 1.5,
@@ -22199,115 +23052,11 @@ var AvatarMage = ({
           }, undefined, true, undefined, this)
         ]
       }, undefined, true, undefined, this),
-      /* @__PURE__ */ jsx_dev_runtime5.jsxDEV("defs", {
-        children: /* @__PURE__ */ jsx_dev_runtime5.jsxDEV("filter", {
-          colorInterpolationFilters: "sRGB",
-          filterUnits: "userSpaceOnUse",
-          id: `filter_${maskID}`,
-          children: [
-            /* @__PURE__ */ jsx_dev_runtime5.jsxDEV("feFlood", {
-              floodOpacity: 0,
-              result: "BackgroundImageFix"
-            }, undefined, false, undefined, this),
-            /* @__PURE__ */ jsx_dev_runtime5.jsxDEV("feBlend", {
-              in: "SourceGraphic",
-              in2: "BackgroundImageFix",
-              result: "shape"
-            }, undefined, false, undefined, this),
-            /* @__PURE__ */ jsx_dev_runtime5.jsxDEV("feGaussianBlur", {
-              result: "effect1_foregroundBlur",
-              stdDeviation: 7
-            }, undefined, false, undefined, this)
-          ]
-        }, undefined, true, undefined, this)
-      }, undefined, false, undefined, this)
-    ]
-  }, undefined, true, undefined, this);
-};
-var avatar_mage_default = AvatarMage;
-
-// src/lib/components/avatar-marble.tsx
-var jsx_dev_runtime6 = __toESM(require_jsx_dev_runtime(), 1);
-var ELEMENTS2 = 3;
-var SIZE6 = 80;
-function generateColors2(name, colors) {
-  const numFromName = hashCode(name);
-  const range = colors && colors.length;
-  const elementsProperties = Array.from({ length: ELEMENTS2 }, (_2, i2) => ({
-    color: getRandomColor(numFromName + i2, colors, range),
-    translateX: getUnit(numFromName * (i2 + 1), SIZE6 / 10, 1),
-    translateY: getUnit(numFromName * (i2 + 1), SIZE6 / 10, 2),
-    scale: 1.2 + getUnit(numFromName * (i2 + 1), SIZE6 / 20) / 10,
-    rotate: getUnit(numFromName * (i2 + 1), 360, 1)
-  }));
-  return elementsProperties;
-}
-var AvatarMarble = ({
-  name,
-  colors,
-  title,
-  square,
-  size,
-  ...otherProps
-}) => {
-  const properties = generateColors2(name, colors);
-  const maskID = generateId(name, "mask");
-  return /* @__PURE__ */ jsx_dev_runtime6.jsxDEV("svg", {
-    fill: "none",
-    height: size,
-    role: "img",
-    viewBox: "0 0 " + SIZE6 + " " + SIZE6,
-    width: size,
-    xmlns: "http://www.w3.org/2000/svg",
-    ...otherProps,
-    children: [
-      title && /* @__PURE__ */ jsx_dev_runtime6.jsxDEV("title", {
-        children: name
-      }, undefined, false, undefined, this),
-      /* @__PURE__ */ jsx_dev_runtime6.jsxDEV("mask", {
-        height: SIZE6,
-        id: maskID,
-        maskUnits: "userSpaceOnUse",
-        width: SIZE6,
-        x: 0,
-        y: 0,
-        children: /* @__PURE__ */ jsx_dev_runtime6.jsxDEV("rect", {
-          fill: "#FFFFFF",
-          height: SIZE6,
-          rx: square ? undefined : SIZE6 * 2,
-          width: SIZE6
-        }, undefined, false, undefined, this)
-      }, undefined, false, undefined, this),
-      /* @__PURE__ */ jsx_dev_runtime6.jsxDEV("g", {
-        mask: `url(#${maskID})`,
-        children: [
-          /* @__PURE__ */ jsx_dev_runtime6.jsxDEV("rect", {
-            height: SIZE6,
-            style: { fill: properties[0].color },
-            width: SIZE6
-          }, undefined, false, undefined, this),
-          /* @__PURE__ */ jsx_dev_runtime6.jsxDEV("path", {
-            d: "M32.414 59.35L50.376 70.5H72.5v-71H33.728L26.5 13.381l19.057 27.08L32.414 59.35z",
-            filter: `url(#filter_${maskID})`,
-            style: { fill: properties[1].color },
-            transform: "translate(" + properties[1].translateX + " " + properties[1].translateY + ") rotate(" + properties[1].rotate + " " + SIZE6 / 2 + " " + SIZE6 / 2 + ") scale(" + properties[2].scale + ")"
-          }, undefined, false, undefined, this),
-          /* @__PURE__ */ jsx_dev_runtime6.jsxDEV("path", {
-            d: "M22.216 24L0 46.75l14.108 38.129L78 86l-3.081-59.276-22.378 4.005 12.972 20.186-23.35 27.395L22.215 24z",
-            filter: `url(#filter_${maskID})`,
-            style: {
-              mixBlendMode: "overlay",
-              fill: properties[2].color
-            },
-            transform: "translate(" + properties[2].translateX + " " + properties[2].translateY + ") rotate(" + properties[2].rotate + " " + SIZE6 / 2 + " " + SIZE6 / 2 + ") scale(" + properties[2].scale + ")"
-          }, undefined, false, undefined, this)
-        ]
-      }, undefined, true, undefined, this),
       /* @__PURE__ */ jsx_dev_runtime6.jsxDEV("defs", {
         children: /* @__PURE__ */ jsx_dev_runtime6.jsxDEV("filter", {
           colorInterpolationFilters: "sRGB",
           filterUnits: "userSpaceOnUse",
-          id: `filter_${maskID}`,
+          id: filterID,
           children: [
             /* @__PURE__ */ jsx_dev_runtime6.jsxDEV("feFlood", {
               floodOpacity: 0,
@@ -22328,10 +23077,86 @@ var AvatarMarble = ({
     ]
   }, undefined, true, undefined, this);
 };
+var avatar_mage_default = AvatarMage;
+
+// src/lib/components/avatar-marble.tsx
+var jsx_dev_runtime7 = __toESM(require_jsx_dev_runtime(), 1);
+var SIZE6 = 80;
+var AvatarMarble = ({
+  name,
+  colors,
+  title,
+  size,
+  ...otherProps
+}) => {
+  const seed = hashCode(name);
+  const maskID = generateId(name, "mask");
+  const filterID = generateId(name, "filter");
+  const patternID = generateId(name, "pattern");
+  return /* @__PURE__ */ jsx_dev_runtime7.jsxDEV("svg", {
+    fill: "none",
+    height: size,
+    role: "img",
+    viewBox: "0 0 " + SIZE6 + " " + SIZE6,
+    width: size,
+    xmlns: "http://www.w3.org/2000/svg",
+    ...otherProps,
+    children: [
+      title && /* @__PURE__ */ jsx_dev_runtime7.jsxDEV("title", {
+        children: name
+      }, undefined, false, undefined, this),
+      /* @__PURE__ */ jsx_dev_runtime7.jsxDEV("mask", {
+        height: SIZE6,
+        id: maskID,
+        maskUnits: "userSpaceOnUse",
+        width: SIZE6,
+        x: 0,
+        y: 0,
+        children: /* @__PURE__ */ jsx_dev_runtime7.jsxDEV("rect", {
+          fill: "#FFFFFF",
+          height: SIZE6,
+          width: SIZE6
+        }, undefined, false, undefined, this)
+      }, undefined, false, undefined, this),
+      /* @__PURE__ */ jsx_dev_runtime7.jsxDEV("g", {
+        mask: `url(#${maskID})`,
+        children: renderMarbleBackground({
+          size: SIZE6,
+          colors: colors || ["#92A1C6", "#146A7C", "#F0AB3D", "#C271B4", "#C20D90"],
+          seed,
+          patternId: patternID,
+          filterUrl: `url(#${filterID})`
+        })
+      }, undefined, false, undefined, this),
+      /* @__PURE__ */ jsx_dev_runtime7.jsxDEV("defs", {
+        children: /* @__PURE__ */ jsx_dev_runtime7.jsxDEV("filter", {
+          colorInterpolationFilters: "sRGB",
+          filterUnits: "userSpaceOnUse",
+          id: filterID,
+          children: [
+            /* @__PURE__ */ jsx_dev_runtime7.jsxDEV("feFlood", {
+              floodOpacity: 0,
+              result: "BackgroundImageFix"
+            }, undefined, false, undefined, this),
+            /* @__PURE__ */ jsx_dev_runtime7.jsxDEV("feBlend", {
+              in: "SourceGraphic",
+              in2: "BackgroundImageFix",
+              result: "shape"
+            }, undefined, false, undefined, this),
+            /* @__PURE__ */ jsx_dev_runtime7.jsxDEV("feGaussianBlur", {
+              result: "effect1_foregroundBlur",
+              stdDeviation: 7
+            }, undefined, false, undefined, this)
+          ]
+        }, undefined, true, undefined, this)
+      }, undefined, false, undefined, this)
+    ]
+  }, undefined, true, undefined, this);
+};
 var avatar_marble_default = AvatarMarble;
 
 // src/lib/components/avatar-pepe.tsx
-var jsx_dev_runtime7 = __toESM(require_jsx_dev_runtime(), 1);
+var jsx_dev_runtime8 = __toESM(require_jsx_dev_runtime(), 1);
 var SIZE7 = 80;
 var q2 = (x1, y1, cx, cy, x2, y2) => `M ${x1} ${y1} Q ${cx} ${cy} ${x2} ${y2}`;
 function frogBlobPath(cx, cy, s2) {
@@ -22366,39 +23191,39 @@ function frogBlobPath(cx, cy, s2) {
 }
 var EyeGroup = ({ cx, cy, rx, ry, lidDrop, outline, pupil, name, eyeId }) => {
   const uid = generateId(name, `eye-${eyeId}`);
-  return /* @__PURE__ */ jsx_dev_runtime7.jsxDEV("g", {
+  return /* @__PURE__ */ jsx_dev_runtime8.jsxDEV("g", {
     children: [
-      /* @__PURE__ */ jsx_dev_runtime7.jsxDEV("clipPath", {
+      /* @__PURE__ */ jsx_dev_runtime8.jsxDEV("clipPath", {
         id: `clip-${uid}`,
-        children: /* @__PURE__ */ jsx_dev_runtime7.jsxDEV("ellipse", {
+        children: /* @__PURE__ */ jsx_dev_runtime8.jsxDEV("ellipse", {
           cx,
           cy,
           rx,
           ry
         }, undefined, false, undefined, this)
       }, undefined, false, undefined, this),
-      /* @__PURE__ */ jsx_dev_runtime7.jsxDEV("ellipse", {
+      /* @__PURE__ */ jsx_dev_runtime8.jsxDEV("ellipse", {
         cx,
         cy,
         rx,
         ry,
         style: { fill: "#fff", stroke: outline, strokeWidth: 1.5 }
       }, undefined, false, undefined, this),
-      /* @__PURE__ */ jsx_dev_runtime7.jsxDEV("circle", {
+      /* @__PURE__ */ jsx_dev_runtime8.jsxDEV("circle", {
         cx: cx + rx * 0.15,
         cy: cy - ry * 0.05,
         r: Math.max(2, rx * 0.42),
         style: { fill: pupil }
       }, undefined, false, undefined, this),
-      /* @__PURE__ */ jsx_dev_runtime7.jsxDEV("circle", {
+      /* @__PURE__ */ jsx_dev_runtime8.jsxDEV("circle", {
         cx: cx + rx * 0.04,
         cy: cy - ry * 0.15,
         r: Math.max(1, rx * 0.15),
         style: { fill: "#fff" }
       }, undefined, false, undefined, this),
-      /* @__PURE__ */ jsx_dev_runtime7.jsxDEV("g", {
+      /* @__PURE__ */ jsx_dev_runtime8.jsxDEV("g", {
         clipPath: `url(#clip-${uid})`,
-        children: /* @__PURE__ */ jsx_dev_runtime7.jsxDEV("path", {
+        children: /* @__PURE__ */ jsx_dev_runtime8.jsxDEV("path", {
           d: `M ${cx - rx} ${cy - lidDrop}
               Q ${cx} ${cy - ry - lidDrop * 0.2}
                 ${cx + rx} ${cy - lidDrop}`,
@@ -22428,9 +23253,9 @@ function Lips({
   const cy = y2 + curve;
   const d = q2(x1, y2, cx, cy, x2, y2);
   const tr = tilt ? { transform: `rotate(${tilt} ${cx} ${y2})` } : undefined;
-  return /* @__PURE__ */ jsx_dev_runtime7.jsxDEV(jsx_dev_runtime7.Fragment, {
+  return /* @__PURE__ */ jsx_dev_runtime8.jsxDEV(jsx_dev_runtime8.Fragment, {
     children: [
-      /* @__PURE__ */ jsx_dev_runtime7.jsxDEV("path", {
+      /* @__PURE__ */ jsx_dev_runtime8.jsxDEV("path", {
         d,
         style: {
           stroke: outline,
@@ -22440,7 +23265,7 @@ function Lips({
         },
         ...tr
       }, undefined, false, undefined, this),
-      /* @__PURE__ */ jsx_dev_runtime7.jsxDEV("path", {
+      /* @__PURE__ */ jsx_dev_runtime8.jsxDEV("path", {
         d,
         style: {
           stroke: color,
@@ -22450,7 +23275,7 @@ function Lips({
         },
         ...tr
       }, undefined, false, undefined, this),
-      /* @__PURE__ */ jsx_dev_runtime7.jsxDEV("path", {
+      /* @__PURE__ */ jsx_dev_runtime8.jsxDEV("path", {
         d,
         style: {
           stroke: split,
@@ -22467,7 +23292,6 @@ function AvatarPepe({
   name,
   colors,
   title,
-  square,
   size,
   ...otherProps
 }) {
@@ -22489,7 +23313,6 @@ function AvatarPepe({
     sunglassesType = typeRoll;
   }
   const bgPattern = getUnit(n + 205, 100) < 70 ? getUnit(n + 206, 5) : -1;
-  const hasTransparentBg = !isFullFace && getUnit(n + 207, 100) < 10;
   const classicGreens = ["#6B9F2E", "#7FAF3F", "#8FBF4F", "#5F8F1F"];
   const classicReds = ["#C03A2B", "#B84236", "#A63526", "#D04030", "#9B3021"];
   const fullColorPool = [...colors, ...classicGreens, ...classicReds];
@@ -22556,7 +23379,7 @@ function AvatarPepe({
   const rightOnTop = getBoolean(n + 57, 1);
   const cx = SIZE7 / 2, cy = SIZE7 / 2;
   const patternID = generateId(name, "pattern");
-  return /* @__PURE__ */ jsx_dev_runtime7.jsxDEV("svg", {
+  return /* @__PURE__ */ jsx_dev_runtime8.jsxDEV("svg", {
     fill: "none",
     height: size,
     role: "img",
@@ -22565,24 +23388,24 @@ function AvatarPepe({
     xmlns: "http://www.w3.org/2000/svg",
     ...otherProps,
     children: [
-      title && /* @__PURE__ */ jsx_dev_runtime7.jsxDEV("title", {
+      title && /* @__PURE__ */ jsx_dev_runtime8.jsxDEV("title", {
         children: name
       }, undefined, false, undefined, this),
-      bgPattern >= 0 && /* @__PURE__ */ jsx_dev_runtime7.jsxDEV("defs", {
-        children: /* @__PURE__ */ jsx_dev_runtime7.jsxDEV("pattern", {
+      bgPattern >= 0 && /* @__PURE__ */ jsx_dev_runtime8.jsxDEV("defs", {
+        children: /* @__PURE__ */ jsx_dev_runtime8.jsxDEV("pattern", {
           height: bgPattern === 0 ? SIZE7 : bgPattern === 1 ? SIZE7 * 0.2 : bgPattern === 2 ? SIZE7 * 0.25 : bgPattern === 3 ? SIZE7 * 0.2 : SIZE7 * 0.2,
           id: patternID,
           patternUnits: "userSpaceOnUse",
           width: bgPattern === 0 ? SIZE7 * 0.2 : bgPattern === 1 ? SIZE7 : bgPattern === 2 ? SIZE7 * 0.25 : bgPattern === 3 ? SIZE7 * 0.2 : SIZE7 * 0.2,
           children: [
-            bgPattern === 0 && /* @__PURE__ */ jsx_dev_runtime7.jsxDEV(jsx_dev_runtime7.Fragment, {
+            bgPattern === 0 && /* @__PURE__ */ jsx_dev_runtime8.jsxDEV(jsx_dev_runtime8.Fragment, {
               children: [
-                /* @__PURE__ */ jsx_dev_runtime7.jsxDEV("rect", {
+                /* @__PURE__ */ jsx_dev_runtime8.jsxDEV("rect", {
                   fill: String(bg),
                   height: SIZE7,
                   width: SIZE7 * 0.1
                 }, undefined, false, undefined, this),
-                /* @__PURE__ */ jsx_dev_runtime7.jsxDEV("rect", {
+                /* @__PURE__ */ jsx_dev_runtime8.jsxDEV("rect", {
                   fill: String(skin),
                   height: SIZE7,
                   opacity: "0.2",
@@ -22591,14 +23414,14 @@ function AvatarPepe({
                 }, undefined, false, undefined, this)
               ]
             }, undefined, true, undefined, this),
-            bgPattern === 1 && /* @__PURE__ */ jsx_dev_runtime7.jsxDEV(jsx_dev_runtime7.Fragment, {
+            bgPattern === 1 && /* @__PURE__ */ jsx_dev_runtime8.jsxDEV(jsx_dev_runtime8.Fragment, {
               children: [
-                /* @__PURE__ */ jsx_dev_runtime7.jsxDEV("rect", {
+                /* @__PURE__ */ jsx_dev_runtime8.jsxDEV("rect", {
                   fill: String(bg),
                   height: SIZE7 * 0.1,
                   width: SIZE7
                 }, undefined, false, undefined, this),
-                /* @__PURE__ */ jsx_dev_runtime7.jsxDEV("rect", {
+                /* @__PURE__ */ jsx_dev_runtime8.jsxDEV("rect", {
                   fill: String(skin),
                   height: SIZE7 * 0.1,
                   opacity: "0.2",
@@ -22607,14 +23430,14 @@ function AvatarPepe({
                 }, undefined, false, undefined, this)
               ]
             }, undefined, true, undefined, this),
-            bgPattern === 2 && /* @__PURE__ */ jsx_dev_runtime7.jsxDEV(jsx_dev_runtime7.Fragment, {
+            bgPattern === 2 && /* @__PURE__ */ jsx_dev_runtime8.jsxDEV(jsx_dev_runtime8.Fragment, {
               children: [
-                /* @__PURE__ */ jsx_dev_runtime7.jsxDEV("rect", {
+                /* @__PURE__ */ jsx_dev_runtime8.jsxDEV("rect", {
                   fill: String(bg),
                   height: SIZE7 * 0.25,
                   width: SIZE7 * 0.25
                 }, undefined, false, undefined, this),
-                /* @__PURE__ */ jsx_dev_runtime7.jsxDEV("circle", {
+                /* @__PURE__ */ jsx_dev_runtime8.jsxDEV("circle", {
                   cx: SIZE7 * 0.125,
                   cy: SIZE7 * 0.125,
                   fill: String(skin),
@@ -22623,28 +23446,28 @@ function AvatarPepe({
                 }, undefined, false, undefined, this)
               ]
             }, undefined, true, undefined, this),
-            bgPattern === 3 && /* @__PURE__ */ jsx_dev_runtime7.jsxDEV(jsx_dev_runtime7.Fragment, {
+            bgPattern === 3 && /* @__PURE__ */ jsx_dev_runtime8.jsxDEV(jsx_dev_runtime8.Fragment, {
               children: [
-                /* @__PURE__ */ jsx_dev_runtime7.jsxDEV("rect", {
+                /* @__PURE__ */ jsx_dev_runtime8.jsxDEV("rect", {
                   fill: String(bg),
                   height: SIZE7 * 0.1,
                   width: SIZE7 * 0.1
                 }, undefined, false, undefined, this),
-                /* @__PURE__ */ jsx_dev_runtime7.jsxDEV("rect", {
+                /* @__PURE__ */ jsx_dev_runtime8.jsxDEV("rect", {
                   fill: String(skin),
                   height: SIZE7 * 0.1,
                   opacity: "0.2",
                   width: SIZE7 * 0.1,
                   x: SIZE7 * 0.1
                 }, undefined, false, undefined, this),
-                /* @__PURE__ */ jsx_dev_runtime7.jsxDEV("rect", {
+                /* @__PURE__ */ jsx_dev_runtime8.jsxDEV("rect", {
                   fill: String(skin),
                   height: SIZE7 * 0.1,
                   opacity: "0.2",
                   width: SIZE7 * 0.1,
                   y: SIZE7 * 0.1
                 }, undefined, false, undefined, this),
-                /* @__PURE__ */ jsx_dev_runtime7.jsxDEV("rect", {
+                /* @__PURE__ */ jsx_dev_runtime8.jsxDEV("rect", {
                   fill: String(bg),
                   height: SIZE7 * 0.1,
                   width: SIZE7 * 0.1,
@@ -22653,18 +23476,18 @@ function AvatarPepe({
                 }, undefined, false, undefined, this)
               ]
             }, undefined, true, undefined, this),
-            bgPattern === 4 && /* @__PURE__ */ jsx_dev_runtime7.jsxDEV(jsx_dev_runtime7.Fragment, {
+            bgPattern === 4 && /* @__PURE__ */ jsx_dev_runtime8.jsxDEV(jsx_dev_runtime8.Fragment, {
               children: [
-                /* @__PURE__ */ jsx_dev_runtime7.jsxDEV("polygon", {
+                /* @__PURE__ */ jsx_dev_runtime8.jsxDEV("polygon", {
                   fill: String(skin),
                   opacity: "0.2",
                   points: `0,0 ${SIZE7 * 0.1},0 0,${SIZE7 * 0.1}`
                 }, undefined, false, undefined, this),
-                /* @__PURE__ */ jsx_dev_runtime7.jsxDEV("polygon", {
+                /* @__PURE__ */ jsx_dev_runtime8.jsxDEV("polygon", {
                   fill: String(bg),
                   points: `${SIZE7 * 0.1},0 ${SIZE7 * 0.2},0 ${SIZE7 * 0.2},${SIZE7 * 0.1} ${SIZE7 * 0.1},${SIZE7 * 0.2} 0,${SIZE7 * 0.2} 0,${SIZE7 * 0.1}`
                 }, undefined, false, undefined, this),
-                /* @__PURE__ */ jsx_dev_runtime7.jsxDEV("polygon", {
+                /* @__PURE__ */ jsx_dev_runtime8.jsxDEV("polygon", {
                   fill: String(skin),
                   opacity: "0.2",
                   points: `${SIZE7 * 0.2},${SIZE7 * 0.1} ${SIZE7 * 0.2},${SIZE7 * 0.2} ${SIZE7 * 0.1},${SIZE7 * 0.2}`
@@ -22674,36 +23497,35 @@ function AvatarPepe({
           ]
         }, undefined, true, undefined, this)
       }, undefined, false, undefined, this),
-      /* @__PURE__ */ jsx_dev_runtime7.jsxDEV("mask", {
+      /* @__PURE__ */ jsx_dev_runtime8.jsxDEV("mask", {
         id: maskID,
-        children: /* @__PURE__ */ jsx_dev_runtime7.jsxDEV("rect", {
+        children: /* @__PURE__ */ jsx_dev_runtime8.jsxDEV("rect", {
           fill: "#fff",
           height: SIZE7,
-          rx: square ? 0 : SIZE7 * 2,
           width: SIZE7
         }, undefined, false, undefined, this)
       }, undefined, false, undefined, this),
-      /* @__PURE__ */ jsx_dev_runtime7.jsxDEV("g", {
+      /* @__PURE__ */ jsx_dev_runtime8.jsxDEV("g", {
         mask: `url(#${maskID})`,
         children: [
-          !hasTransparentBg && /* @__PURE__ */ jsx_dev_runtime7.jsxDEV("rect", {
+          /* @__PURE__ */ jsx_dev_runtime8.jsxDEV("rect", {
             height: SIZE7,
             style: { fill: String(bg) },
             width: SIZE7
           }, undefined, false, undefined, this),
-          !hasTransparentBg && bgPattern >= 0 && /* @__PURE__ */ jsx_dev_runtime7.jsxDEV("rect", {
+          bgPattern >= 0 && /* @__PURE__ */ jsx_dev_runtime8.jsxDEV("rect", {
             fill: `url(#${patternID})`,
             height: SIZE7,
             width: SIZE7
           }, undefined, false, undefined, this),
-          isFullFace && /* @__PURE__ */ jsx_dev_runtime7.jsxDEV("rect", {
+          isFullFace && /* @__PURE__ */ jsx_dev_runtime8.jsxDEV("rect", {
             height: SIZE7,
             style: { fill: String(skin), opacity: 0.95 },
             width: SIZE7
           }, undefined, false, undefined, this),
-          !isFullFace && /* @__PURE__ */ jsx_dev_runtime7.jsxDEV("g", {
+          !isFullFace && /* @__PURE__ */ jsx_dev_runtime8.jsxDEV("g", {
             transform: `rotate(${tilt} ${cx} ${cy})`,
-            children: /* @__PURE__ */ jsx_dev_runtime7.jsxDEV("path", {
+            children: /* @__PURE__ */ jsx_dev_runtime8.jsxDEV("path", {
               d: frogBlobPath(cx, cy, n),
               style: {
                 fill: String(skin),
@@ -22712,7 +23534,7 @@ function AvatarPepe({
               }
             }, undefined, false, undefined, this)
           }, undefined, false, undefined, this),
-          rightOnTop ? /* @__PURE__ */ jsx_dev_runtime7.jsxDEV(EyeGroup, {
+          rightOnTop ? /* @__PURE__ */ jsx_dev_runtime8.jsxDEV(EyeGroup, {
             cx: cx - sep / 2,
             cy: eyeY,
             lidDrop,
@@ -22722,7 +23544,7 @@ function AvatarPepe({
             ry: eyeRy,
             name,
             eyeId: "left"
-          }, undefined, false, undefined, this) : /* @__PURE__ */ jsx_dev_runtime7.jsxDEV(EyeGroup, {
+          }, undefined, false, undefined, this) : /* @__PURE__ */ jsx_dev_runtime8.jsxDEV(EyeGroup, {
             cx: cx + sep / 2,
             cy: eyeY,
             lidDrop,
@@ -22733,7 +23555,7 @@ function AvatarPepe({
             name,
             eyeId: "right"
           }, undefined, false, undefined, this),
-          rightOnTop ? /* @__PURE__ */ jsx_dev_runtime7.jsxDEV(EyeGroup, {
+          rightOnTop ? /* @__PURE__ */ jsx_dev_runtime8.jsxDEV(EyeGroup, {
             cx: cx + sep / 2,
             cy: eyeY,
             lidDrop,
@@ -22743,7 +23565,7 @@ function AvatarPepe({
             ry: eyeRy,
             name,
             eyeId: "right"
-          }, undefined, false, undefined, this) : /* @__PURE__ */ jsx_dev_runtime7.jsxDEV(EyeGroup, {
+          }, undefined, false, undefined, this) : /* @__PURE__ */ jsx_dev_runtime8.jsxDEV(EyeGroup, {
             cx: cx - sep / 2,
             cy: eyeY,
             lidDrop,
@@ -22754,37 +23576,37 @@ function AvatarPepe({
             name,
             eyeId: "left"
           }, undefined, false, undefined, this),
-          isCrying && /* @__PURE__ */ jsx_dev_runtime7.jsxDEV(jsx_dev_runtime7.Fragment, {
+          isCrying && /* @__PURE__ */ jsx_dev_runtime8.jsxDEV(jsx_dev_runtime8.Fragment, {
             children: [
-              /* @__PURE__ */ jsx_dev_runtime7.jsxDEV("ellipse", {
+              /* @__PURE__ */ jsx_dev_runtime8.jsxDEV("ellipse", {
                 cx: cx - sep / 2,
                 cy: eyeY + eyeRy * 0.5,
                 rx: eyeRx * 0.9,
                 ry: eyeRy * 0.4,
                 style: { fill: "#4A90E2", opacity: 0.4 }
               }, undefined, false, undefined, this),
-              /* @__PURE__ */ jsx_dev_runtime7.jsxDEV("ellipse", {
+              /* @__PURE__ */ jsx_dev_runtime8.jsxDEV("ellipse", {
                 cx: cx + sep / 2,
                 cy: eyeY + eyeRy * 0.5,
                 rx: eyeRx * 0.9,
                 ry: eyeRy * 0.4,
                 style: { fill: "#4A90E2", opacity: 0.4 }
               }, undefined, false, undefined, this),
-              /* @__PURE__ */ jsx_dev_runtime7.jsxDEV("ellipse", {
+              /* @__PURE__ */ jsx_dev_runtime8.jsxDEV("ellipse", {
                 cx: cx - sep / 2 - eyeRx * 0.7,
                 cy: eyeY + eyeRy * 1.5,
                 rx: 3,
                 ry: 5,
                 style: { fill: "#4A90E2", opacity: 0.7 }
               }, undefined, false, undefined, this),
-              /* @__PURE__ */ jsx_dev_runtime7.jsxDEV("ellipse", {
+              /* @__PURE__ */ jsx_dev_runtime8.jsxDEV("ellipse", {
                 cx: cx + sep / 2 + eyeRx * 0.7,
                 cy: eyeY + eyeRy * 1.5,
                 rx: 3,
                 ry: 5,
                 style: { fill: "#4A90E2", opacity: 0.7 }
               }, undefined, false, undefined, this),
-              /* @__PURE__ */ jsx_dev_runtime7.jsxDEV("path", {
+              /* @__PURE__ */ jsx_dev_runtime8.jsxDEV("path", {
                 d: `M ${cx - sep / 2 - eyeRx * 0.7} ${eyeY + eyeRy} 
                       Q ${cx - sep / 2 - eyeRx * 0.7} ${eyeY + eyeRy * 2} 
                         ${cx - sep / 2 - eyeRx * 0.8} ${eyeY + eyeRy * 2.5}`,
@@ -22796,7 +23618,7 @@ function AvatarPepe({
                   strokeLinecap: "round"
                 }
               }, undefined, false, undefined, this),
-              /* @__PURE__ */ jsx_dev_runtime7.jsxDEV("path", {
+              /* @__PURE__ */ jsx_dev_runtime8.jsxDEV("path", {
                 d: `M ${cx + sep / 2 + eyeRx * 0.7} ${eyeY + eyeRy} 
                       Q ${cx + sep / 2 + eyeRx * 0.7} ${eyeY + eyeRy * 2} 
                         ${cx + sep / 2 + eyeRx * 0.8} ${eyeY + eyeRy * 2.5}`,
@@ -22810,15 +23632,15 @@ function AvatarPepe({
               }, undefined, false, undefined, this)
             ]
           }, undefined, true, undefined, this),
-          sunglassesType > 0 && /* @__PURE__ */ jsx_dev_runtime7.jsxDEV("g", {
+          sunglassesType > 0 && /* @__PURE__ */ jsx_dev_runtime8.jsxDEV("g", {
             children: (() => {
               if (sunglassesType === 1) {
                 const scale = (sep + eyeRx * 4) / 703;
                 const pathCenterX = 351.5;
                 const pathCenterY = 141;
-                return /* @__PURE__ */ jsx_dev_runtime7.jsxDEV("g", {
+                return /* @__PURE__ */ jsx_dev_runtime8.jsxDEV("g", {
                   transform: `translate(${cx}, ${eyeY}) scale(${scale}) translate(-${pathCenterX}, -${pathCenterY})`,
-                  children: /* @__PURE__ */ jsx_dev_runtime7.jsxDEV("path", {
+                  children: /* @__PURE__ */ jsx_dev_runtime8.jsxDEV("path", {
                     d: "M236.073 1.37938C129.2 3.46326 111.636 4.95175 89.3088 15.3711C55.9669 30.8513 34.8304 58.537 23.8157 101.108L22.3272 107.062H14.5871C8.33549 107.062 6.25162 107.657 3.27466 110.634C1.06464e-06 114.206 0 114.504 0 140.999C0 173.448 0.297697 174.043 14.2894 175.234L22.9226 175.829L26.7927 187.142C42.2729 232.987 78.2941 266.031 126.223 278.535C141.406 282.405 172.664 283 191.121 279.13C220.593 273.176 260.782 256.803 284.895 240.429C319.428 217.209 341.755 189.523 348.9 160.647L351.579 150.227L353.365 159.158C356.64 176.722 372.12 202.027 389.982 218.4C419.752 246.086 464.108 268.413 508.167 277.939C528.708 282.405 558.776 282.405 576.042 277.939C601.346 271.688 623.673 259.184 641.833 241.322C657.908 225.545 672.793 200.538 677.556 181.188L679.343 174.639H687.678C693.632 174.639 696.609 174.043 698.991 171.959C702.265 169.28 702.265 168.685 702.861 143.083C703.456 108.848 702.861 107.359 686.19 106.466L680.236 106.168L676.961 94.2606C666.542 58.2394 645.405 31.4467 615.04 16.5619C591.225 4.95173 577.233 3.16556 478.993 1.08169C409.034 -0.406789 329.55 -0.406794 236.073 1.37938ZM240.241 37.996C260.782 42.1638 279.834 47.5223 294.421 53.1785C301.268 55.8578 306.925 58.5371 306.925 58.8347C306.925 59.1324 256.316 59.4301 194.991 59.4301H82.7595L87.8204 55.2624C99.7282 45.1407 122.055 37.6983 147.062 35.6144C155.397 35.019 176.236 34.7214 193.8 35.0191C218.807 34.7214 228.631 35.3168 240.241 37.996ZM545.677 35.0191C578.126 36.8052 599.262 43.0568 613.552 54.667L618.613 58.8347H506.679C445.056 58.8347 394.447 58.537 394.447 58.2393C394.447 56.7509 420.347 46.9269 433.743 43.3545C453.391 37.6983 462.917 36.2098 481.97 35.0191C505.488 33.8283 519.48 33.8283 545.677 35.0191ZM318.237 99.0237C318.535 104.978 318.535 104.68 317.344 115.992L316.451 125.519H185.167H53.5853V121.649C53.5853 117.183 57.4554 100.512 59.5392 96.6422C60.73 94.2606 68.1724 94.2606 189.335 94.2606H317.939L318.237 99.0237ZM643.619 103.489C644.81 107.955 646.298 114.802 646.894 118.672L647.787 125.816H516.205H384.623L383.135 114.504C382.242 108.252 381.944 101.108 382.242 99.0237L383.135 94.856L512.037 95.1537L640.94 95.4514L643.619 103.489ZM305.139 168.982C303.65 172.852 299.482 179.699 296.505 184.76L290.551 193.393L176.832 193.096L63.1116 192.798L59.2415 182.974C57.1577 177.318 55.0738 170.769 54.4784 167.792L53.5853 162.433H180.702H307.818L305.139 168.982ZM647.489 163.624C647.489 166.005 643.024 180.295 640.047 186.844L637.367 193.691H523.945H410.523L406.355 187.737C401.89 181.783 397.127 172.555 394.745 166.303L393.257 162.731H520.373C590.331 162.433 647.489 163.028 647.489 163.624ZM233.989 234.475C193.502 254.123 152.123 257.993 120.269 244.895C112.231 241.62 93.4766 230.903 93.4766 229.415C93.4766 229.117 127.712 228.819 169.687 229.117H245.599L233.989 234.475ZM605.216 231.796C599.262 236.559 580.805 245.49 570.683 248.765C542.998 257.398 503.404 252.04 467.383 234.773L456.07 229.415H532.281C608.491 228.819 608.789 229.117 605.216 231.796Z",
                     fill: "#000000"
                   }, undefined, false, undefined, this)
@@ -22828,9 +23650,9 @@ function AvatarPepe({
                 const scale = (sep + eyeRx * 4) / 703;
                 const pathCenterX = 351.5;
                 const pathCenterY = 110.5;
-                return /* @__PURE__ */ jsx_dev_runtime7.jsxDEV("g", {
+                return /* @__PURE__ */ jsx_dev_runtime8.jsxDEV("g", {
                   transform: `translate(${cx}, ${eyeY}) scale(${scale}) translate(-${pathCenterX}, -${pathCenterY})`,
-                  children: /* @__PURE__ */ jsx_dev_runtime7.jsxDEV("path", {
+                  children: /* @__PURE__ */ jsx_dev_runtime8.jsxDEV("path", {
                     d: "M166.195 0.0337373C192.983 0.359001 219.782 0.140273 246.536 2.1199C266.824 3.62284 286.988 6.34272 307.186 8.56909C338.732 12.0404 370.195 12.1582 401.747 7.81764C429.277 4.02663 456.953 0.863703 484.797 0.611343C529.299 0.201959 573.819 -0.745773 618.276 2.24329C642.064 3.84718 665.818 6.02307 689.353 10.0496C700.191 11.9059 701.23 13.1957 702.107 24.0696C702.107 24.2154 702.107 24.3668 702.107 24.507C704.562 35.4202 701.916 44.0846 693.022 51.8068C683.527 60.0561 681.853 72.1862 681.004 84.1817C679.617 103.888 676.167 123.202 669.712 141.944C665.361 154.801 659.456 167.079 652.126 178.508C638.171 200.037 618.304 212.762 593.134 216.357C555.16 221.785 516.905 222.997 478.926 217.192C434.339 210.35 405.472 184.492 391.955 141.512C384.904 119.08 380.853 95.9585 376.268 72.9657C376.072 71.9675 375.802 70.9861 375.583 69.9879C373.942 62.4676 371.482 55.3342 363.065 53.0125C353.368 50.3319 343.66 49.9561 334.693 55.6595C330.406 58.3906 328.917 62.9499 327.951 67.5316C324.58 83.1947 321.675 98.9364 318.153 114.583C313.849 133.65 308.602 152.532 298.399 169.491C282.437 196.056 258.211 210.665 228.17 216.598C213.164 219.548 197.966 220.293 182.741 220.394C160.93 220.535 139.148 220.069 117.411 217.736C80.9428 213.811 56.3684 194.373 41.2102 161.707C30.3276 138.265 24.4565 113.652 22.153 88.0513C21.6586 82.5386 21.0743 77.0147 20.1304 71.5638C18.4449 61.8227 13.1862 53.9154 5.94421 47.4942C1.37654 43.4453 -0.612335 39.0037 0.168607 33.0144C0.730436 28.8308 0.634926 24.5743 1.09563 20.3739C1.76982 14.3229 3.65757 12.1863 9.63543 10.9357C26.8499 7.33535 44.3565 5.88846 61.8181 4.11073C96.5223 0.60573 131.339 -0.179367 166.195 0.0337373ZM532.614 23.2677C510.652 22.8807 488.724 22.791 466.976 26.6325C451.778 29.3243 436.873 32.8013 423.569 41.0114C411.057 48.7785 403.427 59.4337 403.787 74.7267C404.157 91.3656 405.579 107.904 408.843 124.24C416.31 161.813 441.39 187.61 478.959 194.598C514.355 201.209 550.065 200.15 585.51 194.396C614.164 189.752 633.137 172.654 643.654 146.167C652.772 123.174 654.02 99.0598 652.61 74.7435C651.806 60.8805 645.677 49.6813 633.569 42.0432C624.423 36.2782 614.349 32.9639 604.051 30.0589C580.611 23.4527 556.604 23.4808 532.614 23.2677ZM187.157 23.4471C158.548 22.8527 134.412 22.1236 110.607 27.5466C96.174 30.8329 81.8024 34.1976 69.077 42.1834C59.8573 47.9821 53.6828 55.9118 51.8457 66.8586C47.3061 93.8836 49.5983 120.415 59.2674 145.965C69.3803 172.614 88.4151 189.747 117.17 194.356C152.924 200.088 188.904 201.338 224.586 194.497C259.7 187.767 282.201 166.193 292.005 132.024C297.298 113.573 298.314 94.45 299.017 75.3548C299.522 61.7385 293.803 51.4535 283.05 43.6023C271.965 35.5043 259.155 31.5843 246.003 28.4046C225.125 23.3686 203.809 24.6921 187.157 23.4471Z",
                     fill: "#000000"
                   }, undefined, false, undefined, this)
@@ -22841,27 +23663,27 @@ function AvatarPepe({
                 const pathCenterX = 351.5;
                 const pathCenterY = 128.5;
                 const maskId = `aviator-mask-${n}`;
-                return /* @__PURE__ */ jsx_dev_runtime7.jsxDEV(jsx_dev_runtime7.Fragment, {
+                return /* @__PURE__ */ jsx_dev_runtime8.jsxDEV(jsx_dev_runtime8.Fragment, {
                   children: [
-                    /* @__PURE__ */ jsx_dev_runtime7.jsxDEV("defs", {
-                      children: /* @__PURE__ */ jsx_dev_runtime7.jsxDEV("mask", {
+                    /* @__PURE__ */ jsx_dev_runtime8.jsxDEV("defs", {
+                      children: /* @__PURE__ */ jsx_dev_runtime8.jsxDEV("mask", {
                         id: maskId,
                         children: [
-                          /* @__PURE__ */ jsx_dev_runtime7.jsxDEV("rect", {
+                          /* @__PURE__ */ jsx_dev_runtime8.jsxDEV("rect", {
                             fill: "white",
                             height: "257",
                             width: "703",
                             x: "0",
                             y: "0"
                           }, undefined, false, undefined, this),
-                          /* @__PURE__ */ jsx_dev_runtime7.jsxDEV("ellipse", {
+                          /* @__PURE__ */ jsx_dev_runtime8.jsxDEV("ellipse", {
                             cx: "175",
                             cy: "128",
                             fill: "black",
                             rx: "85",
                             ry: "75"
                           }, undefined, false, undefined, this),
-                          /* @__PURE__ */ jsx_dev_runtime7.jsxDEV("ellipse", {
+                          /* @__PURE__ */ jsx_dev_runtime8.jsxDEV("ellipse", {
                             cx: "528",
                             cy: "128",
                             fill: "black",
@@ -22871,20 +23693,20 @@ function AvatarPepe({
                         ]
                       }, undefined, true, undefined, this)
                     }, undefined, false, undefined, this),
-                    /* @__PURE__ */ jsx_dev_runtime7.jsxDEV("g", {
+                    /* @__PURE__ */ jsx_dev_runtime8.jsxDEV("g", {
                       transform: `translate(${cx}, ${eyeY}) scale(${scale}) translate(-${pathCenterX}, -${pathCenterY})`,
                       children: [
-                        /* @__PURE__ */ jsx_dev_runtime7.jsxDEV("g", {
+                        /* @__PURE__ */ jsx_dev_runtime8.jsxDEV("g", {
                           opacity: "0.7",
                           children: [
-                            /* @__PURE__ */ jsx_dev_runtime7.jsxDEV("ellipse", {
+                            /* @__PURE__ */ jsx_dev_runtime8.jsxDEV("ellipse", {
                               cx: "175",
                               cy: "128",
                               fill: "#000000",
                               rx: "85",
                               ry: "75"
                             }, undefined, false, undefined, this),
-                            /* @__PURE__ */ jsx_dev_runtime7.jsxDEV("ellipse", {
+                            /* @__PURE__ */ jsx_dev_runtime8.jsxDEV("ellipse", {
                               cx: "528",
                               cy: "128",
                               fill: "#000000",
@@ -22893,7 +23715,7 @@ function AvatarPepe({
                             }, undefined, false, undefined, this)
                           ]
                         }, undefined, true, undefined, this),
-                        /* @__PURE__ */ jsx_dev_runtime7.jsxDEV("path", {
+                        /* @__PURE__ */ jsx_dev_runtime8.jsxDEV("path", {
                           d: "M555.005 2.35602C576.77 2.24799 598.497 4.1972 619.895 8.17763C679.58 19.5537 702.096 45.9427 702.979 107.412C703.274 128.582 700.979 149.718 694.547 170.196C678.47 221.365 634.623 254.74 580.775 256.493C487.758 259.514 399.933 184.928 387.658 92.5909C387.028 87.8583 385.994 83.1805 385.432 78.4342C383.137 59.0242 371.191 48.2029 351.757 48.0796C332.323 47.9563 318.822 58.8119 317.637 77.8725C312.294 163.841 237.868 237.891 170.292 252.678C89.0233 270.486 10.9807 233.789 1.55504 135.246C0.130234 120.384 -0.801371 105.679 1.00019 90.776C6.93233 41.7649 28.9347 17.821 77.2823 8.78034C122.445 0.335585 168.313 2.28755 213.879 0.787627C260.59 -0.753386 307.389 0.44518 354.154 0.44518C354.148 1.08213 488.052 2.34917 555.005 2.35602ZM262.158 10.3282C262.405 14.828 265.583 14.3554 267.878 15.2458C285.25 21.944 302.854 28.3272 311.609 46.9564C315.335 54.9012 319.055 49.2097 322.637 46.7646C334.098 38.9431 346.613 36.1625 360.347 38.3336C370.622 39.9499 379.301 50.5726 387.062 49.5384C394.597 48.5385 397.241 33.4366 406.763 28.7313C418.25 23.0467 429.772 17.4443 444.301 10.3282H262.158Z",
                           fill: "#000000",
                           mask: `url(#${maskId})`
@@ -22906,9 +23728,9 @@ function AvatarPepe({
               return null;
             })()
           }, undefined, false, undefined, this),
-          isMad && sunglassesType === 0 && /* @__PURE__ */ jsx_dev_runtime7.jsxDEV(jsx_dev_runtime7.Fragment, {
+          isMad && sunglassesType === 0 && /* @__PURE__ */ jsx_dev_runtime8.jsxDEV(jsx_dev_runtime8.Fragment, {
             children: [
-              /* @__PURE__ */ jsx_dev_runtime7.jsxDEV("path", {
+              /* @__PURE__ */ jsx_dev_runtime8.jsxDEV("path", {
                 d: `M ${cx - sep / 2 - eyeRx * 1.2} ${eyeY - eyeRy * 1.5}
                   L ${cx - sep / 2 + eyeRx * 0.8} ${eyeY - eyeRy * 0.8}`,
                 style: {
@@ -22917,7 +23739,7 @@ function AvatarPepe({
                   strokeLinecap: "round"
                 }
               }, undefined, false, undefined, this),
-              /* @__PURE__ */ jsx_dev_runtime7.jsxDEV("path", {
+              /* @__PURE__ */ jsx_dev_runtime8.jsxDEV("path", {
                 d: `M ${cx + sep / 2 + eyeRx * 1.2} ${eyeY - eyeRy * 1.5}
                   L ${cx + sep / 2 - eyeRx * 0.8} ${eyeY - eyeRy * 0.8}`,
                 style: {
@@ -22928,7 +23750,7 @@ function AvatarPepe({
               }, undefined, false, undefined, this)
             ]
           }, undefined, true, undefined, this),
-          /* @__PURE__ */ jsx_dev_runtime7.jsxDEV(Lips, {
+          /* @__PURE__ */ jsx_dev_runtime8.jsxDEV(Lips, {
             color: String(lipColor),
             curve: lipCurve,
             outline: "#000",
@@ -22946,26 +23768,25 @@ function AvatarPepe({
 }
 
 // src/lib/components/avatar-pixel.tsx
-var jsx_dev_runtime8 = __toESM(require_jsx_dev_runtime(), 1);
-var ELEMENTS3 = 64;
+var jsx_dev_runtime9 = __toESM(require_jsx_dev_runtime(), 1);
+var ELEMENTS2 = 64;
 var SIZE8 = 80;
-function generateColors3(name, colors) {
+function generateColors2(name, colors) {
   const numFromName = hashCode(name);
   const range = colors && colors.length;
-  const colorList = Array.from({ length: ELEMENTS3 }, (_2, i2) => getRandomColor(numFromName % (i2 + 1), colors, range));
+  const colorList = Array.from({ length: ELEMENTS2 }, (_2, i2) => getRandomColor(numFromName % (i2 + 1), colors, range));
   return colorList;
 }
 var AvatarPixel = ({
   name,
   colors,
   title,
-  square,
   size,
   ...otherProps
 }) => {
-  const pixelColors = generateColors3(name, colors);
+  const pixelColors = generateColors2(name, colors);
   const maskID = generateId(name, "mask");
-  return /* @__PURE__ */ jsx_dev_runtime8.jsxDEV("svg", {
+  return /* @__PURE__ */ jsx_dev_runtime9.jsxDEV("svg", {
     fill: "none",
     height: size,
     role: "img",
@@ -22975,451 +23796,451 @@ var AvatarPixel = ({
     xmlns: "http://www.w3.org/2000/svg",
     ...otherProps,
     children: [
-      title && /* @__PURE__ */ jsx_dev_runtime8.jsxDEV("title", {
+      title && /* @__PURE__ */ jsx_dev_runtime9.jsxDEV("title", {
         children: name
       }, undefined, false, undefined, this),
-      /* @__PURE__ */ jsx_dev_runtime8.jsxDEV("mask", {
+      /* @__PURE__ */ jsx_dev_runtime9.jsxDEV("mask", {
         height: SIZE8,
         id: maskID,
         maskUnits: "userSpaceOnUse",
         width: SIZE8,
         x: 0,
         y: 0,
-        children: /* @__PURE__ */ jsx_dev_runtime8.jsxDEV("rect", {
+        children: /* @__PURE__ */ jsx_dev_runtime9.jsxDEV("rect", {
           fill: "#FFFFFF",
           height: SIZE8,
           width: SIZE8
         }, undefined, false, undefined, this)
       }, undefined, false, undefined, this),
-      /* @__PURE__ */ jsx_dev_runtime8.jsxDEV("g", {
+      /* @__PURE__ */ jsx_dev_runtime9.jsxDEV("g", {
         mask: `url(#${maskID})`,
         children: [
-          /* @__PURE__ */ jsx_dev_runtime8.jsxDEV("rect", {
+          /* @__PURE__ */ jsx_dev_runtime9.jsxDEV("rect", {
             height: 10,
             style: { fill: pixelColors[0] },
             width: 10
           }, undefined, false, undefined, this),
-          /* @__PURE__ */ jsx_dev_runtime8.jsxDEV("rect", {
+          /* @__PURE__ */ jsx_dev_runtime9.jsxDEV("rect", {
             height: 10,
             style: { fill: pixelColors[1] },
             width: 10,
             x: 20
           }, undefined, false, undefined, this),
-          /* @__PURE__ */ jsx_dev_runtime8.jsxDEV("rect", {
+          /* @__PURE__ */ jsx_dev_runtime9.jsxDEV("rect", {
             height: 10,
             style: { fill: pixelColors[2] },
             width: 10,
             x: 40
           }, undefined, false, undefined, this),
-          /* @__PURE__ */ jsx_dev_runtime8.jsxDEV("rect", {
+          /* @__PURE__ */ jsx_dev_runtime9.jsxDEV("rect", {
             height: 10,
             style: { fill: pixelColors[3] },
             width: 10,
             x: 60
           }, undefined, false, undefined, this),
-          /* @__PURE__ */ jsx_dev_runtime8.jsxDEV("rect", {
+          /* @__PURE__ */ jsx_dev_runtime9.jsxDEV("rect", {
             height: 10,
             style: { fill: pixelColors[4] },
             width: 10,
             x: 10
           }, undefined, false, undefined, this),
-          /* @__PURE__ */ jsx_dev_runtime8.jsxDEV("rect", {
+          /* @__PURE__ */ jsx_dev_runtime9.jsxDEV("rect", {
             height: 10,
             style: { fill: pixelColors[5] },
             width: 10,
             x: 30
           }, undefined, false, undefined, this),
-          /* @__PURE__ */ jsx_dev_runtime8.jsxDEV("rect", {
+          /* @__PURE__ */ jsx_dev_runtime9.jsxDEV("rect", {
             height: 10,
             style: { fill: pixelColors[6] },
             width: 10,
             x: 50
           }, undefined, false, undefined, this),
-          /* @__PURE__ */ jsx_dev_runtime8.jsxDEV("rect", {
+          /* @__PURE__ */ jsx_dev_runtime9.jsxDEV("rect", {
             height: 10,
             style: { fill: pixelColors[7] },
             width: 10,
             x: 70
           }, undefined, false, undefined, this),
-          /* @__PURE__ */ jsx_dev_runtime8.jsxDEV("rect", {
+          /* @__PURE__ */ jsx_dev_runtime9.jsxDEV("rect", {
             height: 10,
             style: { fill: pixelColors[8] },
             width: 10,
             y: 10
           }, undefined, false, undefined, this),
-          /* @__PURE__ */ jsx_dev_runtime8.jsxDEV("rect", {
+          /* @__PURE__ */ jsx_dev_runtime9.jsxDEV("rect", {
             height: 10,
             style: { fill: pixelColors[9] },
             width: 10,
             y: 20
           }, undefined, false, undefined, this),
-          /* @__PURE__ */ jsx_dev_runtime8.jsxDEV("rect", {
+          /* @__PURE__ */ jsx_dev_runtime9.jsxDEV("rect", {
             height: 10,
             style: { fill: pixelColors[10] },
             width: 10,
             y: 30
           }, undefined, false, undefined, this),
-          /* @__PURE__ */ jsx_dev_runtime8.jsxDEV("rect", {
+          /* @__PURE__ */ jsx_dev_runtime9.jsxDEV("rect", {
             height: 10,
             style: { fill: pixelColors[11] },
             width: 10,
             y: 40
           }, undefined, false, undefined, this),
-          /* @__PURE__ */ jsx_dev_runtime8.jsxDEV("rect", {
+          /* @__PURE__ */ jsx_dev_runtime9.jsxDEV("rect", {
             height: 10,
             style: { fill: pixelColors[12] },
             width: 10,
             y: 50
           }, undefined, false, undefined, this),
-          /* @__PURE__ */ jsx_dev_runtime8.jsxDEV("rect", {
+          /* @__PURE__ */ jsx_dev_runtime9.jsxDEV("rect", {
             height: 10,
             style: { fill: pixelColors[13] },
             width: 10,
             y: 60
           }, undefined, false, undefined, this),
-          /* @__PURE__ */ jsx_dev_runtime8.jsxDEV("rect", {
+          /* @__PURE__ */ jsx_dev_runtime9.jsxDEV("rect", {
             height: 10,
             style: { fill: pixelColors[14] },
             width: 10,
             y: 70
           }, undefined, false, undefined, this),
-          /* @__PURE__ */ jsx_dev_runtime8.jsxDEV("rect", {
+          /* @__PURE__ */ jsx_dev_runtime9.jsxDEV("rect", {
             height: 10,
             style: { fill: pixelColors[15] },
             width: 10,
             x: 20,
             y: 10
           }, undefined, false, undefined, this),
-          /* @__PURE__ */ jsx_dev_runtime8.jsxDEV("rect", {
+          /* @__PURE__ */ jsx_dev_runtime9.jsxDEV("rect", {
             height: 10,
             style: { fill: pixelColors[16] },
             width: 10,
             x: 20,
             y: 20
           }, undefined, false, undefined, this),
-          /* @__PURE__ */ jsx_dev_runtime8.jsxDEV("rect", {
+          /* @__PURE__ */ jsx_dev_runtime9.jsxDEV("rect", {
             height: 10,
             style: { fill: pixelColors[17] },
             width: 10,
             x: 20,
             y: 30
           }, undefined, false, undefined, this),
-          /* @__PURE__ */ jsx_dev_runtime8.jsxDEV("rect", {
+          /* @__PURE__ */ jsx_dev_runtime9.jsxDEV("rect", {
             height: 10,
             style: { fill: pixelColors[18] },
             width: 10,
             x: 20,
             y: 40
           }, undefined, false, undefined, this),
-          /* @__PURE__ */ jsx_dev_runtime8.jsxDEV("rect", {
+          /* @__PURE__ */ jsx_dev_runtime9.jsxDEV("rect", {
             height: 10,
             style: { fill: pixelColors[19] },
             width: 10,
             x: 20,
             y: 50
           }, undefined, false, undefined, this),
-          /* @__PURE__ */ jsx_dev_runtime8.jsxDEV("rect", {
+          /* @__PURE__ */ jsx_dev_runtime9.jsxDEV("rect", {
             height: 10,
             style: { fill: pixelColors[20] },
             width: 10,
             x: 20,
             y: 60
           }, undefined, false, undefined, this),
-          /* @__PURE__ */ jsx_dev_runtime8.jsxDEV("rect", {
+          /* @__PURE__ */ jsx_dev_runtime9.jsxDEV("rect", {
             height: 10,
             style: { fill: pixelColors[21] },
             width: 10,
             x: 20,
             y: 70
           }, undefined, false, undefined, this),
-          /* @__PURE__ */ jsx_dev_runtime8.jsxDEV("rect", {
+          /* @__PURE__ */ jsx_dev_runtime9.jsxDEV("rect", {
             height: 10,
             style: { fill: pixelColors[22] },
             width: 10,
             x: 40,
             y: 10
           }, undefined, false, undefined, this),
-          /* @__PURE__ */ jsx_dev_runtime8.jsxDEV("rect", {
+          /* @__PURE__ */ jsx_dev_runtime9.jsxDEV("rect", {
             height: 10,
             style: { fill: pixelColors[23] },
             width: 10,
             x: 40,
             y: 20
           }, undefined, false, undefined, this),
-          /* @__PURE__ */ jsx_dev_runtime8.jsxDEV("rect", {
+          /* @__PURE__ */ jsx_dev_runtime9.jsxDEV("rect", {
             height: 10,
             style: { fill: pixelColors[24] },
             width: 10,
             x: 40,
             y: 30
           }, undefined, false, undefined, this),
-          /* @__PURE__ */ jsx_dev_runtime8.jsxDEV("rect", {
+          /* @__PURE__ */ jsx_dev_runtime9.jsxDEV("rect", {
             height: 10,
             style: { fill: pixelColors[25] },
             width: 10,
             x: 40,
             y: 40
           }, undefined, false, undefined, this),
-          /* @__PURE__ */ jsx_dev_runtime8.jsxDEV("rect", {
+          /* @__PURE__ */ jsx_dev_runtime9.jsxDEV("rect", {
             height: 10,
             style: { fill: pixelColors[26] },
             width: 10,
             x: 40,
             y: 50
           }, undefined, false, undefined, this),
-          /* @__PURE__ */ jsx_dev_runtime8.jsxDEV("rect", {
+          /* @__PURE__ */ jsx_dev_runtime9.jsxDEV("rect", {
             height: 10,
             style: { fill: pixelColors[27] },
             width: 10,
             x: 40,
             y: 60
           }, undefined, false, undefined, this),
-          /* @__PURE__ */ jsx_dev_runtime8.jsxDEV("rect", {
+          /* @__PURE__ */ jsx_dev_runtime9.jsxDEV("rect", {
             height: 10,
             style: { fill: pixelColors[28] },
             width: 10,
             x: 40,
             y: 70
           }, undefined, false, undefined, this),
-          /* @__PURE__ */ jsx_dev_runtime8.jsxDEV("rect", {
+          /* @__PURE__ */ jsx_dev_runtime9.jsxDEV("rect", {
             height: 10,
             style: { fill: pixelColors[29] },
             width: 10,
             x: 60,
             y: 10
           }, undefined, false, undefined, this),
-          /* @__PURE__ */ jsx_dev_runtime8.jsxDEV("rect", {
+          /* @__PURE__ */ jsx_dev_runtime9.jsxDEV("rect", {
             height: 10,
             style: { fill: pixelColors[30] },
             width: 10,
             x: 60,
             y: 20
           }, undefined, false, undefined, this),
-          /* @__PURE__ */ jsx_dev_runtime8.jsxDEV("rect", {
+          /* @__PURE__ */ jsx_dev_runtime9.jsxDEV("rect", {
             height: 10,
             style: { fill: pixelColors[31] },
             width: 10,
             x: 60,
             y: 30
           }, undefined, false, undefined, this),
-          /* @__PURE__ */ jsx_dev_runtime8.jsxDEV("rect", {
+          /* @__PURE__ */ jsx_dev_runtime9.jsxDEV("rect", {
             height: 10,
             style: { fill: pixelColors[32] },
             width: 10,
             x: 60,
             y: 40
           }, undefined, false, undefined, this),
-          /* @__PURE__ */ jsx_dev_runtime8.jsxDEV("rect", {
+          /* @__PURE__ */ jsx_dev_runtime9.jsxDEV("rect", {
             height: 10,
             style: { fill: pixelColors[33] },
             width: 10,
             x: 60,
             y: 50
           }, undefined, false, undefined, this),
-          /* @__PURE__ */ jsx_dev_runtime8.jsxDEV("rect", {
+          /* @__PURE__ */ jsx_dev_runtime9.jsxDEV("rect", {
             height: 10,
             style: { fill: pixelColors[34] },
             width: 10,
             x: 60,
             y: 60
           }, undefined, false, undefined, this),
-          /* @__PURE__ */ jsx_dev_runtime8.jsxDEV("rect", {
+          /* @__PURE__ */ jsx_dev_runtime9.jsxDEV("rect", {
             height: 10,
             style: { fill: pixelColors[35] },
             width: 10,
             x: 60,
             y: 70
           }, undefined, false, undefined, this),
-          /* @__PURE__ */ jsx_dev_runtime8.jsxDEV("rect", {
+          /* @__PURE__ */ jsx_dev_runtime9.jsxDEV("rect", {
             height: 10,
             style: { fill: pixelColors[36] },
             width: 10,
             x: 10,
             y: 10
           }, undefined, false, undefined, this),
-          /* @__PURE__ */ jsx_dev_runtime8.jsxDEV("rect", {
+          /* @__PURE__ */ jsx_dev_runtime9.jsxDEV("rect", {
             height: 10,
             style: { fill: pixelColors[37] },
             width: 10,
             x: 10,
             y: 20
           }, undefined, false, undefined, this),
-          /* @__PURE__ */ jsx_dev_runtime8.jsxDEV("rect", {
+          /* @__PURE__ */ jsx_dev_runtime9.jsxDEV("rect", {
             height: 10,
             style: { fill: pixelColors[38] },
             width: 10,
             x: 10,
             y: 30
           }, undefined, false, undefined, this),
-          /* @__PURE__ */ jsx_dev_runtime8.jsxDEV("rect", {
+          /* @__PURE__ */ jsx_dev_runtime9.jsxDEV("rect", {
             height: 10,
             style: { fill: pixelColors[39] },
             width: 10,
             x: 10,
             y: 40
           }, undefined, false, undefined, this),
-          /* @__PURE__ */ jsx_dev_runtime8.jsxDEV("rect", {
+          /* @__PURE__ */ jsx_dev_runtime9.jsxDEV("rect", {
             height: 10,
             style: { fill: pixelColors[40] },
             width: 10,
             x: 10,
             y: 50
           }, undefined, false, undefined, this),
-          /* @__PURE__ */ jsx_dev_runtime8.jsxDEV("rect", {
+          /* @__PURE__ */ jsx_dev_runtime9.jsxDEV("rect", {
             height: 10,
             style: { fill: pixelColors[41] },
             width: 10,
             x: 10,
             y: 60
           }, undefined, false, undefined, this),
-          /* @__PURE__ */ jsx_dev_runtime8.jsxDEV("rect", {
+          /* @__PURE__ */ jsx_dev_runtime9.jsxDEV("rect", {
             height: 10,
             style: { fill: pixelColors[42] },
             width: 10,
             x: 10,
             y: 70
           }, undefined, false, undefined, this),
-          /* @__PURE__ */ jsx_dev_runtime8.jsxDEV("rect", {
+          /* @__PURE__ */ jsx_dev_runtime9.jsxDEV("rect", {
             height: 10,
             style: { fill: pixelColors[43] },
             width: 10,
             x: 30,
             y: 10
           }, undefined, false, undefined, this),
-          /* @__PURE__ */ jsx_dev_runtime8.jsxDEV("rect", {
+          /* @__PURE__ */ jsx_dev_runtime9.jsxDEV("rect", {
             height: 10,
             style: { fill: pixelColors[44] },
             width: 10,
             x: 30,
             y: 20
           }, undefined, false, undefined, this),
-          /* @__PURE__ */ jsx_dev_runtime8.jsxDEV("rect", {
+          /* @__PURE__ */ jsx_dev_runtime9.jsxDEV("rect", {
             height: 10,
             style: { fill: pixelColors[45] },
             width: 10,
             x: 30,
             y: 30
           }, undefined, false, undefined, this),
-          /* @__PURE__ */ jsx_dev_runtime8.jsxDEV("rect", {
+          /* @__PURE__ */ jsx_dev_runtime9.jsxDEV("rect", {
             height: 10,
             style: { fill: pixelColors[46] },
             width: 10,
             x: 30,
             y: 40
           }, undefined, false, undefined, this),
-          /* @__PURE__ */ jsx_dev_runtime8.jsxDEV("rect", {
+          /* @__PURE__ */ jsx_dev_runtime9.jsxDEV("rect", {
             height: 10,
             style: { fill: pixelColors[47] },
             width: 10,
             x: 30,
             y: 50
           }, undefined, false, undefined, this),
-          /* @__PURE__ */ jsx_dev_runtime8.jsxDEV("rect", {
+          /* @__PURE__ */ jsx_dev_runtime9.jsxDEV("rect", {
             height: 10,
             style: { fill: pixelColors[48] },
             width: 10,
             x: 30,
             y: 60
           }, undefined, false, undefined, this),
-          /* @__PURE__ */ jsx_dev_runtime8.jsxDEV("rect", {
+          /* @__PURE__ */ jsx_dev_runtime9.jsxDEV("rect", {
             height: 10,
             style: { fill: pixelColors[49] },
             width: 10,
             x: 30,
             y: 70
           }, undefined, false, undefined, this),
-          /* @__PURE__ */ jsx_dev_runtime8.jsxDEV("rect", {
+          /* @__PURE__ */ jsx_dev_runtime9.jsxDEV("rect", {
             height: 10,
             style: { fill: pixelColors[50] },
             width: 10,
             x: 50,
             y: 10
           }, undefined, false, undefined, this),
-          /* @__PURE__ */ jsx_dev_runtime8.jsxDEV("rect", {
+          /* @__PURE__ */ jsx_dev_runtime9.jsxDEV("rect", {
             height: 10,
             style: { fill: pixelColors[51] },
             width: 10,
             x: 50,
             y: 20
           }, undefined, false, undefined, this),
-          /* @__PURE__ */ jsx_dev_runtime8.jsxDEV("rect", {
+          /* @__PURE__ */ jsx_dev_runtime9.jsxDEV("rect", {
             height: 10,
             style: { fill: pixelColors[52] },
             width: 10,
             x: 50,
             y: 30
           }, undefined, false, undefined, this),
-          /* @__PURE__ */ jsx_dev_runtime8.jsxDEV("rect", {
+          /* @__PURE__ */ jsx_dev_runtime9.jsxDEV("rect", {
             height: 10,
             style: { fill: pixelColors[53] },
             width: 10,
             x: 50,
             y: 40
           }, undefined, false, undefined, this),
-          /* @__PURE__ */ jsx_dev_runtime8.jsxDEV("rect", {
+          /* @__PURE__ */ jsx_dev_runtime9.jsxDEV("rect", {
             height: 10,
             style: { fill: pixelColors[54] },
             width: 10,
             x: 50,
             y: 50
           }, undefined, false, undefined, this),
-          /* @__PURE__ */ jsx_dev_runtime8.jsxDEV("rect", {
+          /* @__PURE__ */ jsx_dev_runtime9.jsxDEV("rect", {
             height: 10,
             style: { fill: pixelColors[55] },
             width: 10,
             x: 50,
             y: 60
           }, undefined, false, undefined, this),
-          /* @__PURE__ */ jsx_dev_runtime8.jsxDEV("rect", {
+          /* @__PURE__ */ jsx_dev_runtime9.jsxDEV("rect", {
             height: 10,
             style: { fill: pixelColors[56] },
             width: 10,
             x: 50,
             y: 70
           }, undefined, false, undefined, this),
-          /* @__PURE__ */ jsx_dev_runtime8.jsxDEV("rect", {
+          /* @__PURE__ */ jsx_dev_runtime9.jsxDEV("rect", {
             height: 10,
             style: { fill: pixelColors[57] },
             width: 10,
             x: 70,
             y: 10
           }, undefined, false, undefined, this),
-          /* @__PURE__ */ jsx_dev_runtime8.jsxDEV("rect", {
+          /* @__PURE__ */ jsx_dev_runtime9.jsxDEV("rect", {
             height: 10,
             style: { fill: pixelColors[58] },
             width: 10,
             x: 70,
             y: 20
           }, undefined, false, undefined, this),
-          /* @__PURE__ */ jsx_dev_runtime8.jsxDEV("rect", {
+          /* @__PURE__ */ jsx_dev_runtime9.jsxDEV("rect", {
             height: 10,
             style: { fill: pixelColors[59] },
             width: 10,
             x: 70,
             y: 30
           }, undefined, false, undefined, this),
-          /* @__PURE__ */ jsx_dev_runtime8.jsxDEV("rect", {
+          /* @__PURE__ */ jsx_dev_runtime9.jsxDEV("rect", {
             height: 10,
             style: { fill: pixelColors[60] },
             width: 10,
             x: 70,
             y: 40
           }, undefined, false, undefined, this),
-          /* @__PURE__ */ jsx_dev_runtime8.jsxDEV("rect", {
+          /* @__PURE__ */ jsx_dev_runtime9.jsxDEV("rect", {
             height: 10,
             style: { fill: pixelColors[61] },
             width: 10,
             x: 70,
             y: 50
           }, undefined, false, undefined, this),
-          /* @__PURE__ */ jsx_dev_runtime8.jsxDEV("rect", {
+          /* @__PURE__ */ jsx_dev_runtime9.jsxDEV("rect", {
             height: 10,
             style: { fill: pixelColors[62] },
             width: 10,
             x: 70,
             y: 60
           }, undefined, false, undefined, this),
-          /* @__PURE__ */ jsx_dev_runtime8.jsxDEV("rect", {
+          /* @__PURE__ */ jsx_dev_runtime9.jsxDEV("rect", {
             height: 10,
             style: { fill: pixelColors[63] },
             width: 10,
@@ -23434,10 +24255,10 @@ var AvatarPixel = ({
 var avatar_pixel_default = AvatarPixel;
 
 // src/lib/components/avatar-ring.tsx
-var jsx_dev_runtime9 = __toESM(require_jsx_dev_runtime(), 1);
+var jsx_dev_runtime10 = __toESM(require_jsx_dev_runtime(), 1);
 var SIZE9 = 90;
 var COLORS = 5;
-function generateColors4(name, colors) {
+function generateColors3(name, colors) {
   const numFromName = hashCode(name);
   const range = colors && colors.length;
   const colorsShuffle = Array.from({ length: COLORS }, (_2, i2) => getRandomColor(numFromName + i2, colors, range));
@@ -23457,13 +24278,12 @@ var AvatarRing = ({
   name,
   colors,
   title,
-  square,
   size,
   ...otherProps
 }) => {
-  const ringColors = generateColors4(name, colors);
+  const ringColors = generateColors3(name, colors);
   const maskID = generateId(name, "mask");
-  return /* @__PURE__ */ jsx_dev_runtime9.jsxDEV("svg", {
+  return /* @__PURE__ */ jsx_dev_runtime10.jsxDEV("svg", {
     fill: "none",
     height: size,
     role: "img",
@@ -23472,59 +24292,58 @@ var AvatarRing = ({
     xmlns: "http://www.w3.org/2000/svg",
     ...otherProps,
     children: [
-      title && /* @__PURE__ */ jsx_dev_runtime9.jsxDEV("title", {
+      title && /* @__PURE__ */ jsx_dev_runtime10.jsxDEV("title", {
         children: name
       }, undefined, false, undefined, this),
-      /* @__PURE__ */ jsx_dev_runtime9.jsxDEV("mask", {
+      /* @__PURE__ */ jsx_dev_runtime10.jsxDEV("mask", {
         height: SIZE9,
         id: maskID,
         maskUnits: "userSpaceOnUse",
         width: SIZE9,
         x: 0,
         y: 0,
-        children: /* @__PURE__ */ jsx_dev_runtime9.jsxDEV("rect", {
+        children: /* @__PURE__ */ jsx_dev_runtime10.jsxDEV("rect", {
           fill: "#FFFFFF",
           height: SIZE9,
-          rx: square ? undefined : SIZE9 * 2,
           width: SIZE9
         }, undefined, false, undefined, this)
       }, undefined, false, undefined, this),
-      /* @__PURE__ */ jsx_dev_runtime9.jsxDEV("g", {
+      /* @__PURE__ */ jsx_dev_runtime10.jsxDEV("g", {
         mask: `url(#${maskID})`,
         children: [
-          /* @__PURE__ */ jsx_dev_runtime9.jsxDEV("path", {
+          /* @__PURE__ */ jsx_dev_runtime10.jsxDEV("path", {
             d: "M0 0h90v45H0z",
             style: { fill: ringColors[0] }
           }, undefined, false, undefined, this),
-          /* @__PURE__ */ jsx_dev_runtime9.jsxDEV("path", {
+          /* @__PURE__ */ jsx_dev_runtime10.jsxDEV("path", {
             d: "M0 45h90v45H0z",
             style: { fill: ringColors[1] }
           }, undefined, false, undefined, this),
-          /* @__PURE__ */ jsx_dev_runtime9.jsxDEV("path", {
+          /* @__PURE__ */ jsx_dev_runtime10.jsxDEV("path", {
             d: "M83 45a38 38 0 00-76 0h76z",
             style: { fill: ringColors[2] }
           }, undefined, false, undefined, this),
-          /* @__PURE__ */ jsx_dev_runtime9.jsxDEV("path", {
+          /* @__PURE__ */ jsx_dev_runtime10.jsxDEV("path", {
             d: "M83 45a38 38 0 01-76 0h76z",
             style: { fill: ringColors[3] }
           }, undefined, false, undefined, this),
-          /* @__PURE__ */ jsx_dev_runtime9.jsxDEV("path", {
+          /* @__PURE__ */ jsx_dev_runtime10.jsxDEV("path", {
             d: "M77 45a32 32 0 10-64 0h64z",
             style: { fill: ringColors[4] }
           }, undefined, false, undefined, this),
-          /* @__PURE__ */ jsx_dev_runtime9.jsxDEV("path", {
+          /* @__PURE__ */ jsx_dev_runtime10.jsxDEV("path", {
             d: "M77 45a32 32 0 11-64 0h64z",
             style: { fill: ringColors[5] }
           }, undefined, false, undefined, this),
-          /* @__PURE__ */ jsx_dev_runtime9.jsxDEV("path", {
+          /* @__PURE__ */ jsx_dev_runtime10.jsxDEV("path", {
             d: "M71 45a26 26 0 00-52 0h52z",
             style: { fill: ringColors[6] }
           }, undefined, false, undefined, this),
-          /* @__PURE__ */ jsx_dev_runtime9.jsxDEV("path", {
+          /* @__PURE__ */ jsx_dev_runtime10.jsxDEV("path", {
             d: "M71 45a26 26 0 01-52 0h52z",
             style: { fill: ringColors[7] }
           }, undefined, false, undefined, this),
-          /* @__PURE__ */ jsx_dev_runtime9.jsxDEV("circle", {
+          /* @__PURE__ */ jsx_dev_runtime10.jsxDEV("circle", {
             cx: 45,
             cy: 45,
             r: 23,
@@ -23538,27 +24357,26 @@ var AvatarRing = ({
 var avatar_ring_default = AvatarRing;
 
 // src/lib/components/avatar-sunset.tsx
-var jsx_dev_runtime10 = __toESM(require_jsx_dev_runtime(), 1);
-var ELEMENTS4 = 4;
+var jsx_dev_runtime11 = __toESM(require_jsx_dev_runtime(), 1);
+var ELEMENTS3 = 4;
 var SIZE10 = 80;
-function generateColors5(name, colors) {
+function generateColors4(name, colors) {
   const numFromName = hashCode(name);
   const range = colors?.length;
-  const colorsList = Array.from({ length: ELEMENTS4 }, (_2, i2) => getRandomColor(numFromName + i2, colors, range));
+  const colorsList = Array.from({ length: ELEMENTS3 }, (_2, i2) => getRandomColor(numFromName + i2, colors, range));
   return colorsList;
 }
 var AvatarSunset = ({
   name,
   colors,
   title,
-  square,
   size,
   ...otherProps
 }) => {
-  const sunsetColors = generateColors5(name, colors);
+  const sunsetColors = generateColors4(name, colors);
   const nameWithoutSpace = name.replace(/\s/g, "");
   const maskID = generateId(name, "mask");
-  return /* @__PURE__ */ jsx_dev_runtime10.jsxDEV("svg", {
+  return /* @__PURE__ */ jsx_dev_runtime11.jsxDEV("svg", {
     fill: "none",
     height: size,
     role: "img",
@@ -23567,39 +24385,38 @@ var AvatarSunset = ({
     xmlns: "http://www.w3.org/2000/svg",
     ...otherProps,
     children: [
-      title && /* @__PURE__ */ jsx_dev_runtime10.jsxDEV("title", {
+      title && /* @__PURE__ */ jsx_dev_runtime11.jsxDEV("title", {
         children: name
       }, undefined, false, undefined, this),
-      /* @__PURE__ */ jsx_dev_runtime10.jsxDEV("mask", {
+      /* @__PURE__ */ jsx_dev_runtime11.jsxDEV("mask", {
         height: SIZE10,
         id: maskID,
         maskUnits: "userSpaceOnUse",
         width: SIZE10,
         x: 0,
         y: 0,
-        children: /* @__PURE__ */ jsx_dev_runtime10.jsxDEV("rect", {
+        children: /* @__PURE__ */ jsx_dev_runtime11.jsxDEV("rect", {
           fill: "#FFFFFF",
           height: SIZE10,
-          rx: square ? undefined : SIZE10 * 2,
           width: SIZE10
         }, undefined, false, undefined, this)
       }, undefined, false, undefined, this),
-      /* @__PURE__ */ jsx_dev_runtime10.jsxDEV("g", {
+      /* @__PURE__ */ jsx_dev_runtime11.jsxDEV("g", {
         mask: `url(#${maskID})`,
         children: [
-          /* @__PURE__ */ jsx_dev_runtime10.jsxDEV("path", {
+          /* @__PURE__ */ jsx_dev_runtime11.jsxDEV("path", {
             d: "M0 0h80v40H0z",
             fill: `url(#gradient_paint0_linear_${nameWithoutSpace})`
           }, undefined, false, undefined, this),
-          /* @__PURE__ */ jsx_dev_runtime10.jsxDEV("path", {
+          /* @__PURE__ */ jsx_dev_runtime11.jsxDEV("path", {
             d: "M0 40h80v40H0z",
             fill: `url(#gradient_paint1_linear_${nameWithoutSpace})`
           }, undefined, false, undefined, this)
         ]
       }, undefined, true, undefined, this),
-      /* @__PURE__ */ jsx_dev_runtime10.jsxDEV("defs", {
+      /* @__PURE__ */ jsx_dev_runtime11.jsxDEV("defs", {
         children: [
-          /* @__PURE__ */ jsx_dev_runtime10.jsxDEV("linearGradient", {
+          /* @__PURE__ */ jsx_dev_runtime11.jsxDEV("linearGradient", {
             gradientUnits: "userSpaceOnUse",
             id: `gradient_paint0_linear_${nameWithoutSpace}`,
             x1: SIZE10 / 2,
@@ -23607,16 +24424,16 @@ var AvatarSunset = ({
             y1: 0,
             y2: SIZE10 / 2,
             children: [
-              /* @__PURE__ */ jsx_dev_runtime10.jsxDEV("stop", {
+              /* @__PURE__ */ jsx_dev_runtime11.jsxDEV("stop", {
                 style: { stopColor: sunsetColors[0] }
               }, undefined, false, undefined, this),
-              /* @__PURE__ */ jsx_dev_runtime10.jsxDEV("stop", {
+              /* @__PURE__ */ jsx_dev_runtime11.jsxDEV("stop", {
                 offset: 1,
                 style: { stopColor: sunsetColors[1] }
               }, undefined, false, undefined, this)
             ]
           }, undefined, true, undefined, this),
-          /* @__PURE__ */ jsx_dev_runtime10.jsxDEV("linearGradient", {
+          /* @__PURE__ */ jsx_dev_runtime11.jsxDEV("linearGradient", {
             gradientUnits: "userSpaceOnUse",
             id: `gradient_paint1_linear_${nameWithoutSpace}`,
             x1: SIZE10 / 2,
@@ -23624,10 +24441,10 @@ var AvatarSunset = ({
             y1: SIZE10 / 2,
             y2: SIZE10,
             children: [
-              /* @__PURE__ */ jsx_dev_runtime10.jsxDEV("stop", {
+              /* @__PURE__ */ jsx_dev_runtime11.jsxDEV("stop", {
                 style: { stopColor: sunsetColors[2] }
               }, undefined, false, undefined, this),
-              /* @__PURE__ */ jsx_dev_runtime10.jsxDEV("stop", {
+              /* @__PURE__ */ jsx_dev_runtime11.jsxDEV("stop", {
                 offset: 1,
                 style: { stopColor: sunsetColors[3] }
               }, undefined, false, undefined, this)
@@ -23641,7 +24458,7 @@ var AvatarSunset = ({
 var avatar_sunset_default = AvatarSunset;
 
 // src/lib/index.tsx
-var jsx_dev_runtime11 = __toESM(require_jsx_dev_runtime(), 1);
+var jsx_dev_runtime12 = __toESM(require_jsx_dev_runtime(), 1);
 var AVATAR_VARIANTS = {
   pixel: avatar_pixel_default,
   bauhaus: avatar_bauhaus_default,
@@ -23660,16 +24477,40 @@ var Avatar = ({
   name = "Clara Barton",
   title = false,
   size,
-  square = false,
+  backgrounds,
+  api,
+  className = "rounded-md",
   ...otherProps
 }) => {
+  if (api) {
+    const params = new URLSearchParams({
+      name,
+      variant,
+      size: size?.toString() || "80",
+      title: title?.toString() || "false",
+      ...colors && colors.length > 0 && {
+        colors: colors.map((c2) => c2.replace(/^#/, "")).join(",")
+      }
+    });
+    const imgSize = typeof size === "number" ? size : parseInt(size || "80", 10);
+    const { style } = otherProps;
+    return /* @__PURE__ */ jsx_dev_runtime12.jsxDEV("img", {
+      src: `${api}?${params}`,
+      alt: name,
+      width: imgSize,
+      height: imgSize,
+      className,
+      style
+    }, undefined, false, undefined, this);
+  }
   const AvatarComponent = AVATAR_VARIANTS[variant] || avatar_marble_default;
-  return /* @__PURE__ */ jsx_dev_runtime11.jsxDEV(AvatarComponent, {
+  return /* @__PURE__ */ jsx_dev_runtime12.jsxDEV(AvatarComponent, {
     colors,
     name,
     size,
-    square,
     title,
+    backgrounds,
+    className,
     ...otherProps
   }, undefined, false, undefined, this);
 };
@@ -23816,7 +24657,7 @@ var exampleNames = [
 
 // src/demo/theme-provider.tsx
 var import_react2 = __toESM(require_react(), 1);
-var jsx_dev_runtime12 = __toESM(require_jsx_dev_runtime(), 1);
+var jsx_dev_runtime13 = __toESM(require_jsx_dev_runtime(), 1);
 var ThemeContext = import_react2.createContext(undefined);
 var useTheme = () => {
   const context = import_react2.useContext(ThemeContext);
@@ -23854,7 +24695,7 @@ var ThemeProvider = ({
     setTheme(newTheme);
     localStorage.setItem("theme", newTheme);
   };
-  return /* @__PURE__ */ jsx_dev_runtime12.jsxDEV(ThemeContext.Provider, {
+  return /* @__PURE__ */ jsx_dev_runtime13.jsxDEV(ThemeContext.Provider, {
     value: { theme, resolvedTheme, setTheme: handleSetTheme },
     children
   }, undefined, false, undefined, this);
@@ -23911,7 +24752,7 @@ var BaseStyles = ft`
 `;
 var base_styles_default = BaseStyles;
 // src/demo/ui-system/components/button.tsx
-var jsx_dev_runtime13 = __toESM(require_jsx_dev_runtime(), 1);
+var jsx_dev_runtime14 = __toESM(require_jsx_dev_runtime(), 1);
 var ButtonWrapper = dt.div`
   appearance: none;
   font: inherit;
@@ -23937,7 +24778,7 @@ var ButtonWrapper = dt.div`
   }
 `;
 var Button = ({ children, icon, ...props }) => {
-  return /* @__PURE__ */ jsx_dev_runtime13.jsxDEV(ButtonWrapper, {
+  return /* @__PURE__ */ jsx_dev_runtime14.jsxDEV(ButtonWrapper, {
     hasChildren: children,
     icon,
     ...props,
@@ -30975,7 +31816,7 @@ var useOnClickOutside = (ref, handler) => {
 };
 
 // src/demo/ui-system/components/color-dot.tsx
-var jsx_dev_runtime14 = __toESM(require_jsx_dev_runtime(), 1);
+var jsx_dev_runtime15 = __toESM(require_jsx_dev_runtime(), 1);
 var DotWrapper = dt.div`
   position: relative;
 `;
@@ -30993,16 +31834,16 @@ var ColorDot = ({ value, onChange }) => {
   const [pickerIsOpen, setPickerIsOpen] = import_react52.useState(false);
   const ref = import_react52.useRef(null);
   useOnClickOutside(ref, () => setPickerIsOpen(false));
-  return /* @__PURE__ */ jsx_dev_runtime14.jsxDEV(DotWrapper, {
+  return /* @__PURE__ */ jsx_dev_runtime15.jsxDEV(DotWrapper, {
     children: [
-      /* @__PURE__ */ jsx_dev_runtime14.jsxDEV(Wrapper, {
+      /* @__PURE__ */ jsx_dev_runtime15.jsxDEV(Wrapper, {
         color: value,
         onClick: () => setPickerIsOpen(!pickerIsOpen),
         style: { background: value }
       }, undefined, false, undefined, this),
-      pickerIsOpen && /* @__PURE__ */ jsx_dev_runtime14.jsxDEV(PickerWrapper, {
+      pickerIsOpen && /* @__PURE__ */ jsx_dev_runtime15.jsxDEV(PickerWrapper, {
         ref,
-        children: /* @__PURE__ */ jsx_dev_runtime14.jsxDEV(Chrome_default, {
+        children: /* @__PURE__ */ jsx_dev_runtime15.jsxDEV(Chrome_default, {
           color: value,
           disableAlpha: true,
           onChange: (v2) => onChange(v2.hex)
@@ -31013,7 +31854,7 @@ var ColorDot = ({ value, onChange }) => {
 };
 var color_dot_default = ColorDot;
 // src/demo/ui-system/components/segment.tsx
-var jsx_dev_runtime15 = __toESM(require_jsx_dev_runtime(), 1);
+var jsx_dev_runtime16 = __toESM(require_jsx_dev_runtime(), 1);
 var SegmentGroupWrapper = dt.div`
   background-color: var(--c-button);
   padding: 0.2rem;
@@ -31029,12 +31870,12 @@ var SegmentWrapper = dt(button_default)`
   ${(p2) => !p2.isSelected && "color: var(--c-fade)"};
 `;
 var SegmentGroup = ({ children }) => {
-  return /* @__PURE__ */ jsx_dev_runtime15.jsxDEV(SegmentGroupWrapper, {
+  return /* @__PURE__ */ jsx_dev_runtime16.jsxDEV(SegmentGroupWrapper, {
     children
   }, undefined, false, undefined, this);
 };
 var Segment = ({ children, isSelected, ...props }) => {
-  return /* @__PURE__ */ jsx_dev_runtime15.jsxDEV(SegmentWrapper, {
+  return /* @__PURE__ */ jsx_dev_runtime16.jsxDEV(SegmentWrapper, {
     isSelected,
     ...props,
     children
@@ -31042,7 +31883,7 @@ var Segment = ({ children, isSelected, ...props }) => {
 };
 var segment_default = Segment;
 // src/demo/theme-toggle.tsx
-var jsx_dev_runtime16 = __toESM(require_jsx_dev_runtime(), 1);
+var jsx_dev_runtime17 = __toESM(require_jsx_dev_runtime(), 1);
 var ThemeIcon = dt.span`
   display: inline-flex;
   align-items: center;
@@ -31051,7 +31892,7 @@ var ThemeIcon = dt.span`
   height: 1.2rem;
   margin-right: 0.4rem;
 `;
-var SunIcon = () => /* @__PURE__ */ jsx_dev_runtime16.jsxDEV("svg", {
+var SunIcon = () => /* @__PURE__ */ jsx_dev_runtime17.jsxDEV("svg", {
   fill: "none",
   height: "16",
   stroke: "currentColor",
@@ -31061,54 +31902,54 @@ var SunIcon = () => /* @__PURE__ */ jsx_dev_runtime16.jsxDEV("svg", {
   viewBox: "0 0 24 24",
   width: "16",
   children: [
-    /* @__PURE__ */ jsx_dev_runtime16.jsxDEV("circle", {
+    /* @__PURE__ */ jsx_dev_runtime17.jsxDEV("circle", {
       cx: "12",
       cy: "12",
       r: "5"
     }, undefined, false, undefined, this),
-    /* @__PURE__ */ jsx_dev_runtime16.jsxDEV("line", {
+    /* @__PURE__ */ jsx_dev_runtime17.jsxDEV("line", {
       x1: "12",
       x2: "12",
       y1: "1",
       y2: "3"
     }, undefined, false, undefined, this),
-    /* @__PURE__ */ jsx_dev_runtime16.jsxDEV("line", {
+    /* @__PURE__ */ jsx_dev_runtime17.jsxDEV("line", {
       x1: "12",
       x2: "12",
       y1: "21",
       y2: "23"
     }, undefined, false, undefined, this),
-    /* @__PURE__ */ jsx_dev_runtime16.jsxDEV("line", {
+    /* @__PURE__ */ jsx_dev_runtime17.jsxDEV("line", {
       x1: "4.22",
       x2: "5.64",
       y1: "4.22",
       y2: "5.64"
     }, undefined, false, undefined, this),
-    /* @__PURE__ */ jsx_dev_runtime16.jsxDEV("line", {
+    /* @__PURE__ */ jsx_dev_runtime17.jsxDEV("line", {
       x1: "18.36",
       x2: "19.78",
       y1: "18.36",
       y2: "19.78"
     }, undefined, false, undefined, this),
-    /* @__PURE__ */ jsx_dev_runtime16.jsxDEV("line", {
+    /* @__PURE__ */ jsx_dev_runtime17.jsxDEV("line", {
       x1: "1",
       x2: "3",
       y1: "12",
       y2: "12"
     }, undefined, false, undefined, this),
-    /* @__PURE__ */ jsx_dev_runtime16.jsxDEV("line", {
+    /* @__PURE__ */ jsx_dev_runtime17.jsxDEV("line", {
       x1: "21",
       x2: "23",
       y1: "12",
       y2: "12"
     }, undefined, false, undefined, this),
-    /* @__PURE__ */ jsx_dev_runtime16.jsxDEV("line", {
+    /* @__PURE__ */ jsx_dev_runtime17.jsxDEV("line", {
       x1: "4.22",
       x2: "5.64",
       y1: "19.78",
       y2: "18.36"
     }, undefined, false, undefined, this),
-    /* @__PURE__ */ jsx_dev_runtime16.jsxDEV("line", {
+    /* @__PURE__ */ jsx_dev_runtime17.jsxDEV("line", {
       x1: "18.36",
       x2: "19.78",
       y1: "5.64",
@@ -31116,7 +31957,7 @@ var SunIcon = () => /* @__PURE__ */ jsx_dev_runtime16.jsxDEV("svg", {
     }, undefined, false, undefined, this)
   ]
 }, undefined, true, undefined, this);
-var MoonIcon = () => /* @__PURE__ */ jsx_dev_runtime16.jsxDEV("svg", {
+var MoonIcon = () => /* @__PURE__ */ jsx_dev_runtime17.jsxDEV("svg", {
   fill: "none",
   height: "16",
   stroke: "currentColor",
@@ -31125,11 +31966,11 @@ var MoonIcon = () => /* @__PURE__ */ jsx_dev_runtime16.jsxDEV("svg", {
   strokeWidth: "2",
   viewBox: "0 0 24 24",
   width: "16",
-  children: /* @__PURE__ */ jsx_dev_runtime16.jsxDEV("path", {
+  children: /* @__PURE__ */ jsx_dev_runtime17.jsxDEV("path", {
     d: "M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"
   }, undefined, false, undefined, this)
 }, undefined, false, undefined, this);
-var SystemIcon = () => /* @__PURE__ */ jsx_dev_runtime16.jsxDEV("svg", {
+var SystemIcon = () => /* @__PURE__ */ jsx_dev_runtime17.jsxDEV("svg", {
   fill: "none",
   height: "16",
   stroke: "currentColor",
@@ -31139,7 +31980,7 @@ var SystemIcon = () => /* @__PURE__ */ jsx_dev_runtime16.jsxDEV("svg", {
   viewBox: "0 0 24 24",
   width: "16",
   children: [
-    /* @__PURE__ */ jsx_dev_runtime16.jsxDEV("rect", {
+    /* @__PURE__ */ jsx_dev_runtime17.jsxDEV("rect", {
       height: "18",
       rx: "2",
       ry: "2",
@@ -31147,13 +31988,13 @@ var SystemIcon = () => /* @__PURE__ */ jsx_dev_runtime16.jsxDEV("svg", {
       x: "3",
       y: "3"
     }, undefined, false, undefined, this),
-    /* @__PURE__ */ jsx_dev_runtime16.jsxDEV("line", {
+    /* @__PURE__ */ jsx_dev_runtime17.jsxDEV("line", {
       x1: "9",
       x2: "15",
       y1: "9",
       y2: "9"
     }, undefined, false, undefined, this),
-    /* @__PURE__ */ jsx_dev_runtime16.jsxDEV("line", {
+    /* @__PURE__ */ jsx_dev_runtime17.jsxDEV("line", {
       x1: "9",
       x2: "15",
       y1: "15",
@@ -31176,11 +32017,11 @@ var ThemeToggle = () => {
   const getIcon = () => {
     switch (theme) {
       case "light":
-        return /* @__PURE__ */ jsx_dev_runtime16.jsxDEV(SunIcon, {}, undefined, false, undefined, this);
+        return /* @__PURE__ */ jsx_dev_runtime17.jsxDEV(SunIcon, {}, undefined, false, undefined, this);
       case "dark":
-        return /* @__PURE__ */ jsx_dev_runtime16.jsxDEV(MoonIcon, {}, undefined, false, undefined, this);
+        return /* @__PURE__ */ jsx_dev_runtime17.jsxDEV(MoonIcon, {}, undefined, false, undefined, this);
       case "system":
-        return /* @__PURE__ */ jsx_dev_runtime16.jsxDEV(SystemIcon, {}, undefined, false, undefined, this);
+        return /* @__PURE__ */ jsx_dev_runtime17.jsxDEV(SystemIcon, {}, undefined, false, undefined, this);
     }
   };
   const getLabel = () => {
@@ -31193,10 +32034,10 @@ var ThemeToggle = () => {
         return "System";
     }
   };
-  return /* @__PURE__ */ jsx_dev_runtime16.jsxDEV(button_default, {
+  return /* @__PURE__ */ jsx_dev_runtime17.jsxDEV(button_default, {
     onClick: handleToggle,
     children: [
-      /* @__PURE__ */ jsx_dev_runtime16.jsxDEV(ThemeIcon, {
+      /* @__PURE__ */ jsx_dev_runtime17.jsxDEV(ThemeIcon, {
         children: getIcon()
       }, undefined, false, undefined, this),
       getLabel()
@@ -31205,7 +32046,7 @@ var ThemeToggle = () => {
 };
 
 // src/demo/playground.tsx
-var jsx_dev_runtime17 = __toESM(require_jsx_dev_runtime(), 1);
+var jsx_dev_runtime18 = __toESM(require_jsx_dev_runtime(), 1);
 var paletteColors = _1000_default;
 var Header = dt.header`
   display: grid;
@@ -31278,12 +32119,12 @@ var AvatarWrapper = import_react53.memo(({ name, playgroundColors, size, square,
       setCopyValue(svgResult);
     }
   }, [copyValue, variant, playgroundColors]);
-  return /* @__PURE__ */ jsx_dev_runtime17.jsxDEV(AvatarContainer, {
+  return /* @__PURE__ */ jsx_dev_runtime18.jsxDEV(AvatarContainer, {
     children: [
-      /* @__PURE__ */ jsx_dev_runtime17.jsxDEV(AvatarSection, {
+      /* @__PURE__ */ jsx_dev_runtime18.jsxDEV(AvatarSection, {
         className: "Avatar",
         ref,
-        children: /* @__PURE__ */ jsx_dev_runtime17.jsxDEV(MemoizedAvatar, {
+        children: /* @__PURE__ */ jsx_dev_runtime18.jsxDEV(MemoizedAvatar, {
           colors: playgroundColors,
           name: avatarName,
           size,
@@ -31291,7 +32132,7 @@ var AvatarWrapper = import_react53.memo(({ name, playgroundColors, size, square,
           variant
         }, undefined, false, undefined, this)
       }, undefined, false, undefined, this),
-      /* @__PURE__ */ jsx_dev_runtime17.jsxDEV(Input, {
+      /* @__PURE__ */ jsx_dev_runtime18.jsxDEV(Input, {
         onChange: (e) => setAvatarName(e.target.value),
         onFocus: handleFocus3,
         value: avatarName
@@ -31336,8 +32177,8 @@ var SizeDot = ({
         return 0;
     }
   };
-  return /* @__PURE__ */ jsx_dev_runtime17.jsxDEV(SizeDotWrapper, {
-    icon: /* @__PURE__ */ jsx_dev_runtime17.jsxDEV(Dot, {
+  return /* @__PURE__ */ jsx_dev_runtime18.jsxDEV(SizeDotWrapper, {
+    icon: /* @__PURE__ */ jsx_dev_runtime18.jsxDEV(Dot, {
       size: getSize()
     }, undefined, false, undefined, this),
     isSelected,
@@ -31372,12 +32213,12 @@ var Playground = () => {
   const [avatarSize, setAvatarSize] = import_react53.useState(avatarSizes.medium);
   const [variant, setVariant] = import_react53.useState("beam");
   const [isSquare, setSquare] = import_react53.useState(false);
-  return /* @__PURE__ */ jsx_dev_runtime17.jsxDEV(jsx_dev_runtime17.Fragment, {
+  return /* @__PURE__ */ jsx_dev_runtime18.jsxDEV(jsx_dev_runtime18.Fragment, {
     children: [
-      /* @__PURE__ */ jsx_dev_runtime17.jsxDEV(base_styles_default, {}, undefined, false, undefined, this),
-      /* @__PURE__ */ jsx_dev_runtime17.jsxDEV(Header, {
+      /* @__PURE__ */ jsx_dev_runtime18.jsxDEV(base_styles_default, {}, undefined, false, undefined, this),
+      /* @__PURE__ */ jsx_dev_runtime18.jsxDEV(Header, {
         children: [
-          /* @__PURE__ */ jsx_dev_runtime17.jsxDEV(SegmentGroup, {
+          /* @__PURE__ */ jsx_dev_runtime18.jsxDEV(SegmentGroup, {
             children: [
               "beam",
               "bauhaus",
@@ -31389,56 +32230,56 @@ var Playground = () => {
               "mage",
               "anime",
               "pepe"
-            ].map((variantItem, i2) => /* @__PURE__ */ jsx_dev_runtime17.jsxDEV(segment_default, {
+            ].map((variantItem, i2) => /* @__PURE__ */ jsx_dev_runtime18.jsxDEV(segment_default, {
               isSelected: variantItem === variant,
               onClick: () => setVariant(variantItem),
               children: variantItem
             }, i2, false, undefined, this))
           }, undefined, false, undefined, this),
-          /* @__PURE__ */ jsx_dev_runtime17.jsxDEV(ColorsSection, {
+          /* @__PURE__ */ jsx_dev_runtime18.jsxDEV(ColorsSection, {
             children: [
-              /* @__PURE__ */ jsx_dev_runtime17.jsxDEV(color_dot_default, {
+              /* @__PURE__ */ jsx_dev_runtime18.jsxDEV(color_dot_default, {
                 onChange: (color) => setDotColor0(color),
                 value: dotColor0
               }, undefined, false, undefined, this),
-              /* @__PURE__ */ jsx_dev_runtime17.jsxDEV(color_dot_default, {
+              /* @__PURE__ */ jsx_dev_runtime18.jsxDEV(color_dot_default, {
                 onChange: (color) => setDotColor1(color),
                 value: dotColor1
               }, undefined, false, undefined, this),
-              /* @__PURE__ */ jsx_dev_runtime17.jsxDEV(color_dot_default, {
+              /* @__PURE__ */ jsx_dev_runtime18.jsxDEV(color_dot_default, {
                 onChange: (color) => setDotColor2(color),
                 value: dotColor2
               }, undefined, false, undefined, this),
-              /* @__PURE__ */ jsx_dev_runtime17.jsxDEV(color_dot_default, {
+              /* @__PURE__ */ jsx_dev_runtime18.jsxDEV(color_dot_default, {
                 onChange: (color) => setDotColor3(color),
                 value: dotColor3
               }, undefined, false, undefined, this),
-              /* @__PURE__ */ jsx_dev_runtime17.jsxDEV(color_dot_default, {
+              /* @__PURE__ */ jsx_dev_runtime18.jsxDEV(color_dot_default, {
                 onChange: (color) => setDotColor4(color),
                 value: dotColor4
               }, undefined, false, undefined, this)
             ]
           }, undefined, true, undefined, this),
-          /* @__PURE__ */ jsx_dev_runtime17.jsxDEV(button_default, {
+          /* @__PURE__ */ jsx_dev_runtime18.jsxDEV(button_default, {
             onClick: () => handleRandomColors(),
             children: "Random palette"
           }, undefined, false, undefined, this),
-          /* @__PURE__ */ jsx_dev_runtime17.jsxDEV(button_default, {
+          /* @__PURE__ */ jsx_dev_runtime18.jsxDEV(button_default, {
             onClick: () => setSquare(!isSquare),
             children: isSquare ? "Round" : "Square"
           }, undefined, false, undefined, this),
-          /* @__PURE__ */ jsx_dev_runtime17.jsxDEV(SegmentGroup, {
-            children: Object.entries(avatarSizes).map(([, value], index) => /* @__PURE__ */ jsx_dev_runtime17.jsxDEV(SizeDot, {
+          /* @__PURE__ */ jsx_dev_runtime18.jsxDEV(SegmentGroup, {
+            children: Object.entries(avatarSizes).map(([, value], index) => /* @__PURE__ */ jsx_dev_runtime18.jsxDEV(SizeDot, {
               isSelected: value === avatarSize,
               onClick: () => setAvatarSize(value),
               size: value
             }, index, false, undefined, this))
           }, undefined, false, undefined, this),
-          /* @__PURE__ */ jsx_dev_runtime17.jsxDEV(ThemeToggle, {}, undefined, false, undefined, this)
+          /* @__PURE__ */ jsx_dev_runtime18.jsxDEV(ThemeToggle, {}, undefined, false, undefined, this)
         ]
       }, undefined, true, undefined, this),
-      /* @__PURE__ */ jsx_dev_runtime17.jsxDEV(AvatarsGrid, {
-        children: import_react53.useMemo(() => exampleNames.map((exampleName, index) => /* @__PURE__ */ jsx_dev_runtime17.jsxDEV(AvatarWrapper, {
+      /* @__PURE__ */ jsx_dev_runtime18.jsxDEV(AvatarsGrid, {
+        children: import_react53.useMemo(() => exampleNames.map((exampleName, index) => /* @__PURE__ */ jsx_dev_runtime18.jsxDEV(AvatarWrapper, {
           name: exampleName,
           playgroundColors: filteredColors,
           size: avatarSize,
@@ -31451,15 +32292,15 @@ var Playground = () => {
 };
 
 // src/demo/App.tsx
-var jsx_dev_runtime18 = __toESM(require_jsx_dev_runtime(), 1);
-var App = () => /* @__PURE__ */ jsx_dev_runtime18.jsxDEV(ThemeProvider, {
+var jsx_dev_runtime19 = __toESM(require_jsx_dev_runtime(), 1);
+var App = () => /* @__PURE__ */ jsx_dev_runtime19.jsxDEV(ThemeProvider, {
   defaultTheme: "system",
-  children: /* @__PURE__ */ jsx_dev_runtime18.jsxDEV(Playground, {}, undefined, false, undefined, this)
+  children: /* @__PURE__ */ jsx_dev_runtime19.jsxDEV(Playground, {}, undefined, false, undefined, this)
 }, undefined, false, undefined, this);
 var App_default = App;
 
 // src/demo/main.tsx
-var jsx_dev_runtime19 = __toESM(require_jsx_dev_runtime(), 1);
-import_client.createRoot(document.getElementById("root")).render(/* @__PURE__ */ jsx_dev_runtime19.jsxDEV(import_react54.StrictMode, {
-  children: /* @__PURE__ */ jsx_dev_runtime19.jsxDEV(App_default, {}, undefined, false, undefined, this)
+var jsx_dev_runtime20 = __toESM(require_jsx_dev_runtime(), 1);
+import_client.createRoot(document.getElementById("root")).render(/* @__PURE__ */ jsx_dev_runtime20.jsxDEV(import_react54.StrictMode, {
+  children: /* @__PURE__ */ jsx_dev_runtime20.jsxDEV(App_default, {}, undefined, false, undefined, this)
 }, undefined, false, undefined, this));

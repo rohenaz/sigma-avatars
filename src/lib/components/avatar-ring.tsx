@@ -29,7 +29,6 @@ const AvatarRing = ({
   name,
   colors,
   title,
-  square,
   size,
   ...otherProps
 }: AvatarProps) => {
@@ -58,7 +57,7 @@ const AvatarRing = ({
         <rect
           fill="#FFFFFF"
           height={SIZE}
-          rx={square ? undefined : SIZE * 2}
+          
           width={SIZE}
         />
       </mask>

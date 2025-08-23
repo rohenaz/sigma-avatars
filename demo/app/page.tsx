@@ -174,126 +174,45 @@ export default function Home() {
         <div className="mx-auto max-w-4xl">
           <h2 className="text-3xl font-bold text-center mb-12">Quick Start</h2>
           
-          <Tabs defaultValue="npm" className="w-full">
-            <TabsList className="grid w-full grid-cols-4">
-              <TabsTrigger value="npm">npm</TabsTrigger>
-              <TabsTrigger value="yarn">yarn</TabsTrigger>
-              <TabsTrigger value="pnpm">pnpm</TabsTrigger>
-              <TabsTrigger value="bun">bun</TabsTrigger>
-            </TabsList>
-            
-            <TabsContent value="npm">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Install with npm</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="relative">
-                    <CodeBlock
-                      code="npm install sigma-avatars"
-                      language="bash"
-                    />
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="absolute top-2 right-2 z-10"
-                      onClick={() => copyToClipboard('npm install sigma-avatars', 'npm')}
-                    >
-                      {copiedCode === 'npm' ? (
-                        <Check className="h-4 w-4" />
-                      ) : (
-                        <Copy className="h-4 w-4" />
-                      )}
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-            </TabsContent>
-            
-            <TabsContent value="yarn">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Install with Yarn</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="relative">
-                    <CodeBlock
-                      code="yarn add sigma-avatars"
-                      language="bash"
-                    />
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="absolute top-2 right-2 z-10"
-                      onClick={() => copyToClipboard('yarn add sigma-avatars', 'yarn')}
-                    >
-                      {copiedCode === 'yarn' ? (
-                        <Check className="h-4 w-4" />
-                      ) : (
-                        <Copy className="h-4 w-4" />
-                      )}
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-            </TabsContent>
-            
-            <TabsContent value="pnpm">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Install with pnpm</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="relative">
-                    <CodeBlock
-                      code="pnpm add sigma-avatars"
-                      language="bash"
-                    />
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="absolute top-2 right-2 z-10"
-                      onClick={() => copyToClipboard('pnpm add sigma-avatars', 'pnpm')}
-                    >
-                      {copiedCode === 'pnpm' ? (
-                        <Check className="h-4 w-4" />
-                      ) : (
-                        <Copy className="h-4 w-4" />
-                      )}
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-            </TabsContent>
-            
-            <TabsContent value="bun">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Install with Bun</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="relative">
-                    <CodeBlock
-                      code="bun add sigma-avatars"
-                      language="bash"
-                    />
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="absolute top-2 right-2 z-10"
-                      onClick={() => copyToClipboard('bun add sigma-avatars', 'bun')}
-                    >
-                      {copiedCode === 'bun' ? (
-                        <Check className="h-4 w-4" />
-                      ) : (
-                        <Copy className="h-4 w-4" />
-                      )}
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-            </TabsContent>
-          </Tabs>
+          <Card>
+            <Tabs defaultValue="npm" className="w-full">
+              <CardHeader className="flex flex-row items-center justify-between pb-3">
+                <CardTitle>Installation</CardTitle>
+                <TabsList className="h-8 grid grid-cols-4">
+                  <TabsTrigger value="npm" className="text-xs data-[state=active]:text-xs">npm</TabsTrigger>
+                  <TabsTrigger value="yarn" className="text-xs data-[state=active]:text-xs">yarn</TabsTrigger>
+                  <TabsTrigger value="pnpm" className="text-xs data-[state=active]:text-xs">pnpm</TabsTrigger>
+                  <TabsTrigger value="bun" className="text-xs data-[state=active]:text-xs">bun</TabsTrigger>
+                </TabsList>
+              </CardHeader>
+              <CardContent>
+                <TabsContent value="npm" className="mt-0">
+                  <CodeBlock
+                    code="npm install sigma-avatars"
+                    language="bash"
+                  />
+                </TabsContent>
+                <TabsContent value="yarn" className="mt-0">
+                  <CodeBlock
+                    code="yarn add sigma-avatars"
+                    language="bash"
+                  />
+                </TabsContent>
+                <TabsContent value="pnpm" className="mt-0">
+                  <CodeBlock
+                    code="pnpm add sigma-avatars"
+                    language="bash"
+                  />
+                </TabsContent>
+                <TabsContent value="bun" className="mt-0">
+                  <CodeBlock
+                    code="bun add sigma-avatars"
+                    language="bash"
+                  />
+                </TabsContent>
+              </CardContent>
+            </Tabs>
+          </Card>
 
           {/* Basic Usage */}
           <Card className="mt-6">
