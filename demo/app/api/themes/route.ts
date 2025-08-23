@@ -96,30 +96,33 @@ function extractColorsFromTheme(theme: RegistryTheme): string[] {
   const colors: string[] = [];
   const lightVars = theme.cssVars.light || {};
   
-  // Priority order for color extraction
-  const colorKeys = [
-    '--primary',
-    '--secondary', 
-    '--accent',
-    '--muted',
-    '--destructive',
-    '--warning',
-    '--success',
-    '--info'
+  // Priority order for diverse color extraction - avoid too many backgrounds/foregrounds
+  const priorityKeys = [
+    'primary',
+    'destructive', 
+    'accent',
+    'secondary',
+    'muted',
+    'success',
+    'warning',
+    'info'
   ];
 
-  // Extract colors from light theme variables
-  for (const key of colorKeys) {
+  // First, try to get diverse colors from priority keys
+  for (const key of priorityKeys) {
     const value = lightVars[key];
-    if (value && typeof value === 'string') {
-      if (value.startsWith('oklch(')) {
-        colors.push(oklchToHex(value));
-      } else if (value.match(/^#[0-9A-Fa-f]{6}$/)) {
-        colors.push(value);
-      } else if (value.match(/^\d+\s+\d+%?\s+\d+%?$/)) {
-        // HSL values - convert to approximate hex
-        const [h, s, l] = value.split(' ').map(v => parseInt(v.replace('%', '')));
-        colors.push(hslToHex(h, s, l));
+    if (value && typeof value === 'string' && value.trim() && colors.length < 5) {
+      colors.push(value.trim());
+    }
+  }
+
+  // If we need more colors, add some chart colors or other colorful keys
+  if (colors.length < 5) {
+    const chartKeys = Object.keys(lightVars).filter(key => key.startsWith('chart-'));
+    for (const key of chartKeys) {
+      const value = lightVars[key];
+      if (value && typeof value === 'string' && value.trim() && colors.length < 5) {
+        colors.push(value.trim());
       }
     }
   }
@@ -134,12 +137,15 @@ function extractColorsFromTheme(theme: RegistryTheme): string[] {
 
 // Convert registry themes to color palettes
 function registryToColorPalettes(themes: RegistryTheme[]): ColorPalette[] {
-  return themes.map(theme => ({
+  const palettes = themes.map(theme => ({
     name: theme.name,
     title: theme.title,
     description: theme.description,
     colors: extractColorsFromTheme(theme)
   }));
+  
+  // Sort alphabetically by title
+  return palettes.sort((a, b) => a.title.localeCompare(b.title));
 }
 
 async function fetchTweakcnRegistry(): Promise<ColorPalette[]> {

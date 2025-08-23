@@ -137,12 +137,16 @@ export async function GET(request: NextRequest) {
     const variant = params.variant;
     const size = parseInt(params.size, 10);
     const title = params.title === 'true';
-    // Parse colors - expect hex values without # (like Boring Avatars)
+    // Parse colors - handle all formats (hex, oklch, hsl, etc.)
     const colors = params.colors && params.colors.trim() !== '' 
       ? params.colors.split(',').map(c => {
           const cleaned = c.trim();
-          // Add # if not present (support both formats)
-          return cleaned.startsWith('#') ? cleaned : `#${cleaned}`;
+          // For hex colors that come without #, add it
+          if (cleaned.match(/^[0-9A-Fa-f]{3,6}$/) && !cleaned.startsWith('#')) {
+            return `#${cleaned}`;
+          }
+          // For all other formats (oklch, hsl, rgb, etc.) or hex with #, use as-is
+          return cleaned;
         }).filter(c => c.length > 1)
       : undefined;
     
