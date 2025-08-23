@@ -24,10 +24,11 @@ import {
   SidebarRail,
 } from "@/components/ui/sidebar"
 import { useSidebarContext } from '@/contexts/sidebar-context';
+import { colorPalettes } from '@/lib/color-palettes';
 
 interface AppSidebarProps extends React.ComponentProps<typeof Sidebar> {}
 
-const variants = ['marble', 'beam', 'pixel', 'sunset', 'ring', 'bauhaus', 'fractal', 'mage', 'barcode', 'pepe'];
+const variants: ('pixel' | 'bauhaus' | 'ring' | 'beam' | 'sunset' | 'marble' | 'fractal' | 'mage' | 'barcode' | 'pepe')[] = ['marble', 'beam', 'pixel', 'sunset', 'ring', 'bauhaus', 'fractal', 'mage', 'barcode', 'pepe'];
 
 export function AppSidebar(props: AppSidebarProps) {
   const { 
@@ -145,7 +146,7 @@ export function AppSidebar(props: AppSidebarProps) {
               <Avatar
                 name={selectedAvatar.name}
                 variant={selectedAvatar.variant}
-                colors={currentColors || selectedAvatar.colors}
+                colors={currentColors || selectedAvatar.colors || colorPalettes[0]}
                 size={120}
                 className={selectedAvatar.shape === 'square' ? 'rounded-none' : selectedAvatar.shape === 'rounded' ? 'rounded-md' : 'rounded-full'}
               />
@@ -217,7 +218,7 @@ export function AppSidebar(props: AppSidebarProps) {
                 <Avatar
                   name={selectedAvatar.name}
                   variant={variant}
-                  colors={currentColors || selectedAvatar.colors}
+                  colors={currentColors || selectedAvatar.colors || colorPalettes[0]}
                   size={32}
                   className={selectedAvatar.shape === 'square' ? 'rounded-none' : selectedAvatar.shape === 'rounded' ? 'rounded-md' : 'rounded-full'}
                 />

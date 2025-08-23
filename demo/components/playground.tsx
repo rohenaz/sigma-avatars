@@ -35,7 +35,7 @@ import { CodeBlock } from './code-block';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { AppSidebar } from './app-sidebar';
 import { useSidebar } from "@/components/ui/sidebar";
-import { useSidebarContext } from '@/contexts/sidebar-context';
+import { useSidebarContext, SelectedAvatar } from '@/contexts/sidebar-context';
 import { useQuery } from '@tanstack/react-query';
 
 const paletteColors = colorPalettes;
@@ -71,7 +71,7 @@ type Variant = typeof variants[number];
 
 interface AvatarWrapperProps {
   name: string;
-  variant: string;
+  variant: Variant;
   colors?: string[];
   size?: number;
   shape?: 'circle' | 'square' | 'rounded';
@@ -102,60 +102,22 @@ const AvatarWrapper = memo(
     };
 
     const downloadAvatar = async () => {
-      if (useApi) {
-        // Download from API
-        const params = new URLSearchParams({
-          name,
-          variant,
-          size: size?.toString() || '80',
-          ...(colors && colors.length > 0 && { 
-            colors: colors.map(c => c.replace(/^#/, '')).join(',') 
-          }),
-        });
-        const url = `/api/avatar?${params}`;
-        const link = document.createElement('a');
-        link.href = url;
-        link.download = `${name}-${variant}.svg`;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-      } else {
-        // Download from client-rendered SVG
-        const svgNode = svgRef.current;
-        if (!svgNode) return;
-
-        const canvas = document.createElement('canvas');
-        const ctx = canvas.getContext('2d');
-        const img = new window.Image();
-
-        canvas.width = size || 80;
-        canvas.height = size || 80;
-
-        const svgString = new XMLSerializer().serializeToString(svgNode);
-        const svgBlob = new Blob([svgString], {
-          type: 'image/svg+xml;charset=utf-8',
-        });
-        const url = URL.createObjectURL(svgBlob);
-
-        img.onload = () => {
-          ctx?.drawImage(img, 0, 0);
-          URL.revokeObjectURL(url);
-
-          canvas.toBlob((blob) => {
-            if (!blob) return;
-            const pngUrl = URL.createObjectURL(blob);
-            const downloadLink = document.createElement('a');
-            downloadLink.href = pngUrl;
-            downloadLink.download = `${name}-${variant}.png`;
-            document.body.appendChild(downloadLink);
-            downloadLink.click();
-            document.body.removeChild(downloadLink);
-            URL.revokeObjectURL(pngUrl);
-          });
-        };
-
-        img.src = url;
-      }
+      // Download from API
+      const params = new URLSearchParams({
+        name,
+        variant,
+        size: size?.toString() || '80',
+        ...(colors && colors.length > 0 && { 
+          colors: colors.map(c => c.replace(/^#/, '')).join(',') 
+        }),
+      });
+      const url = `/api/avatar?${params}`;
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `${name}-${variant}.svg`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
     };
 
     // Build API URL for server-side rendering
@@ -187,7 +149,7 @@ const AvatarWrapper = memo(
         <Avatar
           name={name}
           variant={variant}
-          colors={colors}
+          colors={colors || localColorPalettes[0]}
           size={size}
           api={useApi ? '/api/avatar' : undefined}
           className={shape === 'square' ? 'rounded-none' : shape === 'rounded' ? 'rounded-md' : 'rounded-full'}
@@ -455,9 +417,9 @@ export const Playground = () => {
     const api = searchParams.get('api');
     
     if (name) {
-      const avatarData = {
+      const avatarData: SelectedAvatar = {
         name,
-        variant: avatarVariant && (variants.includes(avatarVariant as Variant) || avatarVariant === 'random') ? avatarVariant : variant,
+        variant: (avatarVariant && (variants.includes(avatarVariant as Variant) || avatarVariant === 'random') ? avatarVariant : variant) as Variant,
         colors: dotColors,
         size: size ? parseInt(size) : avatarSize,
         shape: shapeParam === 'square' ? 'square' : shapeParam === 'rounded' ? 'rounded' : 'circle',
@@ -480,14 +442,7 @@ export const Playground = () => {
   // NOTE: Removed URL updating when selectedAvatar changes to keep sidebar selection 
   // separate from page navigation state
 
-  const handleAvatarClick = (avatarData: {
-    name: string;
-    variant: string;
-    colors?: string[];
-    size: number;
-    shape: 'circle' | 'square' | 'rounded';
-    useApi: boolean;
-  }) => {
+  const handleAvatarClick = (avatarData: SelectedAvatar) => {
     // Only update sidebar state, not URL params
     contextHandleAvatarClick(avatarData);
     setSidebarOpen(true);

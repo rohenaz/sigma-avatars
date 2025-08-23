@@ -305,7 +305,7 @@ const PlayerCard = ({ player }) => (
                     <Avatar
                       name="sarah.jones"
                       variant="beam"
-                      colors={namedPalettes['Ocean Breeze']}
+                      colors={namedPalettes['OKLCH Colors']}
                       size={40}
                       className="rounded-full"
                     />
@@ -340,7 +340,7 @@ const PlayerCard = ({ player }) => (
                     <Avatar
                       name="mike.chen"
                       variant="marble"
-                      colors={namedPalettes['Forest Deep']}
+                      colors={namedPalettes['HSL Colors']}
                       size={40}
                       className="rounded-full"
                     />
@@ -390,7 +390,7 @@ const PlayerCard = ({ player }) => (
                       <Avatar
                         name="alex.kim"
                         variant="ring"
-                        colors={namedPalettes['Purple Dreams']}
+                        colors={namedPalettes['Hex Colors']}
                         size={32}
                         className="rounded-full"
                       />
@@ -410,7 +410,7 @@ const PlayerCard = ({ player }) => (
                       <Avatar
                         name="emma.wilson"
                         variant="sunset"
-                        colors={namedPalettes['Warm Earth']}
+                        colors={namedPalettes['RGB Colors']}
                         size={32}
                         className="rounded-full"
                       />
@@ -430,7 +430,7 @@ const PlayerCard = ({ player }) => (
                       <Avatar
                         name="david.garcia"
                         variant="bauhaus"
-                        colors={namedPalettes['Electric Blue']}
+                        colors={namedPalettes['Mixed Formats']}
                         size={32}
                         className="rounded-full"
                       />
@@ -453,7 +453,7 @@ const PlayerCard = ({ player }) => (
                     <Avatar
                       name="alex.kim"
                       variant="ring"
-                      colors={namedPalettes['Purple Dreams']}
+                      colors={namedPalettes['Hex Colors']}
                       size={24}
                       className="rounded-full"
                     />
@@ -469,7 +469,7 @@ const PlayerCard = ({ player }) => (
                     <Avatar
                       name="current.user"
                       variant="beam"
-                      colors={namedPalettes['Ocean Breeze']}
+                      colors={namedPalettes['OKLCH Colors']}
                       size={24}
                       className="rounded-full"
                     />
@@ -495,7 +495,7 @@ const PlayerCard = ({ player }) => (
                     <Avatar
                       name="lisa.martinez"
                       variant="pixel"
-                      colors={namedPalettes['Sunset Glow']}
+                      colors={namedPalettes['Theme Colors']}
                       size={48}
                       className="mx-auto mb-3 rounded-full"
                     />
@@ -510,7 +510,7 @@ const PlayerCard = ({ player }) => (
                     <Avatar
                       name="tom.anderson"
                       variant="fractal"
-                      colors={namedPalettes['Cool Mint']}
+                      colors={namedPalettes['Short Hex']}
                       size={48}
                       className="mx-auto mb-3 rounded-full"
                     />
@@ -540,7 +540,7 @@ const PlayerCard = ({ player }) => (
                   <Avatar
                     name="system.notification"
                     variant="mage"
-                    colors={namedPalettes['Rose Gold']}
+                    colors={namedPalettes['RGBA/HSLA']}
                     size={32}
                   />
                   <div className="flex-1">
@@ -556,7 +556,7 @@ const PlayerCard = ({ player }) => (
                   <Avatar
                     name="carlos.rodriguez"
                     variant="barcode"
-                    colors={namedPalettes['Autumn Spice']}
+                    colors={namedPalettes['Marble Pop']}
                     size={32}
                   />
                   <div className="flex-1">
@@ -572,7 +572,7 @@ const PlayerCard = ({ player }) => (
                   <Avatar
                     name="project.update"
                     variant="pepe"
-                    colors={namedPalettes['Electric Blue']}
+                    colors={namedPalettes['Mixed Formats']}
                     size={32}
                   />
                   <div className="flex-1">

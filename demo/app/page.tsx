@@ -11,7 +11,7 @@ import Link from 'next/link';
 import { colorPalettes } from '@/lib/color-palettes';
 import { CodeBlock } from '@/components/code-block';
 import { useSidebar } from '@/components/ui/sidebar';
-import { useSidebarContext } from '@/contexts/sidebar-context';
+import { useSidebarContext, SelectedAvatar } from '@/contexts/sidebar-context';
 
 const paletteColors = colorPalettes;
 
@@ -42,7 +42,7 @@ export default function Home() {
   className="rounded-full"  // Optional: circle, rounded-md (default), or rounded-none
 />`;
 
-  const variants = ['marble', 'beam', 'pixel', 'sunset', 'ring', 'bauhaus', 'fractal', 'mage', 'barcode', 'pepe'];
+  const variants: ('pixel' | 'bauhaus' | 'ring' | 'beam' | 'sunset' | 'marble' | 'fractal' | 'mage' | 'barcode' | 'pepe')[] = ['marble', 'beam', 'pixel', 'sunset', 'ring', 'bauhaus', 'fractal', 'mage', 'barcode', 'pepe'];
   const demoNames = ['Mary Shelley', 'Ada Lovelace', 'Grace Hopper', 'Hedy Lamarr', 'Katherine Johnson'];
   
   // State for random avatar variants
@@ -58,8 +58,8 @@ export default function Home() {
     );
   };
 
-  const handleClick = (name: string, variant: string) => {
-    const avatarData = {
+  const handleClick = (name: string, variant: 'pixel' | 'bauhaus' | 'ring' | 'beam' | 'sunset' | 'marble' | 'fractal' | 'mage' | 'barcode' | 'pepe') => {
+    const avatarData: SelectedAvatar = {
       name,
       variant,
       colors: currentPalette,
@@ -93,7 +93,7 @@ export default function Home() {
               >
                 <Avatar
                   name={name}
-                  variant={avatarVariants[i] as any}
+                  variant={avatarVariants[i]}
                   colors={currentPalette}
                   size={80}
                 />

@@ -2,9 +2,9 @@
 
 import React, { createContext, useContext, useState, useCallback } from 'react';
 
-interface SelectedAvatar {
+export interface SelectedAvatar {
   name: string;
-  variant: string;
+  variant: 'pixel' | 'bauhaus' | 'ring' | 'beam' | 'sunset' | 'marble' | 'fractal' | 'mage' | 'barcode' | 'pepe';
   colors?: string[];
   size: number;
   shape: 'circle' | 'square' | 'rounded';
@@ -27,7 +27,7 @@ interface SidebarContextType {
   downloadSelectedAvatar: () => Promise<void>;
   copySvgToClipboard: () => Promise<void>;
   handleNameChange: (newName: string) => void;
-  handleVariantChange: (newVariant: string) => void;
+  handleVariantChange: (newVariant: 'pixel' | 'bauhaus' | 'ring' | 'beam' | 'sunset' | 'marble' | 'fractal' | 'mage' | 'barcode' | 'pepe') => void;
 }
 
 const SidebarContext = createContext<SidebarContextType | undefined>(undefined);
@@ -104,7 +104,7 @@ export function SidebarContextProvider({ children }: { children: React.ReactNode
     }
   }, [selectedAvatar]);
 
-  const handleVariantChange = useCallback((newVariant: string) => {
+  const handleVariantChange = useCallback((newVariant: 'pixel' | 'bauhaus' | 'ring' | 'beam' | 'sunset' | 'marble' | 'fractal' | 'mage' | 'barcode' | 'pepe') => {
     if (selectedAvatar) {
       setSelectedAvatar({ ...selectedAvatar, variant: newVariant });
     }
