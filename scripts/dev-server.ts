@@ -38,6 +38,11 @@ const server = Bun.serve({
       return fileResponse('index.html', 'text/html; charset=utf-8');
     }
 
+    // Serve favicon.ico from public directory
+    if (p === '/favicon.ico') {
+      return fileResponse('public/favicon.ico', 'image/x-icon');
+    }
+
     if (p.startsWith('/public/')) {
       const local = p.slice('/'.length);
       return fileResponse(local, guessType(local));

@@ -21018,6 +21018,9 @@ var getContrast = (hexcolor) => {
   if (hexcolor.slice(0, 1) === "#") {
     hexcolor = hexcolor.slice(1);
   }
+  if (hexcolor.length === 3) {
+    hexcolor = hexcolor[0] + hexcolor[0] + hexcolor[1] + hexcolor[1] + hexcolor[2] + hexcolor[2];
+  }
   const r2 = Number.parseInt(hexcolor.substring(0, 2), 16);
   const g2 = Number.parseInt(hexcolor.substring(2, 4), 16);
   const b2 = Number.parseInt(hexcolor.substring(4, 6), 16);

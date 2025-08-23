@@ -76,6 +76,11 @@ export const getContrast = (hexcolor: string): string => {
     hexcolor = hexcolor.slice(1);
   }
 
+  // Expand 3-digit hex to 6-digit
+  if (hexcolor.length === 3) {
+    hexcolor = hexcolor[0] + hexcolor[0] + hexcolor[1] + hexcolor[1] + hexcolor[2] + hexcolor[2];
+  }
+
   // Convert to RGB value
   const r = Number.parseInt(hexcolor.substring(0, 2), 16);
   const g = Number.parseInt(hexcolor.substring(2, 4), 16);
