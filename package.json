@@ -33,7 +33,7 @@
   "license": "MIT",
   "type": "module",
   "scripts": {
-    "dev": "bun build src/demo/main.tsx --outdir public --format esm --watch & bun run serve",
+    "dev": "cd demo && bun dev",
     "serve": "bun scripts/dev-server.ts",
     "build": "tsc --p ./tsconfig.lib.json && bun build src/lib/index.tsx --outdir dist --format esm --sourcemap --external react --external react-dom --external react/jsx-runtime",
     "build:demo": "bun build src/demo/main.tsx --outdir build --format esm --minify",

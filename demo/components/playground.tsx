@@ -3,6 +3,7 @@
 import React, { useMemo, useRef, useState, memo, useEffect } from 'react';
 import Avatar, { PATTERN_CATEGORIES, PATTERN_REGISTRY } from 'sigma-avatars';
 import { colorPalettes } from '@/lib/color-palettes';
+import { getTweakcnColorPalettes, ColorPalette } from '@/lib/tweakcn-registry';
 import Image from 'next/image';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
@@ -35,6 +36,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { AppSidebar } from './app-sidebar';
 import { useSidebar } from "@/components/ui/sidebar";
 import { useSidebarContext } from '@/contexts/sidebar-context';
+import { useQuery } from '@tanstack/react-query';
 
 const paletteColors = colorPalettes;
 
@@ -52,7 +54,7 @@ const variants = [
 ] as const;
 
 // Different color palettes for variety
-const colorPalettes = [
+const localColorPalettes = [
   ['#92A1C6', '#146A7C', '#F0AB3D', '#C271B4', '#C20D90'],
   ['#f582ae', '#b8e994', '#ffd803', '#00cdac', '#8b5cf6'],
   ['#ffc6ff', '#bdb2ff', '#a0c4ff', '#9bf6ff', '#caffbf'],
@@ -318,6 +320,35 @@ export const Playground = () => {
   const [shape, setShape] = useState<'circle' | 'square' | 'rounded'>('circle');
   const [useApi, setUseApi] = useState(false);
   const [loadedCount, setLoadedCount] = useState(0);
+  const [selectedTheme, setSelectedTheme] = useState<string>('custom');
+
+  // Fetch tweakcn themes
+  const { data: tweakcnPalettes = [], isLoading: themesLoading } = useQuery({
+    queryKey: ['tweakcn-themes'],
+    queryFn: getTweakcnColorPalettes,
+    staleTime: 5 * 60 * 1000, // Cache for 5 minutes
+  });
+
+  // Initialize with default colors, will be updated when themes load
+  const [dotColor0, setDotColor0] = useState<string>('#3b82f6');
+  const [dotColor1, setDotColor1] = useState<string>('#10b981');
+  const [dotColor2, setDotColor2] = useState<string>('#f59e0b');
+  const [dotColor3, setDotColor3] = useState<string>('#ef4444');
+  const [dotColor4, setDotColor4] = useState<string>('#8b5cf6');
+
+  const dotColors = useMemo(() => [dotColor0, dotColor1, dotColor2, dotColor3, dotColor4], [dotColor0, dotColor1, dotColor2, dotColor3, dotColor4]);
+  const setters = [setDotColor0, setDotColor1, setDotColor2, setDotColor3, setDotColor4];
+
+  // Combine tweakcn palettes with custom option (no duplicate local palettes)
+  const allPalettes = useMemo(() => {
+    const customPalette: ColorPalette = {
+      name: 'custom',
+      title: 'Custom',
+      colors: dotColors
+    };
+    
+    return [customPalette, ...tweakcnPalettes];
+  }, [tweakcnPalettes, dotColors]);
   
   const { ref, inView } = useInView({
     threshold: 0,
@@ -359,28 +390,60 @@ export const Playground = () => {
   const totalCompanies = data?.pages[0]?.totalCount ?? 500;
   const progress = (loadedCount / totalCompanies) * 100;
 
-  const [dotColor0, setDotColor0] = useState<string>(paletteColors[8][0]);
-  const [dotColor1, setDotColor1] = useState<string>(paletteColors[8][1]);
-  const [dotColor2, setDotColor2] = useState<string>(paletteColors[8][2]);
-  const [dotColor3, setDotColor3] = useState<string>(paletteColors[8][3]);
-  const [dotColor4, setDotColor4] = useState<string>(paletteColors[8][4]);
-
-  const dotColors = useMemo(() => [dotColor0, dotColor1, dotColor2, dotColor3, dotColor4], [dotColor0, dotColor1, dotColor2, dotColor3, dotColor4]);
-  const setters = [setDotColor0, setDotColor1, setDotColor2, setDotColor3, setDotColor4];
+  // Get current theme palette
+  const currentThemePalette = useMemo(() => {
+    return allPalettes.find(p => p.name === selectedTheme) || allPalettes[0];
+  }, [allPalettes, selectedTheme]);
 
   // Update current colors in sidebar context whenever dotColors change
   useEffect(() => {
     setCurrentColors(dotColors);
   }, [dotColors, setCurrentColors]);
 
+  // Initialize with first theme when themes load (only once)
+  useEffect(() => {
+    if (tweakcnPalettes.length > 0 && selectedTheme === 'custom') {
+      const firstTheme = tweakcnPalettes[0];
+      if (firstTheme) {
+        setSelectedTheme(firstTheme.name);
+        const colors = firstTheme.colors;
+        setDotColor0(colors[0] || '#3b82f6');
+        setDotColor1(colors[1] || '#10b981');
+        setDotColor2(colors[2] || '#f59e0b');
+        setDotColor3(colors[3] || '#ef4444');
+        setDotColor4(colors[4] || '#8b5cf6');
+      }
+    }
+  }, [tweakcnPalettes.length]); // Only depend on length to run once when themes first load
+
   const handleRandomColors = () => {
-    const randomPalette =
-      paletteColors[Math.floor(Math.random() * paletteColors.length)];
-    setDotColor0(randomPalette[0]);
-    setDotColor1(randomPalette[1]);
-    setDotColor2(randomPalette[2]);
-    setDotColor3(randomPalette[3]);
-    setDotColor4(randomPalette[4]);
+    if (allPalettes.length === 0) return;
+    
+    const randomPalette = allPalettes[Math.floor(Math.random() * allPalettes.length)];
+    const colors = randomPalette.colors;
+    
+    setDotColor0(colors[0] || '#3b82f6');
+    setDotColor1(colors[1] || '#10b981');
+    setDotColor2(colors[2] || '#f59e0b');
+    setDotColor3(colors[3] || '#ef4444');
+    setDotColor4(colors[4] || '#8b5cf6');
+    
+    // Update selected theme to match the random palette
+    setSelectedTheme(randomPalette.name);
+  };
+
+  // Update colors when theme changes
+  const handleThemeChange = (themeName: string) => {
+    const theme = allPalettes.find(p => p.name === themeName);
+    if (theme) {
+      setSelectedTheme(themeName);
+      const colors = theme.colors;
+      setDotColor0(colors[0] || '#3b82f6');
+      setDotColor1(colors[1] || '#10b981');
+      setDotColor2(colors[2] || '#f59e0b');
+      setDotColor3(colors[3] || '#ef4444');
+      setDotColor4(colors[4] || '#8b5cf6');
+    }
   };
 
   // Handle URL params on mount
@@ -456,8 +519,9 @@ export const Playground = () => {
     <TooltipProvider delayDuration={200}>
       {/* Main content */}
       <div className="flex flex-1 flex-col">
-            {/* Slim toolbar */}
+            {/* Two-row toolbar */}
             <div className="sticky top-[var(--app-header-h,3.5rem)] z-40 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+          {/* Row 1: Main controls */}
           <div className="px-2 md:px-3 flex items-center gap-2 h-12">
             {/* Variants as main tabs with horizontal scroll if needed */}
             <div className="min-w-0 flex-1 overflow-hidden">
@@ -500,97 +564,109 @@ export const Playground = () => {
             {/* Divider between tabs and controls */}
             <Separator orientation="vertical" className="mx-2 hidden md:block h-6" />
 
-            {/* Controls cluster (right side) */}
-            <div className="flex items-center gap-2">
-              {/* Size */}
-              <div className="hidden lg:block text-xs text-muted-foreground">Size</div>
-              <ToggleGroup
-                type="single"
-                value={avatarSize.toString()}
-                onValueChange={(v) => v && setAvatarSize(Number(v))}
-                className="h-8"
-              >
-                <ToggleGroupItem value="40" className="text-xs h-7 px-2">
-                  S
-                </ToggleGroupItem>
-                <ToggleGroupItem value="80" className="text-xs h-7 px-2">
-                  M
-                </ToggleGroupItem>
-                <ToggleGroupItem value="120" className="text-xs h-7 px-2">
-                  L
-                </ToggleGroupItem>
-              </ToggleGroup>
-
-              <Separator orientation="vertical" className="hidden md:block h-6" />
-
-              {/* Shape */}
-              <ToggleGroup
-                type="single"
-                value={shape}
-                onValueChange={(v) => {
-                  const newShape = v as 'circle' | 'square' | 'rounded';
-                  setShape(newShape);
-                  // Update the selected avatar's shape if one is selected
-                  if (selectedAvatar) {
-                    const updatedAvatar = {
-                      ...selectedAvatar,
-                      shape: newShape
-                    };
-                    setSelectedAvatar(updatedAvatar);
-                    updateUrl(updatedAvatar);
-                  }
-                }}
-                className="h-8"
-              >
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <ToggleGroupItem value="circle" aria-label="Circle" className="h-7 px-2">
-                      <Circle className="size-3.5" />
-                    </ToggleGroupItem>
-                  </TooltipTrigger>
-                  <TooltipContent sideOffset={6}>Circle</TooltipContent>
-                </Tooltip>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <ToggleGroupItem value="rounded" aria-label="Rounded" className="h-7 px-2">
-                      <Square className="size-3.5" />
-                    </ToggleGroupItem>
-                  </TooltipTrigger>
-                  <TooltipContent sideOffset={6}>Rounded</TooltipContent>
-                </Tooltip>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <ToggleGroupItem value="square" aria-label="Square" className="h-7 px-2">
-                      <svg 
-                        width="14" 
-                        height="14" 
-                        viewBox="0 0 24 24" 
-                        fill="none" 
-                        stroke="currentColor" 
-                        strokeWidth="2" 
-                        strokeLinecap="round" 
-                        strokeLinejoin="round"
-                        className="size-3.5"
-                      >
-                        <rect x="3" y="3" width="18" height="18" />
-                      </svg>
-                    </ToggleGroupItem>
-                  </TooltipTrigger>
-                  <TooltipContent sideOffset={6}>Square</TooltipContent>
-                </Tooltip>
-              </ToggleGroup>
-
-              <Separator orientation="vertical" className="hidden md:block h-6" />
-
-              {/* Color palette (5 swatches) */}
+              {/* Theme selector with swatches */}
               <div className="flex items-center gap-1.5">
-                {dotColors.slice(0, 5).map((c, i) => (
-                  <ColorSwatch
-                    key={i}
-                    color={c}
-                    onChange={(next) => setters[i](next)}
-                  />
-                ))}
+                <Select value={selectedTheme} onValueChange={handleThemeChange}>
+                  <SelectTrigger className="w-auto h-8 px-2 gap-1.5 border-0 shadow-none bg-transparent hover:bg-muted/50">
+                    <SelectValue>
+                      <div className="flex items-center gap-1.5">
+                        {/* Current theme swatches */}
+                        <div className="flex gap-0.5">
+                          {currentThemePalette?.colors.slice(0, 5).map((color, i) => (
+                            <div
+                              key={i}
+                              className="w-3 h-3 rounded-full border border-border/20"
+                              style={{ backgroundColor: color }}
+                            />
+                          ))}
+                        </div>
+                        <span className="text-xs font-medium hidden sm:inline">
+                          {currentThemePalette?.title || 'Loading...'}
+                        </span>
+                      </div>
+                    </SelectValue>
+                  </SelectTrigger>
+                  <SelectContent align="start" className="w-64">
+                    <SelectGroup>
+                      <SelectLabel className="text-xs font-medium text-muted-foreground px-2">
+                        Available Themes
+                      </SelectLabel>
+                      {allPalettes.map((palette) => (
+                        <SelectItem 
+                          key={palette.name} 
+                          value={palette.name}
+                          className="flex items-center gap-3 cursor-pointer"
+                        >
+                          <div className="flex items-center gap-2 w-full">
+                            <div className="flex gap-0.5">
+                              {palette.colors.slice(0, 5).map((color, i) => (
+                                <div
+                                  key={i}
+                                  className="w-3 h-3 rounded-full border border-border/20"
+                                  style={{ backgroundColor: color }}
+                                />
+                              ))}
+                            </div>
+                            <span className="flex-1 text-sm">{palette.title}</span>
+                          </div>
+                        </SelectItem>
+                      ))}
+                    </SelectGroup>
+                  </SelectContent>
+                </Select>
+
+                {/* Navigation arrows */}
+                <div className="flex items-center">
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-7 w-7"
+                        onClick={() => {
+                          const currentIndex = allPalettes.findIndex(p => p.name === selectedTheme);
+                          const prevIndex = currentIndex > 0 ? currentIndex - 1 : allPalettes.length - 1;
+                          if (allPalettes[prevIndex]) {
+                            handleThemeChange(allPalettes[prevIndex].name);
+                          }
+                        }}
+                        disabled={allPalettes.length === 0}
+                        aria-label="Previous theme"
+                      >
+                        <svg className="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                        </svg>
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent sideOffset={6}>Previous theme</TooltipContent>
+                  </Tooltip>
+
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-7 w-7"
+                        onClick={() => {
+                          const currentIndex = allPalettes.findIndex(p => p.name === selectedTheme);
+                          const nextIndex = currentIndex < allPalettes.length - 1 ? currentIndex + 1 : 0;
+                          if (allPalettes[nextIndex]) {
+                            handleThemeChange(allPalettes[nextIndex].name);
+                          }
+                        }}
+                        disabled={allPalettes.length === 0}
+                        aria-label="Next theme"
+                      >
+                        <svg className="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                        </svg>
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent sideOffset={6}>Next theme</TooltipContent>
+                  </Tooltip>
+                </div>
+
+                {/* Random theme button */}
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <Button
@@ -598,30 +674,130 @@ export const Playground = () => {
                       size="icon"
                       className="h-8 w-8"
                       onClick={handleRandomColors}
-                      aria-label="Random palette"
+                      disabled={allPalettes.length === 0}
+                      aria-label="Random theme"
                     >
                       <Shuffle className="size-4" />
                     </Button>
                   </TooltipTrigger>
-                  <TooltipContent sideOffset={6}>Random palette</TooltipContent>
+                  <TooltipContent sideOffset={6}>Random theme</TooltipContent>
                 </Tooltip>
-              </div>
-
-              <Separator orientation="vertical" className="hidden md:block h-6" />
-
-              {/* Server API toggle */}
-              <div className="flex items-center gap-2">
-                <Label htmlFor="server-api" className="text-xs text-muted-foreground hidden sm:block">
-                  Server
-                </Label>
-                <Switch
-                  id="server-api"
-                  checked={useApi}
-                  onCheckedChange={setUseApi}
-                />
               </div>
             </div>
           </div>
+
+          {/* Row 2: Size, Shape, Colors, and Server toggle */}
+          <div className="px-2 md:px-3 flex items-center gap-2 h-10 border-t border-border/10">
+            {/* Size */}
+            <Label className="text-xs text-muted-foreground">Size</Label>
+            <ToggleGroup
+              type="single"
+              value={avatarSize.toString()}
+              onValueChange={(v) => v && setAvatarSize(Number(v))}
+              className="h-8"
+            >
+              <ToggleGroupItem value="40" className="text-xs h-7 px-2">
+                S
+              </ToggleGroupItem>
+              <ToggleGroupItem value="80" className="text-xs h-7 px-2">
+                M
+              </ToggleGroupItem>
+              <ToggleGroupItem value="120" className="text-xs h-7 px-2">
+                L
+              </ToggleGroupItem>
+            </ToggleGroup>
+
+            <Separator orientation="vertical" className="h-6" />
+
+            {/* Shape */}
+            <Label className="text-xs text-muted-foreground">Shape</Label>
+            <ToggleGroup
+              type="single"
+              value={shape}
+              onValueChange={(v) => {
+                const newShape = v as 'circle' | 'square' | 'rounded';
+                setShape(newShape);
+                // Update the selected avatar's shape if one is selected
+                if (selectedAvatar) {
+                  const updatedAvatar = {
+                    ...selectedAvatar,
+                    shape: newShape
+                  };
+                  setSelectedAvatar(updatedAvatar);
+                  updateUrl(updatedAvatar);
+                }
+              }}
+              className="h-8"
+            >
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <ToggleGroupItem value="circle" aria-label="Circle" className="h-7 px-2">
+                    <Circle className="size-3.5" />
+                  </ToggleGroupItem>
+                </TooltipTrigger>
+                <TooltipContent sideOffset={6}>Circle</TooltipContent>
+              </Tooltip>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <ToggleGroupItem value="rounded" aria-label="Rounded" className="h-7 px-2">
+                    <Square className="size-3.5" />
+                  </ToggleGroupItem>
+                </TooltipTrigger>
+                <TooltipContent sideOffset={6}>Rounded</TooltipContent>
+              </Tooltip>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <ToggleGroupItem value="square" aria-label="Square" className="h-7 px-2">
+                    <svg 
+                      width="14" 
+                      height="14" 
+                      viewBox="0 0 24 24" 
+                      fill="none" 
+                      stroke="currentColor" 
+                      strokeWidth="2" 
+                      strokeLinecap="round" 
+                      strokeLinejoin="round"
+                      className="size-3.5"
+                    >
+                      <rect x="3" y="3" width="18" height="18" />
+                    </svg>
+                  </ToggleGroupItem>
+                </TooltipTrigger>
+                <TooltipContent sideOffset={6}>Square</TooltipContent>
+              </Tooltip>
+            </ToggleGroup>
+
+            <Separator orientation="vertical" className="h-6" />
+
+            {/* Colors */}
+            <Label className="text-xs text-muted-foreground">Colors</Label>
+            <div className="flex items-center gap-1.5">
+              {dotColors.slice(0, 5).map((c, i) => (
+                <ColorSwatch
+                  key={i}
+                  color={c}
+                  onChange={(next) => {
+                    setters[i](next);
+                    // Reset selected theme when manually changing colors
+                    setSelectedTheme('custom');
+                  }}
+                />
+              ))}
+            </div>
+
+            <div className="flex-1" />
+
+            {/* Server API toggle */}
+            <div className="flex items-center gap-2">
+              <Label htmlFor="server-api" className="text-xs text-muted-foreground">
+                Server
+              </Label>
+              <Switch
+                id="server-api"
+                checked={useApi}
+                onCheckedChange={setUseApi}
+              />
+            </div>
         </div>
 
         {/* Company Grid with infinite scroll */}
@@ -657,8 +833,10 @@ export const Playground = () => {
             {allCompanies.map((company, index) => {
               const variantIndex = index % variants.length;
               const displayVariant = variant === 'random' ? variants[variantIndex] : variant;
-              const paletteIndex = Math.floor(index / 50) % colorPalettes.length;
-              const avatarColors = variant === 'random' ? colorPalettes[paletteIndex] : dotColors;
+              const paletteIndex = Math.floor(index / 50) % Math.max(allPalettes.length, 1);
+              const avatarColors = variant === 'random' && allPalettes.length > 0 
+                ? allPalettes[paletteIndex]?.colors || dotColors 
+                : dotColors;
 
               return (
                 <Card 
@@ -682,7 +860,7 @@ export const Playground = () => {
                           colors={avatarColors}
                           size={avatarSize}
                           className={shape === 'square' ? 'rounded-none' : shape === 'rounded' ? 'rounded-md' : 'rounded-full'}
-                          api={useApi ? '/api/avatar' : undefined}
+                          api={useApi ? "/api/avatar" : undefined}
                         />
                         <Badge 
                           variant="secondary" 

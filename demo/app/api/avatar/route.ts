@@ -153,7 +153,7 @@ export async function GET(request: NextRequest) {
       variant: variant as any,
       size,
       title,
-      colors,
+      colors: colors || ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6'],
     });
     
     // Render to string
