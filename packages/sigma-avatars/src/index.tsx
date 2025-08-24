@@ -38,15 +38,25 @@ const Avatar = ({
 }: AvatarProps & { variant?: keyof typeof AVATAR_VARIANTS }) => {
   // If API is provided, render as an img element
   if (api) {
-    const params = new URLSearchParams({
-      name,
-      variant,
-      size: size?.toString() || '80',
-      title: title?.toString() || 'false',
-      ...(colors && colors.length > 0 && { 
-        colors: colors.map(c => c.replace(/^#/, '')).join(',')
-      }),
-    });
+    // Check if api is a full URL with params or just the base endpoint
+    const isFullUrl = api.includes('?');
+    let finalUrl = api;
+    
+    if (!isFullUrl) {
+      // Build params if api is just the endpoint
+      const params = new URLSearchParams({
+        name,
+        variant,
+        size: size?.toString() || '80',
+        title: title?.toString() || 'false',
+        format: 'webp', // Default to WebP for performance
+        ...(colors && colors.length > 0 && { 
+          colors: colors.map(c => c.replace(/^#/, '')).join(',')
+        }),
+      });
+      finalUrl = `${api}?${params}`;
+    }
+    
     
     const imgSize = typeof size === 'number' ? size : parseInt(size || '80', 10);
     
@@ -55,7 +65,7 @@ const Avatar = ({
     
     return (
       <img
-        src={`${api}?${params}`}
+        src={finalUrl}
         alt={name}
         width={imgSize}
         height={imgSize}

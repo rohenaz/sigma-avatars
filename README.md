@@ -52,11 +52,12 @@ import Avatar from 'sigma-avatars';
 |-----------|--------------------------------------------------------------|-----------------------------------------------------------|-------------|
 | name      | string                                                       | `'Clara Barton'`                                         | Username, email, or any string for avatar generation |
 | variant   | `'marble'` \| `'beam'` \| `'pixel'` \| `'sunset'` \| `'ring'` \| `'bauhaus'` \| `'fractal'` \| `'mage'` \| `'barcode'` \| `'pepe'` | `'marble'`                                                | Avatar style variant |
-| size      | number                                                       | `80`                                                      | Avatar size in pixels |
+| size      | number \| string                                            | `80`                                                      | Avatar size in pixels |
 | colors    | string[]                                                     | `['#92A1C6', '#146A7C', '#F0AB3D', '#C271B4', '#C20D90']` | Color palette array |
 | className | string                                                       | `'rounded-md'`                                           | CSS classes for shape (`rounded-full`, `rounded-md`, `rounded-none`) |
 | title     | boolean                                                      | `false`                                                   | Include accessible title element |
 | api       | string                                                       | `undefined`                                               | API endpoint for server-side generation |
+| backgrounds | string[]                                                   | `undefined`                                               | List of allowed background patterns (for variants that support them) |
 
 ### Basic Usage
 
@@ -145,6 +146,43 @@ import Avatar, { shadcnColors, shadcnColorPrefixColors } from 'sigma-avatars';
 <Avatar name="Prefix User" colors={shadcnColorPrefixColors} />
 ```
 
+### Exported Utilities
+
+The library exports several utilities for working with colors and patterns:
+
+```jsx
+import {
+  // Color validation functions
+  isHex,
+  isCssVariable,
+  isRgbColor,
+  isHslColor,
+  isOklchColor,
+  
+  // Color palettes
+  defaultColors,
+  shadcnColors,
+  shadcnColorPrefixColors,
+  
+  // Utility functions
+  paletteToArray,
+  
+  // Background patterns (for advanced usage)
+  PATTERN_CATEGORIES,
+  PATTERN_REGISTRY,
+  PATTERN_NAMES
+} from 'sigma-avatars';
+
+// Example: Validate color formats
+if (isHex('#ff0000')) {
+  // Valid hex color
+}
+
+if (isCssVariable('var(--primary)')) {
+  // Valid CSS variable
+}
+```
+
 ### Server-Side Generation
 
 Use the `api` prop for server-side avatar generation:
@@ -169,10 +207,11 @@ GET /api/avatar?name=Maria%20Mitchell&variant=beam&size=120&colors=264653,2a9d8f
 
 Supported parameters:
 - `name`: Avatar name/identifier
-- `variant`: Avatar variant (defaults to `beam`)
+- `variant`: Avatar variant (defaults to `marble`)
 - `size`: Size in pixels (defaults to `80`)
 - `colors`: Comma-separated hex colors without `#`
 - `format`: Output format (`svg`, `png`, `webp` - defaults to `svg`)
+- `title`: Include accessible title element (defaults to `false`)
 
 ## 🎨 Examples
 

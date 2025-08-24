@@ -55,7 +55,7 @@ export async function GET(request: NextRequest) {
     // Extract all parameters
     const params = {
       name: searchParams.get("name") || "default",
-      variant: searchParams.get("variant") || "beam",
+      variant: searchParams.get("variant") || "marble",
       size: searchParams.get("size") || "80",
       title: searchParams.get("title") || "false",
       colors: searchParams.get("colors") || "",
@@ -183,16 +183,17 @@ export async function GET(request: NextRequest) {
         try {
           const svgBuffer = Buffer.from(svgString);
           const sharpInstance = sharp(svgBuffer)
-            .resize(size, size) // Use 1x size for faster processing
-            .png({ quality: 80, compressionLevel: 6 }); // Reduce quality for speed
+            .resize(size, size); // Use exact size
 
           if (format === "webp") {
             outputBuffer = await sharpInstance
-              .webp({ quality: 75, effort: 0 }) // effort: 0 is fastest
+              .webp({ quality: 85, effort: 2 }) // Better quality/speed balance
               .toBuffer();
             contentType = "image/webp";
           } else {
-            outputBuffer = await sharpInstance.toBuffer();
+            outputBuffer = await sharpInstance
+              .png({ quality: 90, compressionLevel: 6 })
+              .toBuffer();
             contentType = "image/png";
           }
         } catch (conversionError) {
