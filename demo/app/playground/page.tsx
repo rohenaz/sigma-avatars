@@ -1,5 +1,5 @@
-import { Playground } from '@/components/playground';
-import { Suspense } from 'react';
+import { Playground } from "@/components/playground";
+import { Suspense } from "react";
 
 export default function PlaygroundPage() {
   return (

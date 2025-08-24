@@ -1,14 +1,14 @@
-'use client';
+"use client";
 
-import Link from 'next/link';
-import { usePathname } from 'next/navigation';
-import { cn } from '@/lib/utils';
-import { ModeToggle } from './mode-toggle';
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { cn } from "@/lib/utils";
+import { ModeToggle } from "./mode-toggle";
 
 const navItems = [
-  { href: '/playground', label: 'Playground' },
-  { href: '/examples', label: 'Examples' },
-  { href: '/api-service', label: 'API' },
+  { href: "/playground", label: "Playground" },
+  { href: "/examples", label: "Examples" },
+  { href: "/api-service", label: "API" },
 ];
 
 export function Navbar() {
@@ -29,10 +29,10 @@ export function Navbar() {
                 key={item.href}
                 href={item.href}
                 className={cn(
-                  'transition-colors hover:text-foreground/80',
+                  "transition-colors hover:text-foreground/80",
                   pathname === item.href
-                    ? 'text-foreground'
-                    : 'text-foreground/60'
+                    ? "text-foreground"
+                    : "text-foreground/60",
                 )}
               >
                 {item.label}

@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 
 interface SigmaLogoProps {
   className?: string;
@@ -6,13 +6,17 @@ interface SigmaLogoProps {
   height?: number;
 }
 
-export function SigmaLogo({ className = "h-7 w-auto", width = 120, height = 28 }: SigmaLogoProps) {
+export function SigmaLogo({
+  className = "h-7 w-auto",
+  width = 120,
+  height = 28,
+}: SigmaLogoProps) {
   return (
-    <svg 
+    <svg
       width={width}
       height={height}
-      viewBox="0 0 1136 265" 
-      fill="currentColor" 
+      viewBox="0 0 1136 265"
+      fill="currentColor"
       xmlns="http://www.w3.org/2000/svg"
       className={className}
       aria-label="Sigma"

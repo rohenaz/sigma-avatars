@@ -1,10 +1,10 @@
-'use client';
+"use client";
 
-import Link from 'next/link';
-import { usePathname } from 'next/navigation';
-import { cn } from '@/lib/utils';
-import { ModeToggle } from './mode-toggle';
-import { SigmaLogo } from './sigma-logo';
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { cn } from "@/lib/utils";
+import { ModeToggle } from "./mode-toggle";
+import { SigmaLogo } from "./sigma-logo";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import React from "react";
 import {
@@ -18,26 +18,26 @@ import {
 import { Separator } from "@/components/ui/separator";
 
 const navItems = [
-  { href: '/playground', label: 'Playground' },
-  { href: '/examples', label: 'Examples' },
-  { href: '/api-service', label: 'API' },
+  { href: "/playground", label: "Playground" },
+  { href: "/examples", label: "Examples" },
+  { href: "/api-service", label: "API" },
 ];
 
 export function AppNavbar() {
   const pathname = usePathname();
-  
+
   // Adjust once and reuse this value as sticky offsets elsewhere
   const headerHeight = "3.5rem"; // h-14
 
   // Get current page info for breadcrumbs
   const getCurrentPageInfo = () => {
     switch (pathname) {
-      case '/playground':
-        return { title: 'Playground', showBreadcrumbs: false };
-      case '/examples':
-        return { title: 'Examples', showBreadcrumbs: false };
-      case '/api-service':
-        return { title: 'API', showBreadcrumbs: false };
+      case "/playground":
+        return { title: "Playground", showBreadcrumbs: false };
+      case "/examples":
+        return { title: "Examples", showBreadcrumbs: false };
+      case "/api-service":
+        return { title: "API", showBreadcrumbs: false };
       default:
         return { title: null, showBreadcrumbs: false };
     }
@@ -62,10 +62,10 @@ export function AppNavbar() {
               key={item.href}
               href={item.href}
               className={cn(
-                'transition-colors hover:text-foreground/80',
+                "transition-colors hover:text-foreground/80",
                 pathname === item.href
-                  ? 'text-foreground'
-                  : 'text-foreground/60'
+                  ? "text-foreground"
+                  : "text-foreground/60",
               )}
             >
               {item.label}

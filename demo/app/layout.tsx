@@ -44,9 +44,7 @@ export default function RootLayout({
               <SidebarProvider defaultOpen={false}>
                 <SidebarInset>
                   <AppNavbar />
-                  <main className="min-h-screen">
-                    {children}
-                  </main>
+                  <main className="min-h-screen">{children}</main>
                 </SidebarInset>
                 <AppSidebar side="right" />
               </SidebarProvider>

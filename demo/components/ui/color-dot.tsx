@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import { useRef, useState } from 'react';
-import { ChromePicker } from 'react-color';
-import { useOnClickOutside } from '@/hooks/use-click-outside';
+import { useRef, useState } from "react";
+import { ChromePicker } from "react-color";
+import { useOnClickOutside } from "@/hooks/use-click-outside";
 
 interface ColorDotProps {
   value: string;

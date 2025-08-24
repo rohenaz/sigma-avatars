@@ -147,7 +147,9 @@ code {
 
 .shiki-code {
   @apply text-xs;
-  font-family: ui-monospace, SFMono-Regular, 'SF Mono', Consolas, 'Liberation Mono', Menlo, monospace;
+  font-family:
+    ui-monospace, SFMono-Regular, "SF Mono", Consolas, "Liberation Mono", Menlo,
+    monospace;
 }
 
 /* Custom scrollbar for code blocks */

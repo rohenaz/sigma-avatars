@@ -8,14 +8,19 @@ import { Button } from "@/components/ui/button";
 
 export function ModeToggle() {
   const { theme, setTheme } = useTheme();
+  const [mounted, setMounted] = React.useState(false);
+
+  React.useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const handleToggle = () => {
-    if (!theme || theme === 'system') {
-      setTheme('light');
-    } else if (theme === 'light') {
-      setTheme('dark');
+    if (!theme || theme === "system") {
+      setTheme("light");
+    } else if (theme === "light") {
+      setTheme("dark");
     } else {
-      setTheme('system');
+      setTheme("system");
     }
   };
 
@@ -24,7 +29,9 @@ export function ModeToggle() {
       <Sun className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0 [html:not(.dark):not(.light)_&]:scale-0" />
       <Moon className="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
       <Monitor className="absolute h-[1.2rem] w-[1.2rem] scale-0 transition-all [html:not(.dark):not(.light)_&]:scale-100" />
-      <span className="sr-only">Toggle theme (current: {theme || 'system'})</span>
+      <span className="sr-only">
+        Toggle theme{mounted && theme ? ` (current: ${theme})` : ""}
+      </span>
     </Button>
   );
 }

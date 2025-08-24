@@ -1,17 +1,23 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import Avatar from 'sigma-avatars';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { ArrowRight, Copy, Check, Shuffle } from 'lucide-react';
-import Link from 'next/link';
-import { colorPalettes } from '@/lib/color-palettes';
-import { CodeBlock } from '@/components/code-block';
-import { useSidebar } from '@/components/ui/sidebar';
-import { useSidebarContext, SelectedAvatar } from '@/contexts/sidebar-context';
+import { useState } from "react";
+import Avatar from "sigma-avatars";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { ArrowRight, Copy, Check, Shuffle } from "lucide-react";
+import Link from "next/link";
+import { colorPalettes } from "@/lib/color-palettes";
+import { CodeBlock } from "@/components/code-block";
+import { useSidebar } from "@/components/ui/sidebar";
+import { useSidebarContext, SelectedAvatar } from "@/contexts/sidebar-context";
 
 const paletteColors = colorPalettes;
 
@@ -22,7 +28,7 @@ export default function Home() {
   const [currentPalette, setCurrentPalette] = useState(paletteColors[8]);
 
   const copyToClipboard = (text: string, id: string) => {
-    if (typeof navigator !== 'undefined' && navigator.clipboard) {
+    if (typeof navigator !== "undefined" && navigator.clipboard) {
       navigator.clipboard.writeText(text);
     }
     setCopiedCode(id);
@@ -34,7 +40,7 @@ export default function Home() {
     setCurrentPalette(paletteColors[randomIndex]);
   };
 
-  const installCommand = 'npm install sigma-avatars';
+  const installCommand = "npm install sigma-avatars";
   const basicUsage = `import Avatar from 'sigma-avatars';
 
 <Avatar
@@ -44,30 +50,73 @@ export default function Home() {
   className="rounded-full"  // Optional: circle, rounded-md (default), or rounded-none
 />`;
 
-  const variants: ('pixel' | 'bauhaus' | 'ring' | 'beam' | 'sunset' | 'marble' | 'fractal' | 'mage' | 'barcode' | 'pepe')[] = ['marble', 'beam', 'pixel', 'sunset', 'ring', 'bauhaus', 'fractal', 'mage', 'barcode', 'pepe'];
-  const demoNames = ['Mary Shelley', 'Ada Lovelace', 'Grace Hopper', 'Hedy Lamarr', 'Katherine Johnson'];
-  
+  const variants: (
+    | "pixel"
+    | "bauhaus"
+    | "ring"
+    | "beam"
+    | "sunset"
+    | "marble"
+    | "fractal"
+    | "mage"
+    | "barcode"
+    | "pepe"
+  )[] = [
+    "marble",
+    "beam",
+    "pixel",
+    "sunset",
+    "ring",
+    "bauhaus",
+    "fractal",
+    "mage",
+    "barcode",
+    "pepe",
+  ];
+  const demoNames = [
+    "Mary Shelley",
+    "Ada Lovelace",
+    "Grace Hopper",
+    "Hedy Lamarr",
+    "Katherine Johnson",
+  ];
+
   // State for random avatar variants
   const [avatarVariants, setAvatarVariants] = useState(
-    demoNames.map((_, i) => variants[i % variants.length])
+    demoNames.map((_, i) => variants[i % variants.length]),
   );
 
   const randomizeAvatars = () => {
     // Randomize both colors and variants
     randomizePalette();
     setAvatarVariants(
-      demoNames.map(() => variants[Math.floor(Math.random() * variants.length)])
+      demoNames.map(
+        () => variants[Math.floor(Math.random() * variants.length)],
+      ),
     );
   };
 
-  const handleClick = (name: string, variant: 'pixel' | 'bauhaus' | 'ring' | 'beam' | 'sunset' | 'marble' | 'fractal' | 'mage' | 'barcode' | 'pepe') => {
+  const handleClick = (
+    name: string,
+    variant:
+      | "pixel"
+      | "bauhaus"
+      | "ring"
+      | "beam"
+      | "sunset"
+      | "marble"
+      | "fractal"
+      | "mage"
+      | "barcode"
+      | "pepe",
+  ) => {
     const avatarData: SelectedAvatar = {
       name,
       variant,
       colors: currentPalette,
       size: 80,
-      shape: 'rounded',
-      useApi: false
+      shape: "rounded",
+      useApi: false,
     };
     handleAvatarClick(avatarData);
     setSidebarOpen(true);
@@ -82,18 +131,19 @@ export default function Home() {
             Sigma Avatars
           </h1>
           <p className="text-xl text-muted-foreground mb-8">
-            Beautiful, tiny JavaScript library for generating unique SVG-based avatars from any username and color palette.
+            Beautiful, tiny JavaScript library for generating unique SVG-based
+            avatars from any username and color palette.
           </p>
-          
+
           {/* Demo Grid */}
           <div className="flex justify-center gap-4 mb-12 flex-wrap">
             {demoNames.map((name, i) => (
-              <div 
-                key={name} 
+              <div
+                key={name}
                 className="transition-transform hover:scale-110 cursor-pointer"
                 onClick={() => handleClick(name, avatarVariants[i])}
               >
-<Avatar
+                <Avatar
                   name={name}
                   variant={avatarVariants[i]}
                   colors={currentPalette}
@@ -144,7 +194,8 @@ export default function Home() {
               </CardHeader>
               <CardContent>
                 <p className="text-muted-foreground">
-                  Same input always generates the same avatar. Perfect for consistent user representations.
+                  Same input always generates the same avatar. Perfect for
+                  consistent user representations.
                 </p>
               </CardContent>
             </Card>
@@ -154,7 +205,8 @@ export default function Home() {
               </CardHeader>
               <CardContent>
                 <p className="text-muted-foreground">
-                  10 unique variants, custom color palettes, multiple sizes, and flexible shape options (circle, rounded, square).
+                  10 unique variants, custom color palettes, multiple sizes, and
+                  flexible shape options (circle, rounded, square).
                 </p>
               </CardContent>
             </Card>
@@ -164,7 +216,8 @@ export default function Home() {
               </CardHeader>
               <CardContent>
                 <p className="text-muted-foreground">
-                  Tiny bundle size with zero dependencies beyond React. Optimized for performance.
+                  Tiny bundle size with zero dependencies beyond React.
+                  Optimized for performance.
                 </p>
               </CardContent>
             </Card>
@@ -176,42 +229,50 @@ export default function Home() {
       <section className="container mx-auto px-4 py-16 border-t">
         <div className="mx-auto max-w-4xl">
           <h2 className="text-3xl font-bold text-center mb-12">Quick Start</h2>
-          
+
           <Card>
             <Tabs defaultValue="bun" className="w-full">
               <CardHeader className="flex flex-row items-center justify-between pb-3">
                 <CardTitle>Installation</CardTitle>
                 <TabsList className="h-8 grid grid-cols-4">
-                  <TabsTrigger value="npm" className="text-xs data-[state=active]:text-xs">npm</TabsTrigger>
-                  <TabsTrigger value="yarn" className="text-xs data-[state=active]:text-xs">yarn</TabsTrigger>
-                  <TabsTrigger value="pnpm" className="text-xs data-[state=active]:text-xs">pnpm</TabsTrigger>
-                  <TabsTrigger value="bun" className="text-xs data-[state=active]:text-xs">bun</TabsTrigger>
+                  <TabsTrigger
+                    value="npm"
+                    className="text-xs data-[state=active]:text-xs"
+                  >
+                    npm
+                  </TabsTrigger>
+                  <TabsTrigger
+                    value="yarn"
+                    className="text-xs data-[state=active]:text-xs"
+                  >
+                    yarn
+                  </TabsTrigger>
+                  <TabsTrigger
+                    value="pnpm"
+                    className="text-xs data-[state=active]:text-xs"
+                  >
+                    pnpm
+                  </TabsTrigger>
+                  <TabsTrigger
+                    value="bun"
+                    className="text-xs data-[state=active]:text-xs"
+                  >
+                    bun
+                  </TabsTrigger>
                 </TabsList>
               </CardHeader>
               <CardContent>
                 <TabsContent value="npm" className="mt-0">
-                  <CodeBlock
-                    code="npm install sigma-avatars"
-                    language="bash"
-                  />
+                  <CodeBlock code="npm install sigma-avatars" language="bash" />
                 </TabsContent>
                 <TabsContent value="yarn" className="mt-0">
-                  <CodeBlock
-                    code="yarn add sigma-avatars"
-                    language="bash"
-                  />
+                  <CodeBlock code="yarn add sigma-avatars" language="bash" />
                 </TabsContent>
                 <TabsContent value="pnpm" className="mt-0">
-                  <CodeBlock
-                    code="pnpm add sigma-avatars"
-                    language="bash"
-                  />
+                  <CodeBlock code="pnpm add sigma-avatars" language="bash" />
                 </TabsContent>
                 <TabsContent value="bun" className="mt-0">
-                  <CodeBlock
-                    code="bun add sigma-avatars"
-                    language="bash"
-                  />
+                  <CodeBlock code="bun add sigma-avatars" language="bash" />
                 </TabsContent>
               </CardContent>
             </Tabs>
@@ -227,17 +288,14 @@ export default function Home() {
             </CardHeader>
             <CardContent>
               <div className="relative">
-                <CodeBlock
-                  code={basicUsage}
-                  language="tsx"
-                />
+                <CodeBlock code={basicUsage} language="tsx" />
                 <Button
                   variant="ghost"
                   size="icon"
                   className="absolute top-2 right-2 z-10"
-                  onClick={() => copyToClipboard(basicUsage, 'usage')}
+                  onClick={() => copyToClipboard(basicUsage, "usage")}
                 >
-                  {copiedCode === 'usage' ? (
+                  {copiedCode === "usage" ? (
                     <Check className="h-4 w-4" />
                   ) : (
                     <Copy className="h-4 w-4" />
@@ -246,18 +304,19 @@ export default function Home() {
               </div>
             </CardContent>
           </Card>
-
         </div>
       </section>
 
       {/* Variants Preview */}
       <section className="container mx-auto px-4 py-16 border-t">
         <div className="mx-auto max-w-6xl">
-          <h2 className="text-3xl font-bold text-center mb-12">Available Variants</h2>
+          <h2 className="text-3xl font-bold text-center mb-12">
+            Available Variants
+          </h2>
           <div className="grid grid-cols-2 md:grid-cols-5 gap-6">
             {variants.map((variant) => (
-              <div 
-                key={variant} 
+              <div
+                key={variant}
                 className="text-center cursor-pointer transition-transform hover:scale-105"
                 onClick={() => handleClick("Maria Garcia", variant)}
               >
@@ -281,8 +340,11 @@ export default function Home() {
       {/* Footer */}
       <footer className="container mx-auto px-4 py-8 border-t text-center text-muted-foreground">
         <p>
-          Built with ❤️ using React and TypeScript. 
-          Inspired by <a href="https://boringavatars.com" className="underline">Boring Avatars</a>.
+          Built with ❤️ using React and TypeScript. Inspired by{" "}
+          <a href="https://boringavatars.com" className="underline">
+            Boring Avatars
+          </a>
+          .
         </p>
       </footer>
     </div>
