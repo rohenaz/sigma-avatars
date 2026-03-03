@@ -38,6 +38,9 @@ const Avatar = ({
 }: AvatarProps & { variant?: keyof typeof AVATAR_VARIANTS }) => {
   // If API is provided, render as an img element
   if (api) {
+    const hasAdvancedCssColors = (colors || []).some((color) =>
+      /oklch\(|var\(--/i.test(String(color)),
+    );
     // Check if api is a full URL with params or just the base endpoint
     const isFullUrl = api.includes('?');
     let finalUrl = api;
@@ -49,7 +52,8 @@ const Avatar = ({
         variant,
         size: size?.toString() || '80',
         title: title?.toString() || 'false',
-        format: 'webp', // Default to WebP for performance
+        // Keep raster format for basic colors, fallback to SVG for advanced CSS color functions
+        ...(!hasAdvancedCssColors && { format: 'webp' }),
         ...(colors && colors.length > 0 && { 
           colors: colors.map(c => c.replace(/^#/, '')).join(',')
         }),

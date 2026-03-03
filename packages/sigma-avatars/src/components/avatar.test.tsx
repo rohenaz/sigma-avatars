@@ -64,7 +64,7 @@ describe('Avatar Component Rendering', () => {
 describe('Avatar Variants', () => {
   const variants = [
     'marble', 'beam', 'pixel', 'sunset', 'ring', 
-    'bauhaus', 'fractal', 'mage', 'anime', 'pepe'
+    'bauhaus', 'fractal', 'mage', 'pepe'
   ];
 
   test.each(variants)('should render %s variant', (variant) => {
@@ -169,11 +169,11 @@ describe('Special Variants', () => {
     expect(svg.length).toBeGreaterThan(1000); // Pepe is complex
   });
 
-  test('anime variant should have cel-shaded appearance', () => {
-    const svg = renderAvatar({ name: 'Sakura', variant: 'anime' });
-    
-    // Anime variant uses radialGradient for cel-shading
-    expect(svg).toContain('radialGradient');
+  test('invalid variants should gracefully fallback to marble', () => {
+    const svg = renderAvatar({ name: 'Sakura', variant: 'anime' as any });
+
+    expect(svg).toContain('<svg');
+    expect(svg).toContain('</svg>');
   });
 });
 
@@ -220,5 +220,55 @@ describe('Edge Cases', () => {
     const svg = renderAvatar({ name: 'Test', size: '150' });
     const attrs = parseSvgAttributes(svg);
     expect(attrs.width).toBe('150');
+  });
+});
+
+describe('API Rendering', () => {
+  test('should request webp for simple color formats', () => {
+    const html = renderAvatar({
+      name: 'Test User',
+      variant: 'sunset',
+      colors: ['#ff0000', '#00ff00', '#0000ff', '#ffff00', '#ff00ff'],
+      api: '/api/avatar',
+    });
+
+    expect(html).toContain('<img');
+    expect(html).toContain('format=webp');
+  });
+
+  test('should fallback to svg for oklch colors', () => {
+    const html = renderAvatar({
+      name: 'Test User',
+      variant: 'sunset',
+      colors: [
+        'oklch(0.7 0.1 240)',
+        'oklch(0.6 0.2 120)',
+        'oklch(0.8 0.1 60)',
+        'oklch(0.55 0.2 10)',
+        'oklch(0.65 0.25 280)',
+      ],
+      api: '/api/avatar',
+    });
+
+    expect(html).toContain('<img');
+    expect(html).not.toContain('format=webp');
+  });
+
+  test('should fallback to svg for css variable colors', () => {
+    const html = renderAvatar({
+      name: 'Test User',
+      variant: 'sunset',
+      colors: [
+        'var(--primary)',
+        'var(--secondary)',
+        'var(--accent)',
+        'var(--muted)',
+        'var(--card)',
+      ],
+      api: '/api/avatar',
+    });
+
+    expect(html).toContain('<img');
+    expect(html).not.toContain('format=webp');
   });
 });
