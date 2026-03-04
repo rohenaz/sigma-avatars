@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.0.3] - 2025-08-24
 
+## [0.0.4] - 2026-03-04
+
+### Fixed
+- Prevent server-side rendering avatars from returning black squares with CSS/modern theme color formats (including `oklch(...)`) when using the `api` prop.
+- Adjusted server image format negotiation to fallback to SVG when color values are not guaranteed to be WebP-safe.
+- Updated project dependencies in root, demo, and package workspaces.
+
 ### Added
 - Default WebP format for server-side rendering when using the `api` prop for better performance
 - Improved API URL handling to check for existing parameters before appending
