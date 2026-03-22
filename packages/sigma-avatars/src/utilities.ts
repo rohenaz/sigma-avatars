@@ -133,6 +133,14 @@ export const defaultColors: Color[] = [
   '#C20D90',
 ];
 
+/**
+ * shadcn semantic colors (Tailwind v3 convention without --color- prefix).
+ * WARNING: These use background-level semantic tokens (secondary, accent,
+ * muted, card) which may all resolve to near-identical lightness values in
+ * many themes, making avatars invisible. Prefer `defaultColors` for avatar
+ * generation unless your theme guarantees chromatic diversity across these
+ * tokens.
+ */
 export const shadcnColors: Color[] = [
   'var(--primary)',
   'var(--secondary)',
@@ -141,6 +149,10 @@ export const shadcnColors: Color[] = [
   'var(--card)',
 ];
 
+/**
+ * shadcn semantic colors (Tailwind v4 convention with --color- prefix).
+ * Same visibility caveat as `shadcnColors` above.
+ */
 export const shadcnColorPrefixColors: Color[] = [
   'var(--color-primary)',
   'var(--color-secondary)',
