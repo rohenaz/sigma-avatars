@@ -1,6 +1,6 @@
-import styled from 'styled-components';
-import { useTheme } from './theme-provider';
-import { Button } from './ui-system';
+import styled from "styled-components";
+import { useTheme } from "./theme-provider";
+import { Button } from "./ui-system";
 
 const ThemeIcon = styled.span`
   display: inline-flex;
@@ -22,6 +22,7 @@ const SunIcon = () => (
     viewBox="0 0 24 24"
     width="16"
   >
+    <title>Light theme</title>
     <circle cx="12" cy="12" r="5" />
     <line x1="12" x2="12" y1="1" y2="3" />
     <line x1="12" x2="12" y1="21" y2="23" />
@@ -45,6 +46,7 @@ const MoonIcon = () => (
     viewBox="0 0 24 24"
     width="16"
   >
+    <title>Dark theme</title>
     <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
   </svg>
 );
@@ -60,6 +62,7 @@ const SystemIcon = () => (
     viewBox="0 0 24 24"
     width="16"
   >
+    <title>System theme</title>
     <rect height="18" rx="2" ry="2" width="18" x="3" y="3" />
     <line x1="9" x2="15" y1="9" y2="9" />
     <line x1="9" x2="15" y1="15" y2="15" />
@@ -70,10 +73,10 @@ export const ThemeToggle = () => {
   const { theme, setTheme } = useTheme();
 
   const handleToggle = () => {
-    const themes: Array<'light' | 'dark' | 'system'> = [
-      'light',
-      'dark',
-      'system',
+    const themes: Array<"light" | "dark" | "system"> = [
+      "light",
+      "dark",
+      "system",
     ];
     const currentIndex = themes.indexOf(theme);
     const nextIndex = (currentIndex + 1) % themes.length;
@@ -82,23 +85,27 @@ export const ThemeToggle = () => {
 
   const getIcon = () => {
     switch (theme) {
-      case 'light':
+      case "light":
         return <SunIcon />;
-      case 'dark':
+      case "dark":
         return <MoonIcon />;
-      case 'system':
+      case "system":
         return <SystemIcon />;
+      default:
+        return null;
     }
   };
 
   const getLabel = () => {
     switch (theme) {
-      case 'light':
-        return 'Light';
-      case 'dark':
-        return 'Dark';
-      case 'system':
-        return 'System';
+      case "light":
+        return "Light";
+      case "dark":
+        return "Dark";
+      case "system":
+        return "System";
+      default:
+        return "";
     }
   };
 

@@ -1,6 +1,9 @@
 "use client";
 
 import { useState } from "react";
+import { CodeBlock } from "@/components/code-block";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -8,14 +11,10 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
-import Image from "next/image";
-import { CodeBlock } from "@/components/code-block";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { fortune500Companies } from "@/lib/fortune500-data";
 
 export default function ApiServicePage() {
@@ -31,7 +30,7 @@ export default function ApiServicePage() {
       ? `${window.location.protocol}//${window.location.host}`
       : "https://your-domain.com";
 
-  const exampleUrl = `${baseUrl}/api/avatar?name=${encodeURIComponent(companyName)}&variant=beam&size=120&colors=264653,2a9d8f,e9c46a,f4a261,e76f51`;
+  const _exampleUrl = `${baseUrl}/api/avatar?name=${encodeURIComponent(companyName)}&variant=beam&size=120&colors=264653,2a9d8f,e9c46a,f4a261,e76f51`;
 
   const copyToClipboard = (text: string, id: string) => {
     if (typeof navigator !== "undefined" && navigator.clipboard) {
@@ -227,7 +226,7 @@ export default function ApiServicePage() {
                 <TabsList className="w-auto">
                   {examples.map((example, index) => (
                     <TabsTrigger
-                      key={index}
+                      key={example.title}
                       value={index.toString()}
                       className="text-sm px-3"
                     >
@@ -238,7 +237,7 @@ export default function ApiServicePage() {
               </div>
               {examples.map((example, index) => (
                 <TabsContent
-                  key={index}
+                  key={example.title}
                   value={index.toString()}
                   className="space-y-4"
                 >
@@ -252,6 +251,7 @@ export default function ApiServicePage() {
                   <div className="flex items-start gap-6 rounded-lg border p-4">
                     {/* Preview */}
                     <div className="flex-shrink-0">
+                      {/* biome-ignore lint/performance/noImgElement: intentionally a plain <img> to demonstrate the raw avatar API endpoint output; next/image would proxy/optimize it and defeat the demo's purpose */}
                       <img
                         src={example.url}
                         alt={example.title}

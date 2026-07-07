@@ -1,50 +1,29 @@
-import * as React from 'react';
-import { generateId, getRandomColor, getUnit, hashCode } from '../utilities';
-import { ALL_PATTERNS, selectPattern, renderBackground } from '../backgrounds';
-import type { AvatarProps } from './types';
+import type { ReactNode } from "react";
+import { ALL_PATTERNS, renderBackground, selectPattern } from "../backgrounds";
+import { generateId, getRandomColor, getUnit, hashCode } from "../utilities";
+import type { AvatarProps } from "./types";
 
 const SIZE = 80;
-
-
-// Color helpers for anime-style shading
-function hexToRgb(hex: string) {
-  const c = hex.replace('#', '');
-  const r = Number.parseInt(c.slice(0, 2), 16);
-  const g = Number.parseInt(c.slice(2, 4), 16);
-  const b = Number.parseInt(c.slice(4, 6), 16);
-  return { r, g, b };
-}
-
-function rgbToHex(r: number, g: number, b: number) {
-  const toHex = (v: number) =>
-    Math.max(0, Math.min(255, Math.round(v)))
-      .toString(16)
-      .padStart(2, '0');
-  return `#${toHex(r)}${toHex(g)}${toHex(b)}`;
-}
-
-function darken(hex: string, amount = 0.2) {
-  const { r, g, b } = hexToRgb(hex);
-  return rgbToHex(r * (1 - amount), g * (1 - amount), b * (1 - amount));
-}
 
 // Helper to pick eye color - white, yellow, or bright colors from palette
 function getEyeColor(num: number, colors: string[]): string {
   // Check if palette has bright colors (hex colors with high luminance)
   const brightColors = colors.filter((c) => {
-    if (!c.startsWith('#') || c.length !== 7) return false;
-    const r = Number.parseInt(c.substring(1, 3), 16);
-    const g = Number.parseInt(c.substring(3, 5), 16);
-    const b = Number.parseInt(c.substring(5, 7), 16);
+    if (!c.startsWith("#") || c.length !== 7) {
+      return false;
+    }
+    const r = Number.parseInt(c.slice(1, 3), 16);
+    const g = Number.parseInt(c.slice(3, 5), 16);
+    const b = Number.parseInt(c.slice(5, 7), 16);
     const luminance = 0.299 * r + 0.587 * g + 0.114 * b;
     return luminance > 180; // Only bright colors
   });
 
   const eyeColors = [
-    '#FFFFFF', // Pure white
-    '#FFFF00', // Pure yellow
-    '#FFFFFF', // Pure white (repeated for more white probability)
-    '#FFFF00', // Pure yellow (repeated for balance)
+    "#FFFFFF", // Pure white
+    "#FFFF00", // Pure yellow
+    "#FFFFFF", // Pure white (repeated for more white probability)
+    "#FFFF00", // Pure yellow (repeated for balance)
     ...brightColors.slice(0, 2), // Add up to 2 bright colors from palette
   ];
 
@@ -58,30 +37,17 @@ const AvatarMage = ({
   size,
   ...otherProps
 }: AvatarProps) => {
-  const maskID = generateId(name, 'mage-mask');
-  const filterID = generateId(name, 'mage-filter');
-  const patternID = generateId(name, 'mage-pattern');
+  const maskID = generateId(name, "mage-mask");
+  const filterID = generateId(name, "mage-filter");
+  const patternID = generateId(name, "mage-pattern");
   const num = hashCode(name);
 
   // Deterministic parameters
-  const faceColor = '#000000'; // Always black/shadow for mage face
+  const faceColor = "#000000"; // Always black/shadow for mage face
   const eyeColor = getEyeColor(num + 17, colors);
-  const needsPupil = eyeColor === '#FFFFFF'; // Only white eyes get pupils
+  const needsPupil = eyeColor === "#FFFFFF"; // Only white eyes get pupils
   const eyeShape = getUnit(num, 5); // 0=round, 1=slit, 2=diamond, 3=star, 4=oval
 
-  // Base neutral hat colors
-  const baseHatColors = [
-    '#2C2416', // Dark brown
-    '#1A1A1A', // Near black
-    '#3D3D3D', // Dark gray
-    '#2B2B2B', // Charcoal
-    '#4A3C28', // Dark tan
-    '#1F1F1F', // Off black
-  ];
-  const baseHatColor = baseHatColors[getUnit(num + 7, baseHatColors.length)];
-  const tintColor = getRandomColor(num + 11, colors, colors.length);
-  const hatShape = 5; // force classic wide-brim mage hat for consistent silhouette
-  const tilt = getUnit(num + 13, 31) - 15; // -15 to +15 degrees for hat
   const eyeGlow = getUnit(num + 19, 4); // Eye glow intensity
 
   // Reduce head size significantly and move face lower for "peeking" effect
@@ -137,14 +103,13 @@ const AvatarMage = ({
   const showCollar = getUnit(num + 131, 10) < 3; // 30% chance
   const collarColor = getRandomColor(num + 133, colors, colors.length);
 
-
   // Draw eye based on shape - more organic and mystical
   const drawEye = (cx: number, isLeft: boolean) => {
     const cy =
       faceY + (isLeft ? -eyeVerticalOffset / 2 : eyeVerticalOffset / 2);
     // Eyes tilt opposite ways for natural symmetry
     const eyeAngle = isLeft ? -eyeTilt : eyeTilt;
-    const elements = [];
+    const elements: ReactNode[] = [];
 
     // Wrap everything in a transform group for eye rotation
     const eyeTransform = `rotate(${eyeAngle} ${cx} ${cy})`;
@@ -160,8 +125,8 @@ const AvatarMage = ({
           ry={eyeHeight * 1.5}
           style={{
             fill: eyeColor,
+            filter: "blur(8px)",
             opacity: 0.3 - eyeGlow * 0.05,
-            filter: 'blur(8px)',
           }}
         />
       );
@@ -194,7 +159,7 @@ const AvatarMage = ({
               key={`pupil-${cx}`}
               rx={eyeWidth * 0.25}
               ry={eyeHeight * 0.3}
-              style={{ fill: '#000000' }}
+              style={{ fill: "#000000" }}
             />
           );
         }
@@ -222,7 +187,7 @@ const AvatarMage = ({
               key={`pupil-${cx}`}
               rx={eyeWidth * 0.15}
               ry={eyeHeight * 0.4}
-              style={{ fill: '#000000' }}
+              style={{ fill: "#000000" }}
             />
           );
         }
@@ -272,8 +237,7 @@ const AvatarMage = ({
         );
         break;
 
-      case 4: // Large oval (Vivi style) - iconic glowing orbs, portrait orientation
-      default:
+      default: // Large oval (Vivi style) - iconic glowing orbs, portrait orientation
         // Main glowing oval - portrait oriented (taller than wide)
         elements.push(
           <ellipse
@@ -284,7 +248,7 @@ const AvatarMage = ({
             ry={eyeHeight} // Full height
             style={{
               fill: eyeColor,
-              filter: 'brightness(1.2)',
+              filter: "brightness(1.2)",
             }}
           />
         );
@@ -298,8 +262,8 @@ const AvatarMage = ({
             ry={eyeHeight * 0.85}
             style={{
               fill: eyeColor,
+              filter: "brightness(1.4)",
               opacity: 0.6,
-              filter: 'brightness(1.4)',
             }}
           />
         );
@@ -313,7 +277,7 @@ const AvatarMage = ({
               key={`pupil-${cx}`}
               rx={eyeWidth * 0.3}
               ry={eyeHeight * 0.35}
-              style={{ fill: '#000000' }}
+              style={{ fill: "#000000" }}
             />
           );
         } else {
@@ -326,7 +290,7 @@ const AvatarMage = ({
               rx={eyeWidth * 0.3} // Narrower width
               ry={eyeHeight * 0.5}
               style={{
-                fill: '#FFFFFF',
+                fill: "#FFFFFF",
                 opacity: 0.5,
               }}
             />
@@ -343,7 +307,6 @@ const AvatarMage = ({
     );
   };
 
-
   return (
     <svg
       fill="none"
@@ -354,7 +317,7 @@ const AvatarMage = ({
       xmlns="http://www.w3.org/2000/svg"
       {...otherProps}
     >
-      {title && <title>{name}</title>}
+      {title ? <title>{name}</title> : null}
 
       {/* No gradients needed */}
 
@@ -366,30 +329,31 @@ const AvatarMage = ({
         x={0}
         y={0}
       >
-        <rect
-          fill="#FFFFFF"
-          height={SIZE}
-          
-          width={SIZE}
-        />
+        <rect fill="#FFFFFF" height={SIZE} width={SIZE} />
       </mask>
 
       <g mask={`url(#${maskID})`}>
         {/* Solid fallback background from palette - always visible */}
         <rect
-          width={SIZE}
-          height={SIZE}
           fill={getRandomColor(num * 23, colors, colors.length)}
+          height={SIZE}
+          width={SIZE}
         />
-        
+
         {/* Pattern overlay - may have transparency */}
         {renderBackground(
           selectPattern(num * 31 + 17, ALL_PATTERNS), // Use deterministic selection
           {
-            size: SIZE,
-            colors: colors || ['#92A1C6', '#146A7C', '#F0AB3D', '#C271B4', '#C20D90'],
+            colors: colors || [
+              "#92A1C6",
+              "#146A7C",
+              "#F0AB3D",
+              "#C271B4",
+              "#C20D90",
+            ],
+            patternId: patternID,
             seed: num,
-            patternId: patternID
+            size: SIZE,
           }
         )}
 
@@ -429,10 +393,10 @@ const AvatarMage = ({
           {showMouth && (
             <line
               style={{
-                stroke: eyeColor === '#FFFF00' ? '#FFFFFF' : eyeColor, // Use white if eyes are yellow
-                strokeWidth: 1.5,
                 opacity: 0.7,
-                strokeLinecap: 'round',
+                stroke: eyeColor === "#FFFF00" ? "#FFFFFF" : eyeColor, // Use white if eyes are yellow
+                strokeLinecap: "round",
+                strokeWidth: 1.5,
               }}
               x1={SIZE / 2 - mouthWidth / 2}
               x2={SIZE / 2 + mouthWidth / 2}

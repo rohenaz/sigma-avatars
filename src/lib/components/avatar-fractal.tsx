@@ -1,142 +1,142 @@
-import * as React from 'react';
-import { generateId, getUnit, hashCode, getRandomColor } from '../utilities';
-import type { AvatarProps } from './types';
+import type { CSSProperties } from "react";
+import { generateId, getRandomColor, getUnit, hashCode } from "../utilities";
+import type { AvatarProps } from "./types";
 
 const SIZE = 80;
 
 // Type-safe fractal definitions
 interface Fractal {
-  name: string;
-  axiom: string;
-  rules: Record<string, string>;
   angle: number;
-  iterations: number;
   angleVariance?: number;
+  axiom: string;
+  iterations: number;
   iterVariance?: number;
+  name: string;
+  rules: Record<string, string>;
 }
 
 // Dense fractals for backgrounds
 const BACKGROUND_FRACTALS: Fractal[] = [
   {
-    name: 'Hilbert',
-    axiom: 'A',
-    rules: { A: '-BF+AFA+FB-', B: '+AF-BFB-FA+', F: 'F' },
     angle: 90,
-    iterations: 5,
     angleVariance: 5,
+    axiom: "A",
+    iterations: 5,
     iterVariance: 1,
+    name: "Hilbert",
+    rules: { A: "-BF+AFA+FB-", B: "+AF-BFB-FA+", F: "F" },
   },
   {
-    name: 'Gosper',
-    axiom: 'A',
-    rules: { A: 'A-B--B+A++AA+B-', B: '+A-BB--B-A++A+B', F: 'F' },
     angle: 60,
-    iterations: 4,
     angleVariance: 10,
+    axiom: "A",
+    iterations: 4,
     iterVariance: 1,
+    name: "Gosper",
+    rules: { A: "A-B--B+A++AA+B-", B: "+A-BB--B-A++A+B", F: "F" },
   },
   {
-    name: 'Sierpinski',
-    axiom: 'F-G-G',
-    rules: { F: 'F-G+F+G-F', G: 'GG' },
     angle: 120,
-    iterations: 5,
     angleVariance: 15,
+    axiom: "F-G-G",
+    iterations: 5,
     iterVariance: 1,
+    name: "Sierpinski",
+    rules: { F: "F-G+F+G-F", G: "GG" },
   },
   {
-    name: 'Peano',
-    axiom: 'F',
-    rules: { F: 'F+F-F-F-F+F+F+F-F' },
     angle: 90,
-    iterations: 3,
     angleVariance: 8,
-    iterVariance: 1,
-  },
-  {
-    name: 'Moore',
-    axiom: 'LFL+F+LFL',
-    rules: { L: '-RF+LFL+FR-', R: '+LF-RFR-FL+', F: 'F' },
-    angle: 90,
-    iterations: 4,
-    angleVariance: 5,
-    iterVariance: 1,
-  },
-  {
-    name: 'Hexagon',
-    axiom: 'F',
-    rules: { F: 'F+F-F-F+F+F-F' },
-    angle: 60,
+    axiom: "F",
     iterations: 3,
-    angleVariance: 10,
     iterVariance: 1,
+    name: "Peano",
+    rules: { F: "F+F-F-F-F+F+F+F-F" },
+  },
+  {
+    angle: 90,
+    angleVariance: 5,
+    axiom: "LFL+F+LFL",
+    iterations: 4,
+    iterVariance: 1,
+    name: "Moore",
+    rules: { F: "F", L: "-RF+LFL+FR-", R: "+LF-RFR-FL+" },
+  },
+  {
+    angle: 60,
+    angleVariance: 10,
+    axiom: "F",
+    iterations: 3,
+    iterVariance: 1,
+    name: "Hexagon",
+    rules: { F: "F+F-F-F+F+F-F" },
   },
 ];
 
 // Sparse fractals for foregrounds
 const FOREGROUND_FRACTALS: Fractal[] = [
   {
-    name: 'Dragon',
-    axiom: 'FX',
-    rules: { X: 'X+YF+', Y: '-FX-Y', F: 'F' },
     angle: 90,
+    angleVariance: 15,
+    axiom: "FX",
     iterations: 11,
-    angleVariance: 15,
     iterVariance: 2,
+    name: "Dragon",
+    rules: { F: "F", X: "X+YF+", Y: "-FX-Y" },
   },
   {
-    name: 'Koch',
-    axiom: 'F++F++F',
-    rules: { F: 'F-F++F-F' },
     angle: 60,
-    iterations: 4,
     angleVariance: 10,
+    axiom: "F++F++F",
+    iterations: 4,
     iterVariance: 1,
+    name: "Koch",
+    rules: { F: "F-F++F-F" },
   },
   {
-    name: 'Plant',
-    axiom: 'X',
-    rules: { X: 'F+[[X]-X]-F[-FX]+X', F: 'FF' },
     angle: 25,
-    iterations: 4,
     angleVariance: 10,
+    axiom: "X",
+    iterations: 4,
     iterVariance: 1,
+    name: "Plant",
+    rules: { F: "FF", X: "F+[[X]-X]-F[-FX]+X" },
   },
   {
-    name: 'Levy',
-    axiom: 'F',
-    rules: { F: '+F--F+' },
     angle: 45,
-    iterations: 10,
     angleVariance: 15,
+    axiom: "F",
+    iterations: 10,
     iterVariance: 2,
+    name: "Levy",
+    rules: { F: "+F--F+" },
   },
   {
-    name: 'Tree',
-    axiom: 'F',
-    rules: { F: 'F[+F]F[-F]F' },
     angle: 25.7,
-    iterations: 4,
     angleVariance: 8,
+    axiom: "F",
+    iterations: 4,
     iterVariance: 1,
+    name: "Tree",
+    rules: { F: "F[+F]F[-F]F" },
   },
   {
-    name: 'Fern',
-    axiom: 'X',
-    rules: { X: 'F[+X][-X]FX', F: 'FF' },
     angle: 25,
-    iterations: 5,
     angleVariance: 12,
+    axiom: "X",
+    iterations: 5,
     iterVariance: 1,
+    name: "Fern",
+    rules: { F: "FF", X: "F[+X][-X]FX" },
   },
   {
-    name: 'Crystal',
-    axiom: 'F+F+F+F',
-    rules: { F: 'FF+F+F+F+F+F-F' },
     angle: 90,
-    iterations: 3,
     angleVariance: 10,
+    axiom: "F+F+F+F",
+    iterations: 3,
     iterVariance: 1,
+    name: "Crystal",
+    rules: { F: "FF+F+F+F+F+F-F" },
   },
 ];
 
@@ -148,8 +148,8 @@ function generateLSystem(
 ): string {
   let current = axiom;
 
-  for (let i = 0; i < iterations; i++) {
-    let next = '';
+  for (let i = 0; i < iterations; i += 1) {
+    let next = "";
     for (const char of current) {
       next += rules[char] || char;
     }
@@ -161,11 +161,11 @@ function generateLSystem(
 
 // Convert L-System to SVG path with bounding box tracking
 interface PathResult {
-  path: string;
-  minX: number;
   maxX: number;
-  minY: number;
   maxY: number;
+  minX: number;
+  minY: number;
+  path: string;
   pathLength: number;
 }
 
@@ -185,46 +185,36 @@ function lSystemToPath(system: string, angle: number): PathResult {
   let currentPath = `M ${x} ${y}`;
 
   for (const char of system) {
-    switch (char) {
-      case 'F':
-      case 'G': {
-        // Draw forward
-        const rad = (currentAngle * Math.PI) / 180;
-        const prevX = x,
-          prevY = y;
-        x += Math.cos(rad);
-        y += Math.sin(rad);
+    if (char === "F" || char === "G") {
+      // Draw forward
+      const rad = (currentAngle * Math.PI) / 180;
+      const prevX = x,
+        prevY = y;
+      x += Math.cos(rad);
+      y += Math.sin(rad);
 
-        currentPath += ` L ${x} ${y}`;
-        pathLength += Math.sqrt((x - prevX) ** 2 + (y - prevY) ** 2);
+      currentPath += ` L ${x} ${y}`;
+      pathLength += Math.sqrt((x - prevX) ** 2 + (y - prevY) ** 2);
 
-        minX = Math.min(minX, x);
-        maxX = Math.max(maxX, x);
-        minY = Math.min(minY, y);
-        maxY = Math.max(maxY, y);
-        break;
-      }
-      case '+':
-        currentAngle += angle;
-        break;
-      case '-':
-        currentAngle -= angle;
-        break;
-      case '[':
-        stack.push({ x, y, angle: currentAngle });
-        break;
-      case ']': {
-        const state = stack.pop();
-        if (state) {
-          if (currentPath.length > 10) {
-            paths.push(currentPath);
-          }
-          x = state.x;
-          y = state.y;
-          currentAngle = state.angle;
-          currentPath = `M ${x} ${y}`;
+      minX = Math.min(minX, x);
+      maxX = Math.max(maxX, x);
+      minY = Math.min(minY, y);
+      maxY = Math.max(maxY, y);
+    } else if (char === "+") {
+      currentAngle += angle;
+    } else if (char === "-") {
+      currentAngle -= angle;
+    } else if (char === "[") {
+      stack.push({ angle: currentAngle, x, y });
+    } else if (char === "]") {
+      const state = stack.pop();
+      if (state) {
+        if (currentPath.length > 10) {
+          paths.push(currentPath);
         }
-        break;
+        currentAngle = state.angle;
+        ({ x, y } = state);
+        currentPath = `M ${x} ${y}`;
       }
     }
   }
@@ -234,11 +224,11 @@ function lSystemToPath(system: string, angle: number): PathResult {
   }
 
   return {
-    path: paths.join(' '),
-    minX,
     maxX,
-    minY,
     maxY,
+    minX,
+    minY,
+    path: paths.join(" "),
     pathLength,
   };
 }
@@ -278,7 +268,7 @@ function fitToBox(
 }
 
 export interface FractalAvatarProps extends AvatarProps {
-  animate?: boolean | 'subtle' | 'pulse' | 'rotate';
+  animate?: boolean | "subtle" | "pulse" | "rotate";
 }
 
 const AvatarFractal = ({
@@ -289,11 +279,11 @@ const AvatarFractal = ({
   animate,
   ...otherProps
 }: FractalAvatarProps) => {
-  const maskID = generateId(name, 'fractal-mask');
-  const clipID = generateId(name, 'fractal-clip');
-  const gradientBgID = generateId(name, 'fractal-gradient-bg');
-  const gradientFgID = generateId(name, 'fractal-gradient-fg');
-  const gradientAccentID = generateId(name, 'fractal-gradient-accent');
+  const maskID = generateId(name, "fractal-mask");
+  const clipID = generateId(name, "fractal-clip");
+  const gradientBgID = generateId(name, "fractal-gradient-bg");
+  const gradientFgID = generateId(name, "fractal-gradient-fg");
+  const gradientAccentID = generateId(name, "fractal-gradient-accent");
   const num = hashCode(name);
 
   // Decide if we use gradients or solid colors (20% chance for gradients)
@@ -307,7 +297,11 @@ const AvatarFractal = ({
 
   // Apply blend mode to foreground (20% chance) - avoid modes that completely hide layers
   const useBlendMode = getUnit(num * 269, 100) < 20;
-  const blendModes = ['multiply', 'screen', 'overlay']; // removed darken/lighten/color-dodge/color-burn which can hide layers
+  const blendModes: CSSProperties["mixBlendMode"][] = [
+    "multiply",
+    "screen",
+    "overlay",
+  ]; // removed darken/lighten/color-dodge/color-burn which can hide layers
   const blendMode = blendModes[getUnit(num * 271, blendModes.length)];
 
   // Select fractal combinations with more variation - use prime multipliers to avoid collisions
@@ -343,11 +337,19 @@ const AvatarFractal = ({
   })();
 
   // Generate background fractal with varied parameters
-  const bgSystem = generateLSystem(bgFractal.axiom, bgFractal.rules, bgIterations);
+  const bgSystem = generateLSystem(
+    bgFractal.axiom,
+    bgFractal.rules,
+    bgIterations
+  );
   const bgPath = lSystemToPath(bgSystem, bgAngle);
 
   // Generate foreground fractal with varied parameters
-  const fgSystem = generateLSystem(fgFractal.axiom, fgFractal.rules, fgIterations);
+  const fgSystem = generateLSystem(
+    fgFractal.axiom,
+    fgFractal.rules,
+    fgIterations
+  );
   const fgPath = lSystemToPath(fgSystem, fgAngle);
 
   // More varied transforms - use prime multipliers for better distribution
@@ -407,7 +409,9 @@ const AvatarFractal = ({
   // Direct calculation instead of useMemo for SSR compatibility
   const fgDashPattern = (() => {
     const useDash = getUnit(num * 113 + 47, 3) > 0; // 2/3 chance of dashes
-    if (!useDash) return 'none';
+    if (!useDash) {
+      return "none";
+    }
 
     const repeats = 8 + getUnit(num * 127 + 53, 16); // 8 to 24 repeats
     const unit = fgPath.pathLength / repeats;
@@ -434,7 +438,7 @@ const AvatarFractal = ({
       xmlns="http://www.w3.org/2000/svg"
       {...otherProps}
     >
-      {title && <title>{name}</title>}
+      {title ? <title>{name}</title> : null}
 
       <defs>
         {/* Gradients using all colors */}
@@ -479,7 +483,7 @@ const AvatarFractal = ({
 
         {/* Clipping mask */}
         <clipPath id={clipID}>
-          <rect height={SIZE}  width={SIZE} />
+          <rect height={SIZE} width={SIZE} />
         </clipPath>
 
         {/* Mask for rounded corners */}
@@ -491,12 +495,7 @@ const AvatarFractal = ({
           x={0}
           y={0}
         >
-          <rect
-            fill="#FFFFFF"
-            height={SIZE}
-            
-            width={SIZE}
-          />
+          <rect fill="#FFFFFF" height={SIZE} width={SIZE} />
         </mask>
       </defs>
 
@@ -509,7 +508,7 @@ const AvatarFractal = ({
           }}
           width={SIZE}
         />
-        
+
         {/* Semi-transparent overlay - rarely uses gradient (10% chance) */}
         <rect
           height={SIZE}
@@ -527,12 +526,12 @@ const AvatarFractal = ({
         <path
           d={bgPath.path}
           style={{
-            fill: 'none',
-            stroke: useGradients ? `url(#${gradientBgID})` : bgColor,
-            strokeWidth: bgStrokeWidth,
-            strokeLinecap: 'round',
-            strokeLinejoin: 'round',
+            fill: "none",
             opacity: bgOpacity,
+            stroke: useGradients ? `url(#${gradientBgID})` : bgColor,
+            strokeLinecap: "round",
+            strokeLinejoin: "round",
+            strokeWidth: bgStrokeWidth,
           }}
           transform={bgTransform}
         />
@@ -542,22 +541,24 @@ const AvatarFractal = ({
           d={fgPath.path}
           pathLength={fgPath.pathLength}
           style={{
-            fill: 'none',
-            stroke: useGradients ? `url(#${gradientFgID})` : fgColor,
-            strokeWidth: fgStrokeWidth,
-            strokeLinecap: 'round',
-            strokeLinejoin: 'round',
-            strokeDasharray: fgDashPattern,
+            fill: "none",
+            mixBlendMode: useBlendMode ? blendMode : "normal",
             opacity: fgOpacity,
-            mixBlendMode: useBlendMode ? (blendMode as any) : 'normal',
+            stroke: useGradients ? `url(#${gradientFgID})` : fgColor,
+            strokeDasharray: fgDashPattern,
+            strokeLinecap: "round",
+            strokeLinejoin: "round",
+            strokeWidth: fgStrokeWidth,
           }}
           transform={fgTransform}
         />
 
         {/* Small accent dots using the last color - each has 20% chance */}
-        {[...Array(5)].map((_, i) => {
+        {Array.from({ length: 5 }, (_, i) => {
           // Each dot has independent chance to appear
-          if (getUnit(num * 151 + i * 17, 100) >= 20) return null;
+          if (getUnit(num * 151 + i * 17, 100) >= 20) {
+            return null;
+          }
 
           const angle = (getUnit(num * 157 + i * 19, 360) * Math.PI) / 180;
           const radius = SIZE * (0.2 + getUnit(num * 163 + i * 23, 25) / 100);
@@ -569,7 +570,7 @@ const AvatarFractal = ({
             <circle
               cx={dotX}
               cy={dotY}
-              key={i}
+              key={`dot-${dotX}-${dotY}`}
               r={dotSize}
               style={{
                 fill: colors[4] || colors[3] || colors[0],

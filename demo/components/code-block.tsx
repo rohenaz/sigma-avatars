@@ -60,6 +60,7 @@ export function CodeBlock({ code, language, className = "" }: CodeBlockProps) {
   return (
     <div
       className={`rounded-md overflow-x-auto text-xs ${className}`}
+      // biome-ignore lint/security/noDangerouslySetInnerHtml: renders Shiki syntax-highlighted HTML generated from static, developer-authored example code (not user input)
       dangerouslySetInnerHTML={{ __html: html }}
       style={
         {

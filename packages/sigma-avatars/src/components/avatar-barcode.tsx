@@ -1,7 +1,6 @@
-import * as React from 'react';
-import { hashCode, generateId } from '../utilities';
-import { barcodeStripes, renderBackground } from '../backgrounds';
-import type { AvatarProps } from './types';
+import { barcodeStripes, renderBackground } from "../backgrounds";
+import { generateId, hashCode } from "../utilities";
+import type { AvatarProps } from "./types";
 
 const SIZE = 80;
 
@@ -13,20 +12,20 @@ const AvatarBarcode = ({
   ...otherProps
 }: AvatarProps) => {
   const numFromName = hashCode(name);
-  const maskID = generateId(name, 'barcode-mask');
-  const patternID = generateId(name, 'barcode-pattern');
+  const maskID = generateId(name, "barcode-mask");
+  const patternID = generateId(name, "barcode-pattern");
 
   return (
     <svg
       fill="none"
       height={size}
       role="img"
-      viewBox={'0 0 ' + SIZE + ' ' + SIZE}
+      viewBox={`0 0 ${SIZE} ${SIZE}`}
       width={size}
       xmlns="http://www.w3.org/2000/svg"
       {...otherProps}
     >
-      {title && <title>{name}</title>}
+      {title ? <title>{name}</title> : null}
       <mask
         height={SIZE}
         id={maskID}
@@ -35,24 +34,16 @@ const AvatarBarcode = ({
         x={0}
         y={0}
       >
-        <rect
-          fill="#FFFFFF"
-          height={SIZE}
-          
-          width={SIZE}
-        />
+        <rect fill="#FFFFFF" height={SIZE} width={SIZE} />
       </mask>
       <g mask={`url(#${maskID})`}>
         {/* Use the barcode pattern from backgrounds */}
-        {renderBackground(
-          barcodeStripes,
-          {
-            size: SIZE,
-            colors: colors,
-            seed: numFromName,
-            patternId: patternID
-          }
-        )}
+        {renderBackground(barcodeStripes, {
+          colors,
+          patternId: patternID,
+          seed: numFromName,
+          size: SIZE,
+        })}
       </g>
     </svg>
   );

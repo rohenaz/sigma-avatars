@@ -1,13 +1,12 @@
-import React from 'react';
-import { getRandomColor, hashCode, generateId } from '../utilities';
-import type { AvatarProps } from './types';
+import { generateId, getRandomColor, hashCode } from "../utilities";
+import type { AvatarProps } from "./types";
 
 const ELEMENTS = 4;
 const SIZE = 80;
 
 function generateColors(name: string, colors: string[]) {
   const numFromName = hashCode(name);
-  const range = colors?.length;
+  const range = colors.length;
 
   const colorsList = Array.from({ length: ELEMENTS }, (_, i) =>
     getRandomColor(numFromName + i, colors, range)
@@ -24,11 +23,10 @@ const AvatarSunset = ({
   ...otherProps
 }: AvatarProps) => {
   const sunsetColors = generateColors(name, colors);
-  const nameWithoutSpace = name.replace(/\s/g, '');
-  const maskID = generateId(name, 'sunset-mask');
+  const nameWithoutSpace = name.replace(/\s/g, "");
+  const maskID = generateId(name, "sunset-mask");
 
   return (
-    // biome-ignore lint/a11y/noSvgWithoutTitle: title is available when provided
     <svg
       fill="none"
       height={size}
@@ -38,7 +36,7 @@ const AvatarSunset = ({
       xmlns="http://www.w3.org/2000/svg"
       {...otherProps}
     >
-      {title && <title>{name}</title>}
+      {title ? <title>{name}</title> : null}
       <mask
         height={SIZE}
         id={maskID}
@@ -47,12 +45,7 @@ const AvatarSunset = ({
         x={0}
         y={0}
       >
-        <rect
-          fill="#FFFFFF"
-          height={SIZE}
-          
-          width={SIZE}
-        />
+        <rect fill="#FFFFFF" height={SIZE} width={SIZE} />
       </mask>
       <g mask={`url(#${maskID})`}>
         <path

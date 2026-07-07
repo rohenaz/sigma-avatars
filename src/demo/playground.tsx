@@ -1,16 +1,16 @@
-import colors from 'nice-color-palettes/1000.json' with { type: 'json' };
-import { memo, useEffect, useMemo, useRef, useState } from 'react';
-import styled from 'styled-components';
-import Avatar from '../lib';
-import { exampleNames } from './example-names';
-import { ThemeToggle } from './theme-toggle';
+import colors from "nice-color-palettes/1000.json" with { type: "json" };
+import { memo, useEffect, useMemo, useRef, useState } from "react";
+import styled from "styled-components";
+import Avatar from "../lib";
+import { exampleNames } from "./example-names";
+import { ThemeToggle } from "./theme-toggle";
 import {
   BaseStyles,
   Button,
   ColorDot,
   Segment,
   SegmentGroup,
-} from './ui-system';
+} from "./ui-system";
 
 const paletteColors = colors;
 
@@ -27,12 +27,6 @@ const ColorsSection = styled.div`
   grid-template-columns: repeat(5, 1fr);
   max-width: max-content;
   grid-gap: var(--sp-xs);
-`;
-
-const Banner = styled.div`
-  background: var(--c-body);
-  color: var(--c-background);
-  padding: var(--sp-l);
 `;
 
 const AvatarsGrid = styled.div`
@@ -83,16 +77,16 @@ interface AvatarWrapperProps {
   size: number;
   square: boolean;
   variant:
-    | 'beam'
-    | 'bauhaus'
-    | 'ring'
-    | 'sunset'
-    | 'pixel'
-    | 'marble'
-    | 'fractal'
-    | 'mage'
-    | 'anime'
-    | 'pepe';
+    | "beam"
+    | "bauhaus"
+    | "ring"
+    | "sunset"
+    | "pixel"
+    | "marble"
+    | "fractal"
+    | "mage"
+    | "anime"
+    | "pepe";
 }
 
 // Memoized Avatar component to prevent unnecessary re-renders
@@ -104,18 +98,6 @@ const AvatarWrapper = memo(
     const handleFocus = (event: React.FocusEvent<HTMLInputElement>) =>
       event.target.select();
     const ref = useRef<HTMLDivElement>(null);
-    const [copyValue, setCopyValue] = useState<string>(name);
-
-    useEffect(() => {
-      if (ref.current) {
-        const svgNode = ref.current.innerHTML;
-        const svgStart = svgNode.indexOf('<svg');
-        const svgEnd = svgNode.indexOf('</svg>') + 6;
-        const svgResult = svgNode.substring(svgStart, svgEnd).toString();
-
-        setCopyValue(svgResult);
-      }
-    }, [copyValue, variant, playgroundColors]);
 
     return (
       <AvatarContainer>
@@ -144,17 +126,17 @@ const getRandomPaletteIndex = (): number =>
   Math.floor(Math.random() * paletteColors.length);
 
 const avatarSizes: Record<string, number> = {
-  small: 40,
-  medium: 80,
   large: 128,
+  medium: 80,
+  small: 40,
 };
 
 const SizeDotWrapper = styled(Button)<{ isSelected: boolean }>`
-  ${(p) => (p.isSelected ? 'background-color: var(--c-background)' : null)};
-  ${(p) => !p.isSelected && 'color: var(--c-fade)'};
+  ${(p) => (p.isSelected ? "background-color: var(--c-background)" : null)};
+  ${(p) => !p.isSelected && "color: var(--c-fade)"};
 
   &:hover {
-    ${(p) => p.isSelected && 'background-color: var(--c-background)'};
+    ${(p) => p.isSelected && "background-color: var(--c-background)"};
   }
 `;
 
@@ -196,7 +178,7 @@ const SizeDot = ({
 };
 
 export const Playground = () => {
-  const defaultPlaygroundColors = paletteColors[493];
+  const { 493: defaultPlaygroundColors } = paletteColors;
   const [playgroundColors, setPlaygroundColors] = useState(
     defaultPlaygroundColors
   );
@@ -207,13 +189,10 @@ export const Playground = () => {
   const [dotColor3, setDotColor3] = useState(playgroundColors[3]);
   const [dotColor4, setDotColor4] = useState(playgroundColors[4]);
 
-  const filteredColors = [
-    dotColor0,
-    dotColor1,
-    dotColor2,
-    dotColor3,
-    dotColor4,
-  ];
+  const filteredColors = useMemo(
+    () => [dotColor0, dotColor1, dotColor2, dotColor3, dotColor4],
+    [dotColor0, dotColor1, dotColor2, dotColor3, dotColor4]
+  );
 
   const handleRandomColors = () => {
     setPlaygroundColors(paletteColors[getRandomPaletteIndex()]);
@@ -228,7 +207,7 @@ export const Playground = () => {
   }, [playgroundColors]);
 
   const [avatarSize, setAvatarSize] = useState(avatarSizes.medium);
-  const [variant, setVariant] = useState<AvatarWrapperProps['variant']>('beam');
+  const [variant, setVariant] = useState<AvatarWrapperProps["variant"]>("beam");
   const [isSquare, setSquare] = useState(false);
 
   return (
@@ -238,21 +217,21 @@ export const Playground = () => {
         <SegmentGroup>
           {(
             [
-              'beam',
-              'bauhaus',
-              'ring',
-              'sunset',
-              'pixel',
-              'marble',
-              'fractal',
-              'mage',
-              'anime',
-              'pepe',
+              "beam",
+              "bauhaus",
+              "ring",
+              "sunset",
+              "pixel",
+              "marble",
+              "fractal",
+              "mage",
+              "anime",
+              "pepe",
             ] as const
-          ).map((variantItem, i) => (
+          ).map((variantItem) => (
             <Segment
               isSelected={variantItem === variant}
-              key={i}
+              key={variantItem}
               onClick={() => setVariant(variantItem)}
             >
               {variantItem}
@@ -284,13 +263,13 @@ export const Playground = () => {
 
         <Button onClick={() => handleRandomColors()}>Random palette</Button>
         <Button onClick={() => setSquare(!isSquare)}>
-          {isSquare ? 'Round' : 'Square'}
+          {isSquare ? "Round" : "Square"}
         </Button>
         <SegmentGroup>
-          {Object.entries(avatarSizes).map(([, value], index) => (
+          {Object.entries(avatarSizes).map(([sizeName, value]) => (
             <SizeDot
               isSelected={value === avatarSize}
-              key={index}
+              key={sizeName}
               onClick={() => setAvatarSize(value)}
               size={value}
             />
@@ -301,9 +280,9 @@ export const Playground = () => {
       <AvatarsGrid>
         {useMemo(
           () =>
-            exampleNames.map((exampleName, index) => (
+            exampleNames.map((exampleName) => (
               <AvatarWrapper
-                key={`${variant}-${index}`}
+                key={`${variant}-${exampleName}`}
                 name={exampleName}
                 playgroundColors={filteredColors}
                 size={avatarSize}

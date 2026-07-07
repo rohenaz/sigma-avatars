@@ -1,7 +1,6 @@
-import * as React from 'react';
-import { hashCode, generateId } from '../utilities';
-import { renderMarbleBackground } from '../backgrounds';
-import type { AvatarProps } from './types';
+import { renderMarbleBackground } from "../backgrounds";
+import { generateId, hashCode } from "../utilities";
+import type { AvatarProps } from "./types";
 
 const SIZE = 80;
 
@@ -13,21 +12,21 @@ const AvatarMarble = ({
   ...otherProps
 }: AvatarProps) => {
   const seed = hashCode(name);
-  const maskID = generateId(name, 'marble-mask');
-  const filterID = generateId(name, 'marble-filter');
-  const patternID = generateId(name, 'marble-pattern');
+  const maskID = generateId(name, "marble-mask");
+  const filterID = generateId(name, "marble-filter");
+  const patternID = generateId(name, "marble-pattern");
 
   return (
     <svg
       fill="none"
       height={size}
       role="img"
-      viewBox={'0 0 ' + SIZE + ' ' + SIZE}
+      viewBox={`0 0 ${SIZE} ${SIZE}`}
       width={size}
       xmlns="http://www.w3.org/2000/svg"
       {...otherProps}
     >
-      {title && <title>{name}</title>}
+      {title ? <title>{name}</title> : null}
       <mask
         height={SIZE}
         id={maskID}
@@ -36,20 +35,21 @@ const AvatarMarble = ({
         x={0}
         y={0}
       >
-        <rect
-          fill="#FFFFFF"
-          height={SIZE}
-          
-          width={SIZE}
-        />
+        <rect fill="#FFFFFF" height={SIZE} width={SIZE} />
       </mask>
       <g mask={`url(#${maskID})`}>
         {renderMarbleBackground({
-          size: SIZE,
-          colors: colors || ['#92A1C6', '#146A7C', '#F0AB3D', '#C271B4', '#C20D90'],
-          seed,
+          colors: colors || [
+            "#92A1C6",
+            "#146A7C",
+            "#F0AB3D",
+            "#C271B4",
+            "#C20D90",
+          ],
+          filterUrl: `url(#${filterID})`,
           patternId: patternID,
-          filterUrl: `url(#${filterID})`
+          seed,
+          size: SIZE,
         })}
       </g>
       <defs>

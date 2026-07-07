@@ -1,19 +1,18 @@
-import * as React from 'react';
 import {
+  generateId,
   getBoolean,
   getContrastSafe,
   getRandomColor,
   getUnit,
   hashCode,
-  generateId,
-} from '../utilities';
-import type { AvatarProps } from './types';
+} from "../utilities";
+import type { AvatarProps } from "./types";
 
 const SIZE = 36;
 
 function generateData(name: string, colors: string[]) {
   const numFromName = hashCode(name);
-  const range = colors && colors.length;
+  const range = colors.length;
   const wrapperColor = getRandomColor(numFromName, colors, range);
   const preTranslateX = getUnit(numFromName, 10, 1);
   const wrapperTranslateX =
@@ -23,17 +22,9 @@ function generateData(name: string, colors: string[]) {
     preTranslateY < 5 ? preTranslateY + SIZE / 9 : preTranslateY;
 
   const data = {
-    wrapperColor,
-    faceColor: getContrastSafe(wrapperColor, '#000000'),
     backgroundColor: getRandomColor(numFromName + 13, colors, range),
-    wrapperTranslateX,
-    wrapperTranslateY,
-    wrapperRotate: getUnit(numFromName, 360),
-    wrapperScale: 1 + getUnit(numFromName, SIZE / 12) / 10,
-    isMouthOpen: getBoolean(numFromName, 2),
-    isCircle: getBoolean(numFromName, 1),
     eyeSpread: getUnit(numFromName, 5),
-    mouthSpread: getUnit(numFromName, 3),
+    faceColor: getContrastSafe(wrapperColor, "#000000"),
     faceRotate: getUnit(numFromName, 10, 3),
     faceTranslateX:
       wrapperTranslateX > SIZE / 6
@@ -43,6 +34,14 @@ function generateData(name: string, colors: string[]) {
       wrapperTranslateY > SIZE / 6
         ? wrapperTranslateY / 2
         : getUnit(numFromName, 7, 2),
+    isCircle: getBoolean(numFromName, 1),
+    isMouthOpen: getBoolean(numFromName, 2),
+    mouthSpread: getUnit(numFromName, 3),
+    wrapperColor,
+    wrapperRotate: getUnit(numFromName, 360),
+    wrapperScale: 1 + getUnit(numFromName, SIZE / 12) / 10,
+    wrapperTranslateX,
+    wrapperTranslateY,
   };
 
   return data;
@@ -56,19 +55,19 @@ const AvatarBeam = ({
   ...otherProps
 }: AvatarProps) => {
   const data = generateData(name, colors);
-  const maskID = generateId(name, 'beam-mask');
+  const maskID = generateId(name, "beam-mask");
 
   return (
     <svg
       fill="none"
       height={size}
       role="img"
-      viewBox={'0 0 ' + SIZE + ' ' + SIZE}
+      viewBox={`0 0 ${SIZE} ${SIZE}`}
       width={size}
       xmlns="http://www.w3.org/2000/svg"
       {...otherProps}
     >
-      {title && <title>{name}</title>}
+      {title ? <title>{name}</title> : null}
       <mask
         height={SIZE}
         id={maskID}
@@ -77,11 +76,7 @@ const AvatarBeam = ({
         x={0}
         y={0}
       >
-        <rect
-          fill="#FFFFFF"
-          height={SIZE}
-          width={SIZE}
-        />
+        <rect fill="#FFFFFF" height={SIZE} width={SIZE} />
       </mask>
       <g mask={`url(#${maskID})`}>
         <rect
@@ -92,20 +87,20 @@ const AvatarBeam = ({
         <rect
           height={SIZE}
           rx={data.isCircle ? SIZE : SIZE / 6}
-          style={{ 
+          style={{
             fill: data.wrapperColor,
-            transformOrigin: `${SIZE / 2}px ${SIZE / 2}px`
+            transformOrigin: `${SIZE / 2}px ${SIZE / 2}px`,
           }}
           transform={
-            'translate(' +
+            "translate(" +
             data.wrapperTranslateX +
-            ' ' +
+            " " +
             data.wrapperTranslateY +
-            ') rotate(' +
+            ") rotate(" +
             data.wrapperRotate +
-            ') scale(' +
+            ") scale(" +
             data.wrapperScale +
-            ')'
+            ")"
           }
           width={SIZE}
           x="0"
@@ -113,28 +108,28 @@ const AvatarBeam = ({
         />
         <g
           style={{
-            transformOrigin: `${SIZE / 2}px ${SIZE / 2}px`
+            transformOrigin: `${SIZE / 2}px ${SIZE / 2}px`,
           }}
           transform={
-            'translate(' +
+            "translate(" +
             data.faceTranslateX +
-            ' ' +
+            " " +
             data.faceTranslateY +
-            ') rotate(' +
+            ") rotate(" +
             data.faceRotate +
-            ')'
+            ")"
           }
         >
           {data.isMouthOpen ? (
             <path
-              d={'M15 ' + (19 + data.mouthSpread) + 'c2 1 4 1 6 0'}
+              d={`M15 ${19 + data.mouthSpread}c2 1 4 1 6 0`}
               fill="none"
               strokeLinecap="round"
               style={{ stroke: data.faceColor }}
             />
           ) : (
             <path
-              d={'M13,' + (19 + data.mouthSpread) + ' a1,0.75 0 0,0 10,0'}
+              d={`M13,${19 + data.mouthSpread} a1,0.75 0 0,0 10,0`}
               style={{ fill: data.faceColor }}
             />
           )}

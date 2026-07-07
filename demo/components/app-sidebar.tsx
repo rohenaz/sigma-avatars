@@ -1,8 +1,8 @@
 "use client";
 
-import * as React from "react";
-import { useState } from "react";
+import { Check, Copy, Download } from "lucide-react";
 import Image from "next/image";
+import * as React from "react";
 import Avatar from "sigma-avatars";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -14,8 +14,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Copy, Check, Download, FileImage } from "lucide-react";
-import { CodeBlock } from "./code-block";
 import {
   Sidebar,
   SidebarContent,
@@ -25,6 +23,7 @@ import {
 } from "@/components/ui/sidebar";
 import { useSidebarContext } from "@/contexts/sidebar-context";
 import { colorPalettes } from "@/lib/color-palettes";
+import { CodeBlock } from "./code-block";
 
 interface AppSidebarProps extends React.ComponentProps<typeof Sidebar> {}
 
@@ -69,7 +68,7 @@ export function AppSidebar(props: AppSidebarProps) {
   const generateCodeSnippet = (avatarData: typeof selectedAvatar) => {
     if (!avatarData) return "";
 
-    const { name, variant, colors, size, shape } = avatarData;
+    const { name, variant, colors, size } = avatarData;
     const colorsProp =
       colors && colors.length > 0
         ? `\n  colors={${JSON.stringify(colors)}}`
@@ -87,7 +86,7 @@ export function AppSidebar(props: AppSidebarProps) {
   const generateApiUrl = (avatarData: typeof selectedAvatar) => {
     if (!avatarData) return "";
 
-    const { name, variant, colors, size, shape } = avatarData;
+    const { name, variant, colors, size } = avatarData;
     const params = new URLSearchParams({
       name,
       variant,
@@ -203,6 +202,7 @@ export function AppSidebar(props: AppSidebarProps) {
               <button
                 key={variant}
                 onClick={() => handleVariantChange(variant)}
+                type="button"
                 className={`relative p-2 rounded-md border transition-all hover:border-primary ${
                   selectedAvatar.variant === variant
                     ? "border-primary ring-2 ring-primary/20 bg-primary/5"

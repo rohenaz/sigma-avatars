@@ -1,7 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { ArrowRight, Check, Copy, Shuffle } from "lucide-react";
+import Link from "next/link";
+import { type ComponentProps, useState } from "react";
 import Avatar from "sigma-avatars";
+import { CodeBlock } from "@/components/code-block";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -9,15 +14,13 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { ArrowRight, Copy, Check, Shuffle } from "lucide-react";
-import Link from "next/link";
-import { colorPalettes } from "@/lib/color-palettes";
-import { CodeBlock } from "@/components/code-block";
 import { useSidebar } from "@/components/ui/sidebar";
-import { useSidebarContext, SelectedAvatar } from "@/contexts/sidebar-context";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  type SelectedAvatar,
+  useSidebarContext,
+} from "@/contexts/sidebar-context";
+import { colorPalettes } from "@/lib/color-palettes";
 
 const paletteColors = colorPalettes;
 
@@ -40,7 +43,7 @@ export default function Home() {
     setCurrentPalette(paletteColors[randomIndex]);
   };
 
-  const installCommand = "npm install sigma-avatars";
+  const _installCommand = "npm install sigma-avatars";
   const basicUsage = `import Avatar from 'sigma-avatars';
 
 <Avatar
@@ -138,10 +141,11 @@ export default function Home() {
           {/* Demo Grid */}
           <div className="flex justify-center gap-4 mb-12 flex-wrap">
             {demoNames.map((name, i) => (
-              <div
+              <button
+                className="transition-transform hover:scale-110 cursor-pointer border-0 bg-transparent p-0"
                 key={name}
-                className="transition-transform hover:scale-110 cursor-pointer"
                 onClick={() => handleClick(name, avatarVariants[i])}
+                type="button"
               >
                 <Avatar
                   name={name}
@@ -149,7 +153,7 @@ export default function Home() {
                   colors={currentPalette}
                   size={80}
                 />
-              </div>
+              </button>
             ))}
             <Button
               variant="outline"
@@ -315,15 +319,18 @@ export default function Home() {
           </h2>
           <div className="grid grid-cols-2 md:grid-cols-5 gap-6">
             {variants.map((variant) => (
-              <div
+              <button
+                className="text-center cursor-pointer transition-transform hover:scale-105 border-0 bg-transparent p-0"
                 key={variant}
-                className="text-center cursor-pointer transition-transform hover:scale-105"
                 onClick={() => handleClick("Maria Garcia", variant)}
+                type="button"
               >
                 <div className="flex justify-center mb-3">
                   <Avatar
                     name="Maria Garcia"
-                    variant={variant as any}
+                    variant={
+                      variant as ComponentProps<typeof Avatar>["variant"]
+                    }
                     colors={currentPalette}
                     size={80}
                   />
@@ -331,7 +338,7 @@ export default function Home() {
                 <Badge variant="secondary" className="text-xs">
                   {variant}
                 </Badge>
-              </div>
+              </button>
             ))}
           </div>
         </div>

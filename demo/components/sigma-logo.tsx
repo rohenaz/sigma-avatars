@@ -1,5 +1,3 @@
-import React from "react";
-
 interface SigmaLogoProps {
   className?: string;
   width?: number;

@@ -1,13 +1,12 @@
-import * as React from 'react';
-import { generateId, getRandomColor, hashCode } from '../utilities';
-import type { AvatarProps } from './types';
+import { generateId, getRandomColor, hashCode } from "../utilities";
+import type { AvatarProps } from "./types";
 
 const ELEMENTS = 64;
 const SIZE = 80;
 
 function generateColors(name: string, colors: string[]) {
   const numFromName = hashCode(name);
-  const range = colors && colors.length;
+  const range = colors.length;
 
   const colorList = Array.from({ length: ELEMENTS }, (_, i) =>
     getRandomColor(numFromName % (i + 1), colors, range)
@@ -24,7 +23,7 @@ const AvatarPixel = ({
   ...otherProps
 }: AvatarProps) => {
   const pixelColors = generateColors(name, colors);
-  const maskID = generateId(name, 'pixel-mask');
+  const maskID = generateId(name, "pixel-mask");
 
   return (
     <svg
@@ -32,12 +31,12 @@ const AvatarPixel = ({
       height={size}
       role="img"
       shapeRendering="crispEdges"
-      viewBox={'0 0 ' + SIZE + ' ' + SIZE}
+      viewBox={`0 0 ${SIZE} ${SIZE}`}
       width={size}
       xmlns="http://www.w3.org/2000/svg"
       {...otherProps}
     >
-      {title && <title>{name}</title>}
+      {title ? <title>{name}</title> : null}
       <mask
         height={SIZE}
         id={maskID}

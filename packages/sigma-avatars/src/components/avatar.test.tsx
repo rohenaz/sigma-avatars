@@ -1,7 +1,10 @@
-import { describe, expect, test } from 'bun:test';
-import React from 'react';
-import { renderToStaticMarkup } from 'react-dom/server';
-import Avatar from '../index';
+import { describe, expect, test } from "bun:test";
+import { renderToStaticMarkup } from "react-dom/server";
+import Avatar from "../index";
+
+const WIDTH_REGEX = /width="(\d+)"/;
+const HEIGHT_REGEX = /height="(\d+)"/;
+const VIEWBOX_REGEX = /viewBox="([^"]*)"/;
 
 // Helper to render component to string and parse as DOM
 function renderAvatar(props: any) {
@@ -11,264 +14,276 @@ function renderAvatar(props: any) {
 
 // Helper to extract attributes from SVG string
 function parseSvgAttributes(svg: string) {
-  const widthMatch = svg.match(/width="(\d+)"/);
-  const heightMatch = svg.match(/height="(\d+)"/);
-  const viewBoxMatch = svg.match(/viewBox="([^"]*)"/);
-  
+  const widthMatch = svg.match(WIDTH_REGEX);
+  const heightMatch = svg.match(HEIGHT_REGEX);
+  const viewBoxMatch = svg.match(VIEWBOX_REGEX);
+
   return {
-    width: widthMatch ? widthMatch[1] : null,
     height: heightMatch ? heightMatch[1] : null,
     viewBox: viewBoxMatch ? viewBoxMatch[1] : null,
+    width: widthMatch ? widthMatch[1] : null,
   };
 }
 
-describe('Avatar Component Rendering', () => {
-  test('should render default avatar', () => {
-    const svg = renderAvatar({ name: 'Test User' });
-    expect(svg).toContain('<svg');
-    expect(svg).toContain('</svg>');
+describe("Avatar Component Rendering", () => {
+  test("should render default avatar", () => {
+    const svg = renderAvatar({ name: "Test User" });
+    expect(svg).toContain("<svg");
+    expect(svg).toContain("</svg>");
   });
 
-  test('should render with correct size', () => {
-    const svg = renderAvatar({ name: 'Test User', size: 100 });
+  test("should render with correct size", () => {
+    const svg = renderAvatar({ name: "Test User", size: 100 });
     const attrs = parseSvgAttributes(svg);
-    expect(attrs.width).toBe('100');
-    expect(attrs.height).toBe('100');
+    expect(attrs.width).toBe("100");
+    expect(attrs.height).toBe("100");
     // Note: internal viewBox uses SIZE constant (80) regardless of size prop
-    expect(attrs.viewBox).toBe('0 0 80 80');
+    expect(attrs.viewBox).toBe("0 0 80 80");
   });
 
-  test('should render square avatar with no border radius', () => {
-    const svg = renderAvatar({ name: 'Test User', className: 'rounded-none' });
+  test("should render square avatar with no border radius", () => {
+    const svg = renderAvatar({ className: "rounded-none", name: "Test User" });
     // Square avatars should not have rounded corners
     expect(svg).not.toContain('rx="200"');
   });
 
-  test('should render round avatar with border radius', () => {
-    const svg = renderAvatar({ name: 'Test User', className: 'rounded-full', size: 100 });
+  test("should render round avatar with border radius", () => {
+    const svg = renderAvatar({
+      className: "rounded-full",
+      name: "Test User",
+      size: 100,
+    });
     // Round avatars use mask with circular shape
-    expect(svg).toContain('mask');
+    expect(svg).toContain("mask");
   });
 
-  test('should include title when specified', () => {
-    const svg = renderAvatar({ name: 'Test User', title: true });
-    expect(svg).toContain('<title>Test User</title>');
+  test("should include title when specified", () => {
+    const svg = renderAvatar({ name: "Test User", title: true });
+    expect(svg).toContain("<title>Test User</title>");
   });
 
-  test('should not include title when not specified', () => {
-    const svg = renderAvatar({ name: 'Test User', title: false });
-    expect(svg).not.toContain('<title>');
+  test("should not include title when not specified", () => {
+    const svg = renderAvatar({ name: "Test User", title: false });
+    expect(svg).not.toContain("<title>");
   });
 });
 
-describe('Avatar Variants', () => {
+describe("Avatar Variants", () => {
   const variants = [
-    'marble', 'beam', 'pixel', 'sunset', 'ring', 
-    'bauhaus', 'fractal', 'mage', 'pepe'
+    "marble",
+    "beam",
+    "pixel",
+    "sunset",
+    "ring",
+    "bauhaus",
+    "fractal",
+    "mage",
+    "pepe",
   ];
 
-  test.each(variants)('should render %s variant', (variant) => {
-    const svg = renderAvatar({ name: 'Test User', variant });
-    expect(svg).toContain('<svg');
-    expect(svg).toContain('</svg>');
+  test.each(variants)("should render %s variant", (variant) => {
+    const svg = renderAvatar({ name: "Test User", variant });
+    expect(svg).toContain("<svg");
+    expect(svg).toContain("</svg>");
     // Each variant should produce some content
     expect(svg.length).toBeGreaterThan(100);
   });
 
-  test('different names should produce different outputs', () => {
-    const svg1 = renderAvatar({ name: 'Alice', variant: 'marble' });
-    const svg2 = renderAvatar({ name: 'Bob', variant: 'marble' });
+  test("different names should produce different outputs", () => {
+    const svg1 = renderAvatar({ name: "Alice", variant: "marble" });
+    const svg2 = renderAvatar({ name: "Bob", variant: "marble" });
     expect(svg1).not.toBe(svg2);
   });
 
-  test('same name should produce identical outputs', () => {
-    const svg1 = renderAvatar({ name: 'Alice', variant: 'marble' });
-    const svg2 = renderAvatar({ name: 'Alice', variant: 'marble' });
+  test("same name should produce identical outputs", () => {
+    const svg1 = renderAvatar({ name: "Alice", variant: "marble" });
+    const svg2 = renderAvatar({ name: "Alice", variant: "marble" });
     expect(svg1).toBe(svg2);
   });
 });
 
-describe('Color Handling', () => {
-  test('should handle hex colors', () => {
-    const colors = ['#FF0000', '#00FF00', '#0000FF', '#FFFF00', '#FF00FF'];
-    const svg = renderAvatar({ name: 'Test', colors });
+describe("Color Handling", () => {
+  test("should handle hex colors", () => {
+    const colors = ["#FF0000", "#00FF00", "#0000FF", "#FFFF00", "#FF00FF"];
+    const svg = renderAvatar({ colors, name: "Test" });
     expect(svg).toBeDefined();
     // Should contain at least one of the colors
-    expect(
-      colors.some(color => svg.includes(color))
-    ).toBe(true);
+    expect(colors.some((color) => svg.includes(color))).toBe(true);
   });
 
-  test('should handle CSS variables', () => {
+  test("should handle CSS variables", () => {
     const colors = [
-      'var(--primary)',
-      'var(--secondary)',
-      'var(--accent)',
-      'var(--muted)',
-      'var(--card)'
+      "var(--primary)",
+      "var(--secondary)",
+      "var(--accent)",
+      "var(--muted)",
+      "var(--card)",
     ];
-    const svg = renderAvatar({ name: 'Test', colors });
+    const svg = renderAvatar({ colors, name: "Test" });
     expect(svg).toBeDefined();
     // CSS variables should be preserved in output
-    expect(svg).toContain('var(--');
+    expect(svg).toContain("var(--");
   });
 
-  test('should handle mixed color formats', () => {
+  test("should handle mixed color formats", () => {
     const colors = [
-      '#FF0000',
-      'var(--primary)',
-      'rgb(0, 255, 0)',
-      'hsl(240, 100%, 50%)',
-      'oklch(0.7 0.2 340)'
+      "#FF0000",
+      "var(--primary)",
+      "rgb(0, 255, 0)",
+      "hsl(240, 100%, 50%)",
+      "oklch(0.7 0.2 340)",
     ];
-    const svg = renderAvatar({ name: 'Test', colors });
+    const svg = renderAvatar({ colors, name: "Test" });
     expect(svg).toBeDefined();
     // Should handle without errors
-    expect(svg).toContain('<svg');
+    expect(svg).toContain("<svg");
   });
 
-  test('should use default colors when not provided', () => {
-    const svg = renderAvatar({ name: 'Test' });
+  test("should use default colors when not provided", () => {
+    const svg = renderAvatar({ name: "Test" });
     expect(svg).toBeDefined();
     // Should contain at least one default color
-    const hasDefaultColor = 
-      svg.includes('#92A1C6') || 
-      svg.includes('#146A7C') ||
-      svg.includes('#F0AB3D') ||
-      svg.includes('#C271B4') ||
-      svg.includes('#C20D90');
+    const hasDefaultColor =
+      svg.includes("#92A1C6") ||
+      svg.includes("#146A7C") ||
+      svg.includes("#F0AB3D") ||
+      svg.includes("#C271B4") ||
+      svg.includes("#C20D90");
     expect(hasDefaultColor).toBe(true);
   });
 });
 
-describe('Special Variants', () => {
-  test('fractal variant should generate unique patterns for different names', () => {
-    const svg1 = renderAvatar({ name: 'UnitedHealth Group', variant: 'fractal' });
-    const svg2 = renderAvatar({ name: 'Mastercard', variant: 'fractal' });
-    
+describe("Special Variants", () => {
+  test("fractal variant should generate unique patterns for different names", () => {
+    const svg1 = renderAvatar({
+      name: "UnitedHealth Group",
+      variant: "fractal",
+    });
+    const svg2 = renderAvatar({ name: "Mastercard", variant: "fractal" });
+
     // These should be different (this was a bug that was fixed)
     expect(svg1).not.toBe(svg2);
-    
+
     // Both should have path elements
-    expect(svg1).toContain('<path');
-    expect(svg2).toContain('<path');
+    expect(svg1).toContain("<path");
+    expect(svg2).toContain("<path");
   });
 
-  test('mage variant should have black face background', () => {
-    const svg = renderAvatar({ name: 'Wizard', variant: 'mage' });
-    
+  test("mage variant should have black face background", () => {
+    const svg = renderAvatar({ name: "Wizard", variant: "mage" });
+
     // Mage faces should always be black
-    expect(svg).toContain('#000000');
+    expect(svg).toContain("#000000");
   });
 
-  test('pepe variant should render with sunglasses', () => {
-    const svg = renderAvatar({ name: 'Pepe', variant: 'pepe' });
-    
+  test("pepe variant should render with sunglasses", () => {
+    const svg = renderAvatar({ name: "Pepe", variant: "pepe" });
+
     // Should have complex paths for sunglasses
-    expect(svg).toContain('<path');
+    expect(svg).toContain("<path");
     expect(svg.length).toBeGreaterThan(1000); // Pepe is complex
   });
 
-  test('invalid variants should gracefully fallback to marble', () => {
-    const svg = renderAvatar({ name: 'Sakura', variant: 'anime' as any });
+  test("invalid variants should gracefully fallback to marble", () => {
+    const svg = renderAvatar({ name: "Sakura", variant: "anime" as any });
 
-    expect(svg).toContain('<svg');
-    expect(svg).toContain('</svg>');
+    expect(svg).toContain("<svg");
+    expect(svg).toContain("</svg>");
   });
 });
 
-describe('Edge Cases', () => {
-  test('should handle empty name', () => {
-    const svg = renderAvatar({ name: '' });
-    expect(svg).toContain('<svg');
+describe("Edge Cases", () => {
+  test("should handle empty name", () => {
+    const svg = renderAvatar({ name: "" });
+    expect(svg).toContain("<svg");
     // Empty string should still generate consistent output
   });
 
-  test('should handle very long names', () => {
-    const longName = 'A'.repeat(1000);
+  test("should handle very long names", () => {
+    const longName = "A".repeat(1000);
     const svg = renderAvatar({ name: longName });
-    expect(svg).toContain('<svg');
+    expect(svg).toContain("<svg");
   });
 
-  test('should handle special characters in names', () => {
+  test("should handle special characters in names", () => {
     const specialNames = [
-      'Alice & Bob',
-      'user@example.com',
-      '123-456-7890',
-      'Ñoño José',
-      '🚀 Rocket',
-      '<script>alert("xss")</script>'
+      "Alice & Bob",
+      "user@example.com",
+      "123-456-7890",
+      "Ñoño José",
+      "🚀 Rocket",
+      '<script>alert("xss")</script>',
     ];
 
-    specialNames.forEach(name => {
+    for (const name of specialNames) {
       const svg = renderAvatar({ name });
-      expect(svg).toContain('<svg');
+      expect(svg).toContain("<svg");
       // Should not contain unescaped script tags
-      expect(svg).not.toContain('<script>');
-    });
+      expect(svg).not.toContain("<script>");
+    }
   });
 
-  test('should handle invalid color arrays', () => {
-    const svg1 = renderAvatar({ name: 'Test', colors: [] });
-    expect(svg1).toContain('<svg');
-    
-    const svg2 = renderAvatar({ name: 'Test', colors: [''] });
-    expect(svg2).toContain('<svg');
+  test("should handle invalid color arrays", () => {
+    const svg1 = renderAvatar({ colors: [], name: "Test" });
+    expect(svg1).toContain("<svg");
+
+    const svg2 = renderAvatar({ colors: [""], name: "Test" });
+    expect(svg2).toContain("<svg");
   });
 
-  test('should handle size as string', () => {
-    const svg = renderAvatar({ name: 'Test', size: '150' });
+  test("should handle size as string", () => {
+    const svg = renderAvatar({ name: "Test", size: "150" });
     const attrs = parseSvgAttributes(svg);
-    expect(attrs.width).toBe('150');
+    expect(attrs.width).toBe("150");
   });
 });
 
-describe('API Rendering', () => {
-  test('should request webp for simple color formats', () => {
+describe("API Rendering", () => {
+  test("should request webp for simple color formats", () => {
     const html = renderAvatar({
-      name: 'Test User',
-      variant: 'sunset',
-      colors: ['#ff0000', '#00ff00', '#0000ff', '#ffff00', '#ff00ff'],
-      api: '/api/avatar',
+      api: "/api/avatar",
+      colors: ["#ff0000", "#00ff00", "#0000ff", "#ffff00", "#ff00ff"],
+      name: "Test User",
+      variant: "sunset",
     });
 
-    expect(html).toContain('<img');
-    expect(html).toContain('format=webp');
+    expect(html).toContain("<img");
+    expect(html).toContain("format=webp");
   });
 
-  test('should fallback to svg for oklch colors', () => {
+  test("should fallback to svg for oklch colors", () => {
     const html = renderAvatar({
-      name: 'Test User',
-      variant: 'sunset',
+      api: "/api/avatar",
       colors: [
-        'oklch(0.7 0.1 240)',
-        'oklch(0.6 0.2 120)',
-        'oklch(0.8 0.1 60)',
-        'oklch(0.55 0.2 10)',
-        'oklch(0.65 0.25 280)',
+        "oklch(0.7 0.1 240)",
+        "oklch(0.6 0.2 120)",
+        "oklch(0.8 0.1 60)",
+        "oklch(0.55 0.2 10)",
+        "oklch(0.65 0.25 280)",
       ],
-      api: '/api/avatar',
+      name: "Test User",
+      variant: "sunset",
     });
 
-    expect(html).toContain('<img');
-    expect(html).not.toContain('format=webp');
+    expect(html).toContain("<img");
+    expect(html).not.toContain("format=webp");
   });
 
-  test('should fallback to svg for css variable colors', () => {
+  test("should fallback to svg for css variable colors", () => {
     const html = renderAvatar({
-      name: 'Test User',
-      variant: 'sunset',
+      api: "/api/avatar",
       colors: [
-        'var(--primary)',
-        'var(--secondary)',
-        'var(--accent)',
-        'var(--muted)',
-        'var(--card)',
+        "var(--primary)",
+        "var(--secondary)",
+        "var(--accent)",
+        "var(--muted)",
+        "var(--card)",
       ],
-      api: '/api/avatar',
+      name: "Test User",
+      variant: "sunset",
     });
 
-    expect(html).toContain('<img');
-    expect(html).not.toContain('format=webp');
+    expect(html).toContain("<img");
+    expect(html).not.toContain("format=webp");
   });
 });

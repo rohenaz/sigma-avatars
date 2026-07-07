@@ -1,4 +1,68 @@
 {
-  "$schema": "https://biomejs.dev/schemas/2.2.0/schema.json",
-  "extends": ["ultracite/biome/core", "ultracite/biome/react"]
+  "$schema": "https://biomejs.dev/schemas/2.5.2/schema.json",
+  "extends": ["ultracite/biome/core", "ultracite/biome/react"],
+  "vcs": {
+    "enabled": true,
+    "clientKind": "git",
+    "useIgnoreFile": true
+  },
+  "files": {
+    "includes": ["!!**/vectors", "!!**/public", "!!**/*.svg"]
+  },
+  "javascript": {
+    // Bun runtime global, used by scripts/dev-server.ts and scripts/*.
+    "globals": ["Bun"]
+  },
+  "linter": {
+    "rules": {
+      "suspicious": {
+        // The avatar hashing/color math (hashCode, getUnit) requires bitwise
+        // ops by design — this is a deterministic hashing library, not app
+        // logic where a bitwise op would signal a typo'd boolean.
+        "noBitwiseOperators": "off",
+        // False positives: emits "This case is unreachable" for every case of
+        // every `switch` in this repo (discriminants are plain number/string,
+        // all cases reachable). Its only true positives here — a few
+        // `x && x.length` / `x?.length` redundancies on non-nullable operands —
+        // were fixed by hand.
+        "noUnnecessaryConditions": "off"
+      },
+      "performance": {
+        // src/index.tsx is the package's intended public API barrel.
+        "noBarrelFile": "off"
+      }
+    }
+  },
+  "overrides": [
+    {
+      // The demo apps are interactive showcases/playgrounds. Inline event
+      // handlers on mapped controls are idiomatic here and the per-render
+      // allocation is irrelevant for demo UI, so this micro-perf rule is noise.
+      "includes": ["src/demo/**", "demo/**"],
+      "linter": {
+        "rules": {
+          "performance": {
+            "noJsxPropsBind": "off"
+          }
+        }
+      }
+    },
+    {
+      // Avatar SVGs are deterministic, byte-stable renders and the library
+      // exposes an opt-in `title` prop for accessible labelling. Forcing an
+      // unconditional <title>/aria-label here would change rendered output and
+      // break the determinism + id-collision regression tests.
+      "includes": [
+        "packages/sigma-avatars/src/components/**",
+        "src/lib/components/**"
+      ],
+      "linter": {
+        "rules": {
+          "a11y": {
+            "noSvgWithoutTitle": "off"
+          }
+        }
+      }
+    }
+  ]
 }

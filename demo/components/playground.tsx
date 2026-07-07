@@ -1,53 +1,54 @@
 "use client";
 
-import React, { useMemo, useRef, useState, memo, useEffect } from "react";
-import Avatar, { PATTERN_CATEGORIES, PATTERN_REGISTRY } from "sigma-avatars";
-import { colorPalettes } from "@/lib/color-palettes";
-import { getTweakcnColorPalettes, ColorPalette } from "@/lib/tweakcn-registry";
-import Image from "next/image";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
+import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
+import { Circle, Loader2, Shuffle, Square } from "lucide-react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { memo, useEffect, useMemo, useState } from "react";
+import { useInView } from "react-intersection-observer";
+import Avatar from "sigma-avatars";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Switch } from "@/components/ui/switch";
+import { Card, CardContent } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
-import { Separator } from "@/components/ui/separator";
-import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
-import { Shuffle, Circle, Square, SquareIcon, Loader2 } from "lucide-react";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Separator } from "@/components/ui/separator";
+import { useSidebar } from "@/components/ui/sidebar";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Switch } from "@/components/ui/switch";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { useInfiniteQuery } from "@tanstack/react-query";
-import { useInView } from "react-intersection-observer";
-import { fetchCompanies } from "../lib/fortune500-data";
-import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Skeleton } from "@/components/ui/skeleton";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-  SelectGroup,
-  SelectLabel,
-} from "@/components/ui/select";
-import { CodeBlock } from "./code-block";
-import { useRouter, useSearchParams } from "next/navigation";
-import { AppSidebar } from "./app-sidebar";
-import { useSidebar } from "@/components/ui/sidebar";
-import { useSidebarContext, SelectedAvatar } from "@/contexts/sidebar-context";
-import { useQuery } from "@tanstack/react-query";
+  type SelectedAvatar,
+  useSidebarContext,
+} from "@/contexts/sidebar-context";
+import { colorPalettes } from "@/lib/color-palettes";
+import {
+  type ColorPalette,
+  getTweakcnColorPalettes,
+} from "@/lib/tweakcn-registry";
+import { fetchCompanies } from "../lib/fortune500-data";
 
-const paletteColors = colorPalettes;
+const _paletteColors = colorPalettes;
 
 const variants = [
   "marble",
@@ -77,6 +78,9 @@ const localColorPalettes = [
 ];
 
 type Variant = (typeof variants)[number];
+
+// Stable keys for the fixed set of loading-skeleton placeholders
+const SKELETON_KEYS = Array.from({ length: 35 }, (_, i) => `skeleton-${i}`);
 
 interface AvatarWrapperProps {
   name: string;
@@ -126,7 +130,7 @@ const AvatarWrapper = memo(
       }
     };
 
-    const downloadAvatar = async () => {
+    const _downloadAvatar = async () => {
       // Download from API
       const params = new URLSearchParams({
         name,
@@ -147,7 +151,7 @@ const AvatarWrapper = memo(
     };
 
     // Build API URL for server-side rendering
-    const apiUrl = useMemo(() => {
+    const _apiUrl = useMemo(() => {
       if (!useApi) return null;
       const params = new URLSearchParams({
         name,
@@ -165,13 +169,14 @@ const AvatarWrapper = memo(
     }, [name, variant, size, colors, useApi]);
 
     return (
-      <div
-        className={`flex flex-col items-center gap-2 cursor-pointer transition-colors ${
+      <button
+        className={`flex flex-col items-center gap-2 cursor-pointer transition-colors border-0 bg-transparent p-0 ${
           isSelected
             ? "bg-primary/10 rounded-lg"
             : "hover:bg-muted/50 rounded-lg"
         }`}
         onClick={handleClick}
+        type="button"
       >
         <Avatar
           name={name}
@@ -190,14 +195,14 @@ const AvatarWrapper = memo(
         <span className="text-xs text-muted-foreground truncate max-w-[8rem]">
           {name}
         </span>
-      </div>
+      </button>
     );
   },
 );
 
 AvatarWrapper.displayName = "AvatarWrapper";
 
-const exampleNames = [
+const _exampleNames = [
   "Apple",
   "Microsoft",
   "Amazon",
@@ -709,6 +714,7 @@ function ColorSwatch({
           aria-label="Color"
           className="h-6 w-6 rounded-md border shadow-sm hover:scale-110 transition-transform"
           style={{ backgroundColor: color }}
+          type="button"
         />
       </PopoverTrigger>
       <PopoverContent
@@ -755,7 +761,7 @@ export const Playground = () => {
   const [selectedTheme, setSelectedTheme] = useState<string>("custom");
 
   // Fetch tweakcn themes
-  const { data: tweakcnPalettes = [], isLoading: themesLoading } = useQuery({
+  const { data: tweakcnPalettes = [] } = useQuery({
     queryKey: ["tweakcn-themes"],
     queryFn: getTweakcnColorPalettes,
     staleTime: 5 * 60 * 1000, // Cache for 5 minutes
@@ -796,23 +802,15 @@ export const Playground = () => {
     rootMargin: "100px",
   });
 
-  const {
-    data,
-    error,
-    fetchNextPage,
-    hasNextPage,
-    isFetchingNextPage,
-    status,
-    isLoading,
-    refetch,
-  } = useInfiniteQuery({
-    queryKey: ["companies"],
-    queryFn: ({ pageParam = 0 }) => fetchCompanies(pageParam, 25),
-    getNextPageParam: (lastPage) => {
-      return lastPage.hasMore ? lastPage.currentPage + 1 : undefined;
-    },
-    initialPageParam: 0,
-  });
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading } =
+    useInfiniteQuery({
+      queryKey: ["companies"],
+      queryFn: ({ pageParam = 0 }) => fetchCompanies(pageParam, 25),
+      getNextPageParam: (lastPage) => {
+        return lastPage.hasMore ? lastPage.currentPage + 1 : undefined;
+      },
+      initialPageParam: 0,
+    });
 
   useEffect(() => {
     if (inView && hasNextPage && !isFetchingNextPage) {
@@ -832,7 +830,7 @@ export const Playground = () => {
 
   const allCompanies = data?.pages.flatMap((page) => page.companies) ?? [];
   const totalCompanies = data?.pages[0]?.totalCount ?? 500;
-  const progress = (loadedCount / totalCompanies) * 100;
+  const _progress = (loadedCount / totalCompanies) * 100;
 
   // Get current theme palette
   const currentThemePalette = useMemo(() => {
@@ -845,6 +843,7 @@ export const Playground = () => {
   }, [dotColors, setCurrentColors]);
 
   // Initialize with first theme when themes load (only once)
+  // biome-ignore lint/correctness/useExhaustiveDependencies: intentionally keyed on palette count so this seeds the first theme once when themes load; the selectedTheme guard already prevents overriding later user changes
   useEffect(() => {
     if (tweakcnPalettes.length > 0 && selectedTheme === "custom") {
       const firstTheme = tweakcnPalettes[0];
@@ -892,6 +891,7 @@ export const Playground = () => {
   };
 
   // Handle URL params on mount
+  // biome-ignore lint/correctness/useExhaustiveDependencies: deep-link handler that must run only when the URL search params change, not on every state update (adding the setters/state it writes would re-apply URL values over user edits)
   useEffect(() => {
     const name = searchParams.get("name");
     const avatarVariant = searchParams.get("variant");
@@ -915,7 +915,7 @@ export const Playground = () => {
           ? avatarVariant
           : variant) as Variant,
         colors: dotColors,
-        size: size ? parseInt(size) : avatarSize,
+        size: size ? parseInt(size, 10) : avatarSize,
         shape:
           shapeParam === "square"
             ? "square"
@@ -935,7 +935,7 @@ export const Playground = () => {
       ) {
         setVariant(avatarVariant as Variant | "random");
       }
-      if (size) setAvatarSize(parseInt(size));
+      if (size) setAvatarSize(parseInt(size, 10));
       if (shapeParam === "square") setShape("square");
       else if (shapeParam === "rounded") setShape("rounded");
     }
@@ -1031,9 +1031,9 @@ export const Playground = () => {
                       <div className="flex gap-0.5">
                         {currentThemePalette?.colors
                           .slice(0, 5)
-                          .map((color, i) => (
+                          .map((color) => (
                             <div
-                              key={i}
+                              key={color}
                               className="w-3 h-3 rounded-full border border-border/20"
                               style={{ backgroundColor: color }}
                             />
@@ -1058,9 +1058,9 @@ export const Playground = () => {
                       >
                         <div className="flex items-center gap-2 w-full">
                           <div className="flex gap-0.5">
-                            {palette.colors.slice(0, 5).map((color, i) => (
+                            {palette.colors.slice(0, 5).map((color) => (
                               <div
-                                key={i}
+                                key={`${palette.name}-${color}`}
                                 className="w-3 h-3 rounded-full border border-border/20"
                                 style={{ backgroundColor: color }}
                               />
@@ -1100,6 +1100,7 @@ export const Playground = () => {
                       aria-label="Previous theme"
                     >
                       <svg
+                        aria-hidden="true"
                         className="h-3 w-3"
                         fill="none"
                         stroke="currentColor"
@@ -1139,6 +1140,7 @@ export const Playground = () => {
                       aria-label="Next theme"
                     >
                       <svg
+                        aria-hidden="true"
                         className="h-3 w-3"
                         fill="none"
                         stroke="currentColor"
@@ -1253,6 +1255,7 @@ export const Playground = () => {
             </ToggleGroupItem>
             <ToggleGroupItem value="square" className="text-xs h-7 px-2">
               <svg
+                aria-hidden="true"
                 width="14"
                 height="14"
                 viewBox="0 0 24 24"
@@ -1275,7 +1278,7 @@ export const Playground = () => {
           <div className="flex items-center gap-1.5">
             {dotColors.slice(0, 5).map((c, i) => (
               <ColorSwatch
-                key={i}
+                key={c}
                 color={c}
                 onChange={(next) => {
                   setters[i](next);
@@ -1303,7 +1306,7 @@ export const Playground = () => {
 
               return (
                 <Card
-                  key={`${company}-${index}`}
+                  key={company}
                   className="w-full min-w-0 group hover:shadow-lg transition-shadow cursor-pointer"
                   onClick={() =>
                     handleAvatarClick({
@@ -1355,40 +1358,37 @@ export const Playground = () => {
             })}
 
             {/* Loading Skeletons - show on initial load or when fetching */}
-            {(isLoading || isFetchingNextPage || allCompanies.length < 20) && (
-              <>
-                {[...Array(35)].map((_, i) => (
-                  <Card
-                    key={`skeleton-${i}`}
-                    className="w-full min-w-0 group hover:shadow-lg transition-shadow cursor-pointer"
-                  >
-                    <CardContent className="p-4">
-                      <div className="flex flex-col items-center space-y-3 w-full min-w-0">
-                        <div className="relative">
-                          <Skeleton
-                            className={
-                              avatarSize === 40
-                                ? "h-10 w-10 rounded-full"
-                                : avatarSize === 80
-                                  ? "h-20 w-20 rounded-full"
-                                  : "h-30 w-30 rounded-full"
-                            }
-                          />
+            {(isLoading || isFetchingNextPage || allCompanies.length < 20) &&
+              SKELETON_KEYS.map((skeletonKey) => (
+                <Card
+                  key={skeletonKey}
+                  className="w-full min-w-0 group hover:shadow-lg transition-shadow cursor-pointer"
+                >
+                  <CardContent className="p-4">
+                    <div className="flex flex-col items-center space-y-3 w-full min-w-0">
+                      <div className="relative">
+                        <Skeleton
+                          className={
+                            avatarSize === 40
+                              ? "h-10 w-10 rounded-full"
+                              : avatarSize === 80
+                                ? "h-20 w-20 rounded-full"
+                                : "h-30 w-30 rounded-full"
+                          }
+                        />
+                      </div>
+                      <div className="text-center w-full min-w-0 px-2">
+                        <div className="text-sm font-medium line-clamp-2 break-words">
+                          <Skeleton className="h-4 w-20 mx-auto mb-1" />
                         </div>
-                        <div className="text-center w-full min-w-0 px-2">
-                          <div className="text-sm font-medium line-clamp-2 break-words">
-                            <Skeleton className="h-4 w-20 mx-auto mb-1" />
-                          </div>
-                          <div className="text-xs text-muted-foreground truncate">
-                            <Skeleton className="h-3 w-12 mx-auto" />
-                          </div>
+                        <div className="text-xs text-muted-foreground truncate">
+                          <Skeleton className="h-3 w-12 mx-auto" />
                         </div>
                       </div>
-                    </CardContent>
-                  </Card>
-                ))}
-              </>
-            )}
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
           </div>
 
           {/* Infinite Scroll Trigger */}

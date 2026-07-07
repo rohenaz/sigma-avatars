@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from "next/server";
+import { type NextRequest, NextResponse } from "next/server";
 
 interface RegistryTheme {
   name: string;
@@ -30,7 +30,7 @@ let cachedData: {
 } | null = null;
 
 // Parse OKLCH color to hex (simplified conversion)
-function oklchToHex(oklch: string): string {
+function _oklchToHex(oklch: string): string {
   // Fallback mappings for common theme patterns
   if (oklch.includes("0.98") || oklch.includes("1 0")) return "#ffffff";
   if (oklch.includes("0.02") || oklch.includes("0 0")) return "#000000";
@@ -45,7 +45,7 @@ function oklchToHex(oklch: string): string {
   if (match) {
     const [, l, c, h] = match;
     const lightness = parseFloat(l);
-    const chroma = parseFloat(c);
+    const _chroma = parseFloat(c);
     const hue = parseFloat(h);
 
     // Simple conversion based on hue ranges
@@ -62,7 +62,7 @@ function oklchToHex(oklch: string): string {
 }
 
 // Simple HSL to hex conversion
-function hslToHex(h: number, s: number, l: number): string {
+function _hslToHex(h: number, s: number, l: number): string {
   l /= 100;
   const a = (s * Math.min(l, 1 - l)) / 100;
   const f = (n: number) => {
@@ -89,7 +89,7 @@ function getThemeBasedColors(themeName: string, index: number): string {
 
   // Extract theme base name (remove variants like -dark, -light)
   const baseTheme = themeName.replace(/-dark|-light$/, "");
-  const colors = themeColorSets[baseTheme] || themeColorSets["default"];
+  const colors = themeColorSets[baseTheme] || themeColorSets.default;
 
   return colors[index] || colors[0];
 }
@@ -195,8 +195,10 @@ async function fetchTweakcnRegistry(): Promise<ColorPalette[]> {
       if (data.items && Array.isArray(data.items)) {
         console.log("Found items array with", data.items.length, "items");
         themes = data.items.filter(
-          (item: any) =>
-            item && typeof item === "object" && item.type === "registry:style",
+          (item: unknown) =>
+            typeof item === "object" &&
+            item !== null &&
+            (item as { type?: string }).type === "registry:style",
         ) as RegistryTheme[];
       } else {
         // If it's an object, extract values
@@ -204,7 +206,7 @@ async function fetchTweakcnRegistry(): Promise<ColorPalette[]> {
           (item) =>
             item &&
             typeof item === "object" &&
-            (item as any).type === "registry:style",
+            (item as { type?: string }).type === "registry:style",
         ) as RegistryTheme[];
       }
     }
@@ -238,7 +240,7 @@ async function fetchTweakcnRegistry(): Promise<ColorPalette[]> {
   }
 }
 
-export async function GET(request: NextRequest) {
+export async function GET(_request: NextRequest) {
   try {
     const now = Date.now();
 

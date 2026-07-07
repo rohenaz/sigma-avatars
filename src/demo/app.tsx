@@ -1,5 +1,5 @@
-import { Playground } from './playground';
-import { ThemeProvider } from './theme-provider';
+import { Playground } from "./playground";
+import { ThemeProvider } from "./theme-provider";
 
 const App = () => (
   <ThemeProvider defaultTheme="system">

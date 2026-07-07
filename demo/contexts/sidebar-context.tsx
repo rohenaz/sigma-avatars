@@ -1,6 +1,7 @@
 "use client";
 
-import React, { createContext, useContext, useState, useCallback } from "react";
+import type React from "react";
+import { createContext, useCallback, useContext, useState } from "react";
 
 export interface SelectedAvatar {
   name: string;
@@ -83,7 +84,7 @@ export function SidebarContextProvider({
   const downloadSelectedAvatar = useCallback(async () => {
     if (!selectedAvatar) return;
 
-    const { name, variant, colors, size, shape } = selectedAvatar;
+    const { name, variant, colors, size } = selectedAvatar;
     const params = new URLSearchParams({
       name,
       variant,
@@ -106,7 +107,7 @@ export function SidebarContextProvider({
   const copySvgToClipboard = useCallback(async () => {
     if (!selectedAvatar) return;
 
-    const { name, variant, colors, size, shape } = selectedAvatar;
+    const { name, variant, colors, size } = selectedAvatar;
     const params = new URLSearchParams({
       name,
       variant,

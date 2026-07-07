@@ -1,7 +1,7 @@
-import { NextRequest, NextResponse } from "next/server";
-import * as fs from "fs/promises";
-import * as path from "path";
-import * as crypto from "crypto";
+import * as crypto from "node:crypto";
+import * as fs from "node:fs/promises";
+import * as path from "node:path";
+import { type NextRequest, NextResponse } from "next/server";
 
 // File-based cache directory
 const CACHE_DIR = path.join(process.cwd(), ".avatar-cache");
@@ -108,17 +108,18 @@ export async function GET(request: NextRequest) {
           `Cache INVALID (removed) for ${params.name}-${params.variant}.${format}`,
         );
       }
-    } catch (error) {
+    } catch (_error) {
       // Cache miss - file doesn't exist
       console.log(`Cache MISS for ${params.name}-${params.variant}.${format}`);
     }
 
     // Check if another request is already processing this same avatar
     const conversionKey = `${cacheKey}.${format}`;
-    if (inProgressConversions.has(conversionKey)) {
+    const pendingConversion = inProgressConversions.get(conversionKey);
+    if (pendingConversion) {
       console.log(`Waiting for in-progress conversion: ${conversionKey}`);
       try {
-        const result = await inProgressConversions.get(conversionKey)!;
+        const result = await pendingConversion;
         const contentType =
           format === "svg" ? "image/svg+xml" : `image/${format}`;
         return new NextResponse(result as BodyInit, {
@@ -164,7 +165,7 @@ export async function GET(request: NextRequest) {
     // Create the avatar element
     const avatarElement = React.createElement(Avatar, {
       name,
-      variant: variant as any,
+      variant: variant as Parameters<typeof Avatar>[0]["variant"],
       size,
       title,
       colors: colors || ["#3b82f6", "#10b981", "#f59e0b", "#ef4444", "#8b5cf6"],
@@ -176,25 +177,24 @@ export async function GET(request: NextRequest) {
     // Create conversion promise for this request
     const conversionPromise = (async () => {
       let outputBuffer: string | Buffer = svgString;
-      let contentType = "image/svg+xml";
+      let _contentType = "image/svg+xml";
 
       // Convert to PNG or WebP if requested
       if (format === "png" || format === "webp") {
         try {
           const svgBuffer = Buffer.from(svgString);
-          const sharpInstance = sharp(svgBuffer)
-            .resize(size, size); // Use exact size
+          const sharpInstance = sharp(svgBuffer).resize(size, size); // Use exact size
 
           if (format === "webp") {
             outputBuffer = await sharpInstance
               .webp({ quality: 85, effort: 2 }) // Better quality/speed balance
               .toBuffer();
-            contentType = "image/webp";
+            _contentType = "image/webp";
           } else {
             outputBuffer = await sharpInstance
               .png({ quality: 90, compressionLevel: 6 })
               .toBuffer();
-            contentType = "image/png";
+            _contentType = "image/png";
           }
         } catch (conversionError) {
           console.error("Failed to convert image:", conversionError);

@@ -1,4 +1,4 @@
-import type { SVGProps } from 'react';
+import type { SVGProps } from "react";
 
 // Type-safe color formats
 export type HexColor = `#${string}`;
@@ -18,11 +18,11 @@ export type Color =
 
 // Color palette interface for better DX
 export interface ColorPalette {
+  accent: Color;
+  background: Color;
+  muted: Color;
   primary: Color;
   secondary: Color;
-  accent: Color;
-  muted: Color;
-  background: Color;
 }
 
 export type AvatarProps = {

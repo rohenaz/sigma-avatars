@@ -1,36 +1,32 @@
 "use client";
 
-import { useState } from "react";
+import {
+  Hash,
+  Mail,
+  MessageSquare,
+  MoreHorizontal,
+  RefreshCw,
+  Share,
+  ShoppingBag,
+  ThumbsUp,
+  Users,
+  Wallet,
+} from "lucide-react";
+import { type ComponentProps, useState } from "react";
 import Avatar from "sigma-avatars";
+import { CodeBlock } from "@/components/code-block";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-  CardAction,
-  CardFooter,
 } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Separator } from "@/components/ui/separator";
-import {
-  Copy,
-  Check,
-  RefreshCw,
-  Users,
-  MessageSquare,
-  ShoppingBag,
-  Mail,
-  Wallet,
-  Hash,
-  MoreHorizontal,
-  ThumbsUp,
-  Share,
-} from "lucide-react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { colorPalettes } from "@/lib/color-palettes";
-import { CodeBlock } from "@/components/code-block";
 
 const paletteColors = colorPalettes;
 
@@ -91,10 +87,10 @@ const namedPalettes = {
 };
 
 export default function ExamplesPage() {
-  const [copiedCode, setCopiedCode] = useState<string | null>(null);
+  const [_copiedCode, setCopiedCode] = useState<string | null>(null);
   const [currentPalette, setCurrentPalette] = useState(paletteColors[8]);
 
-  const copyToClipboard = (text: string, id: string) => {
+  const _copyToClipboard = (text: string, id: string) => {
     if (typeof navigator !== "undefined" && navigator.clipboard) {
       navigator.clipboard.writeText(text);
     }
@@ -756,8 +752,8 @@ const PlayerCard = ({ player }) => (
                   <CardContent className="space-y-4">
                     <div className="flex gap-6">
                       <div className="flex flex-col gap-2 flex-1">
-                        {colors.map((color, index) => (
-                          <div key={index} className="flex items-center gap-3">
+                        {colors.map((color) => (
+                          <div key={color} className="flex items-center gap-3">
                             <div
                               className="w-10 h-10 rounded-md border shadow-sm flex-shrink-0"
                               style={{ backgroundColor: color }}
@@ -775,7 +771,7 @@ const PlayerCard = ({ player }) => (
                           variant={
                             ["beam", "marble", "pixel", "sunset", "ring"][
                               paletteIndex % 5
-                            ] as any
+                            ] as ComponentProps<typeof Avatar>["variant"]
                           }
                           colors={colors}
                           size={40}
@@ -785,7 +781,7 @@ const PlayerCard = ({ player }) => (
                           variant={
                             ["bauhaus", "fractal", "mage", "barcode", "pepe"][
                               paletteIndex % 5
-                            ] as any
+                            ] as ComponentProps<typeof Avatar>["variant"]
                           }
                           colors={colors}
                           size={40}
@@ -795,7 +791,7 @@ const PlayerCard = ({ player }) => (
                           variant={
                             ["marble", "beam", "sunset", "pixel", "ring"][
                               (paletteIndex + 2) % 5
-                            ] as any
+                            ] as ComponentProps<typeof Avatar>["variant"]
                           }
                           colors={colors}
                           size={40}
@@ -885,13 +881,17 @@ const PlayerCard = ({ player }) => (
                           >
                             <Avatar
                               name={name}
-                              variant={example.variant as any}
+                              variant={
+                                example.variant as ComponentProps<
+                                  typeof Avatar
+                                >["variant"]
+                              }
                               colors={currentPalette}
                               size={example.size}
                             />
                             <span className="text-xs text-muted-foreground text-center truncate max-w-full">
                               {name.length > 20
-                                ? name.substring(0, 20) + "..."
+                                ? `${name.substring(0, 20)}...`
                                 : name}
                             </span>
                           </div>

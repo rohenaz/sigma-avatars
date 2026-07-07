@@ -1,20 +1,25 @@
-import * as React from 'react';
-import { generateId, getBoolean, getRandomColor, getUnit, hashCode } from '../utilities';
-import type { AvatarProps } from './types';
+import {
+  generateId,
+  getBoolean,
+  getRandomColor,
+  getUnit,
+  hashCode,
+} from "../utilities";
+import type { AvatarProps } from "./types";
 
 const ELEMENTS = 4;
 const SIZE = 80;
 
 function generateColors(name: string, colors: string[]) {
   const numFromName = hashCode(name);
-  const range = colors && colors.length;
+  const range = colors.length;
 
   const elementsProperties = Array.from({ length: ELEMENTS }, (_, i) => ({
     color: getRandomColor(numFromName + i, colors, range),
+    isSquare: getBoolean(numFromName, 2),
+    rotate: getUnit(numFromName * (i + 1), 360),
     translateX: getUnit(numFromName * (i + 1), SIZE / 2 - (i + 17), 1),
     translateY: getUnit(numFromName * (i + 1), SIZE / 2 - (i + 17), 2),
-    rotate: getUnit(numFromName * (i + 1), 360),
-    isSquare: getBoolean(numFromName, 2),
   }));
 
   return elementsProperties;
@@ -28,19 +33,19 @@ const AvatarBauhaus = ({
   ...otherProps
 }: AvatarProps) => {
   const properties = generateColors(name, colors);
-  const maskID = generateId(name, 'bauhaus-mask');
+  const maskID = generateId(name, "bauhaus-mask");
 
   return (
     <svg
       fill="none"
       height={size}
       role="img"
-      viewBox={'0 0 ' + SIZE + ' ' + SIZE}
+      viewBox={`0 0 ${SIZE} ${SIZE}`}
       width={size}
       xmlns="http://www.w3.org/2000/svg"
       {...otherProps}
     >
-      {title && <title>{name}</title>}
+      {title ? <title>{name}</title> : null}
       <mask
         height={SIZE}
         id={maskID}
@@ -49,12 +54,7 @@ const AvatarBauhaus = ({
         x={0}
         y={0}
       >
-        <rect
-          fill="#FFFFFF"
-          height={SIZE}
-          
-          width={SIZE}
-        />
+        <rect fill="#FFFFFF" height={SIZE} width={SIZE} />
       </mask>
       <g mask={`url(#${maskID})`}>
         <rect
@@ -66,17 +66,17 @@ const AvatarBauhaus = ({
           height={properties[1].isSquare ? SIZE : SIZE / 8}
           style={{ fill: properties[1].color }}
           transform={
-            'translate(' +
+            "translate(" +
             properties[1].translateX +
-            ' ' +
+            " " +
             properties[1].translateY +
-            ') rotate(' +
+            ") rotate(" +
             properties[1].rotate +
-            ' ' +
+            " " +
             SIZE / 2 +
-            ' ' +
+            " " +
             SIZE / 2 +
-            ')'
+            ")"
           }
           width={SIZE}
           x={(SIZE - 60) / 2}
@@ -88,28 +88,28 @@ const AvatarBauhaus = ({
           r={SIZE / 5}
           style={{ fill: properties[2].color }}
           transform={
-            'translate(' +
+            "translate(" +
             properties[2].translateX +
-            ' ' +
+            " " +
             properties[2].translateY +
-            ')'
+            ")"
           }
         />
         <line
           strokeWidth={2}
           style={{ stroke: properties[3].color }}
           transform={
-            'translate(' +
+            "translate(" +
             properties[3].translateX +
-            ' ' +
+            " " +
             properties[3].translateY +
-            ') rotate(' +
+            ") rotate(" +
             properties[3].rotate +
-            ' ' +
+            " " +
             SIZE / 2 +
-            ' ' +
+            " " +
             SIZE / 2 +
-            ')'
+            ")"
           }
           x1={0}
           x2={SIZE}

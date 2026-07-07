@@ -1,80 +1,86 @@
-import React from 'react';
-import AvatarBarcode from './components/avatar-barcode';
-import AvatarBauhaus from './components/avatar-bauhaus';
-import AvatarBeam from './components/avatar-beam';
-import AvatarFractal from './components/avatar-fractal';
-import AvatarMage from './components/avatar-mage';
-import AvatarMarble from './components/avatar-marble';
-import AvatarPepe from './components/avatar-pepe';
-import AvatarPixel from './components/avatar-pixel';
-import AvatarRing from './components/avatar-ring';
-import AvatarSunset from './components/avatar-sunset';
-import type { AvatarProps } from './components/types';
-import { defaultColors } from './utilities';
+import type React from "react";
+import AvatarBarcode from "./components/avatar-barcode";
+import AvatarBauhaus from "./components/avatar-bauhaus";
+import AvatarBeam from "./components/avatar-beam";
+import AvatarFractal from "./components/avatar-fractal";
+import AvatarMage from "./components/avatar-mage";
+import AvatarMarble from "./components/avatar-marble";
+import AvatarPepe from "./components/avatar-pepe";
+import AvatarPixel from "./components/avatar-pixel";
+import AvatarRing from "./components/avatar-ring";
+import AvatarSunset from "./components/avatar-sunset";
+import type { AvatarProps } from "./components/types";
+import { defaultColors } from "./utilities";
+
+const ADVANCED_CSS_COLOR_REGEX = /oklch\(|var\(--/i;
+const LEADING_HASH_REGEX = /^#/;
 
 const AVATAR_VARIANTS = {
-  pixel: AvatarPixel,
+  barcode: AvatarBarcode,
   bauhaus: AvatarBauhaus,
-  ring: AvatarRing,
   beam: AvatarBeam,
-  sunset: AvatarSunset,
-  marble: AvatarMarble,
   fractal: AvatarFractal,
   mage: AvatarMage,
-  barcode: AvatarBarcode,
+  marble: AvatarMarble,
   pepe: AvatarPepe,
+  pixel: AvatarPixel,
+  ring: AvatarRing,
+  sunset: AvatarSunset,
 };
 
 const Avatar = ({
-  variant = 'marble',
+  variant = "marble",
   colors = defaultColors,
-  name = 'Clara Barton',
+  name = "Clara Barton",
   title = false,
   size,
   backgrounds,
   api,
-  className = 'rounded-md',
+  className = "rounded-md",
   ...otherProps
 }: AvatarProps & { variant?: keyof typeof AVATAR_VARIANTS }) => {
   // If API is provided, render as an img element
   if (api) {
     const hasAdvancedCssColors = (colors || []).some((color) =>
-      /oklch\(|var\(--/i.test(String(color)),
+      ADVANCED_CSS_COLOR_REGEX.test(String(color))
     );
     // Check if api is a full URL with params or just the base endpoint
-    const isFullUrl = api.includes('?');
+    const isFullUrl = api.includes("?");
     let finalUrl = api;
-    
+
     if (!isFullUrl) {
       // Build params if api is just the endpoint
       const params = new URLSearchParams({
         name,
+        size: size?.toString() || "80",
+        title: title?.toString() || "false",
         variant,
-        size: size?.toString() || '80',
-        title: title?.toString() || 'false',
         // Keep raster format for basic colors, fallback to SVG for advanced CSS color functions
-        ...(!hasAdvancedCssColors && { format: 'webp' }),
-        ...(colors && colors.length > 0 && { 
-          colors: colors.map(c => c.replace(/^#/, '')).join(',')
-        }),
+        ...(!hasAdvancedCssColors && { format: "webp" }),
+        ...(colors &&
+          colors.length > 0 && {
+            colors: colors
+              .map((c) => c.replace(LEADING_HASH_REGEX, ""))
+              .join(","),
+          }),
       });
       finalUrl = `${api}?${params}`;
     }
-    
-    
-    const imgSize = typeof size === 'number' ? size : parseInt(size || '80', 10);
-    
+
+    const imgSize =
+      typeof size === "number" ? size : Number.parseInt(size || "80", 10);
+
     // Extract only HTML-compatible props
     const { style } = otherProps;
-    
+
     return (
       <img
-        src={finalUrl}
         alt={name}
-        width={imgSize}
-        height={imgSize}
         className={className as string}
+        height={imgSize}
+        src={finalUrl}
         style={style as React.CSSProperties}
+        width={imgSize}
       />
     );
   }
@@ -84,12 +90,12 @@ const Avatar = ({
 
   return (
     <AvatarComponent
+      backgrounds={backgrounds}
+      className={className}
       colors={colors}
       name={name}
       size={size}
       title={title}
-      backgrounds={backgrounds}
-      className={className}
       {...otherProps}
     />
   );
@@ -97,8 +103,15 @@ const Avatar = ({
 
 export default Avatar;
 
+// Export background patterns
+export {
+  type BackgroundPattern,
+  PATTERN_CATEGORIES,
+  PATTERN_NAMES,
+  PATTERN_REGISTRY,
+} from "./backgrounds";
 // Export types and utilities for consumers
-export type { AvatarProps, Color, ColorPalette } from './components/types';
+export type { AvatarProps, Color, ColorPalette } from "./components/types";
 export {
   defaultColors,
   isCssVariable,
@@ -109,12 +122,4 @@ export {
   paletteToArray,
   shadcnColorPrefixColors,
   shadcnColors,
-} from './utilities';
-
-// Export background patterns
-export {
-  PATTERN_NAMES,
-  PATTERN_CATEGORIES,
-  PATTERN_REGISTRY,
-  type BackgroundPattern,
-} from './backgrounds';
+} from "./utilities";

@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.0.6] - 2026-07-07
+
+### Changed
+- Repo-wide lint cleanup to zero diagnostics under the ultracite Biome preset (2,732 → 0): unused imports/vars removed, stable React keys, exhaustive-deps corrections, a11y fixes in the playground, template literals, and type tightening. No changes to rendered SVG output — verified by the full test suite, the id-collision regression check, and visual render of all 10 variants.
+- Biome config: domain-appropriate rule exceptions documented in biome.jsonc (bitwise ops required by the hash functions; package barrel is the public API; optional `title` prop governs SVG accessibility).
+
 ## [0.0.5] - 2026-07-07
 
 ### Fixed

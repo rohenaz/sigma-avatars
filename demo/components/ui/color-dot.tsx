@@ -20,6 +20,7 @@ const ColorDot = ({ value, onChange }: ColorDotProps) => {
         className="w-8 h-8 rounded-full cursor-pointer border-2 border-border hover:border-muted-foreground transition-colors shadow-sm"
         onClick={() => setPickerIsOpen(!pickerIsOpen)}
         style={{ backgroundColor: value }}
+        type="button"
         aria-label={`Color: ${value}`}
       />
       {pickerIsOpen && (

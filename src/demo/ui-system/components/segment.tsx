@@ -1,5 +1,5 @@
-import styled from 'styled-components';
-import Button from './button';
+import styled from "styled-components";
+import Button from "./button";
 
 const SegmentGroupWrapper = styled.div`
   background-color: var(--c-button);
@@ -14,32 +14,30 @@ interface SegmentWrapperProps {
 
 const SegmentWrapper = styled(Button)<SegmentWrapperProps>`
   &:not(:hover) {
-    background-color: ${(p) => (p.isSelected ? 'var(--c-background)' : 'transparent')};
+    background-color: ${(p) => (p.isSelected ? "var(--c-background)" : "transparent")};
   }
 
-  ${(p) => p.isSelected && 'background-color: var(--c-background)'};
-  ${(p) => !p.isSelected && 'color: var(--c-fade)'};
+  ${(p) => p.isSelected && "background-color: var(--c-background)"};
+  ${(p) => !p.isSelected && "color: var(--c-fade)"};
 `;
 
 interface SegmentGroupProps {
   children?: React.ReactNode;
 }
 
-export const SegmentGroup = ({ children }: SegmentGroupProps) => {
-  return <SegmentGroupWrapper>{children}</SegmentGroupWrapper>;
-};
+export const SegmentGroup = ({ children }: SegmentGroupProps) => (
+  <SegmentGroupWrapper>{children}</SegmentGroupWrapper>
+);
 
 interface SegmentProps extends React.HTMLAttributes<HTMLDivElement> {
   children?: React.ReactNode;
   isSelected?: boolean;
 }
 
-const Segment = ({ children, isSelected, ...props }: SegmentProps) => {
-  return (
-    <SegmentWrapper isSelected={isSelected} {...props}>
-      {children}
-    </SegmentWrapper>
-  );
-};
+const Segment = ({ children, isSelected, ...props }: SegmentProps) => (
+  <SegmentWrapper isSelected={isSelected} {...props}>
+    {children}
+  </SegmentWrapper>
+);
 
 export default Segment;
