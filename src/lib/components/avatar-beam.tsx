@@ -56,7 +56,7 @@ const AvatarBeam = ({
   ...otherProps
 }: AvatarProps) => {
   const data = generateData(name, colors);
-  const maskID = generateId(name, 'mask');
+  const maskID = generateId(name, 'beam-mask');
 
   return (
     <svg

@@ -5,7 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.0.3] - 2025-08-24
+## [0.0.5] - 2026-07-07
+
+### Fixed
+- SVG def id collisions between variants sharing the same `name` seed. Mask, filter, pattern, clip, and gradient ids are now scoped per variant (e.g. `avatar-<hash>-bauhaus-mask`). Previously, rendering multiple variants with the same name on one page caused `url(#id)` to resolve to the first avatar's defs — beam's 36x36 mask clipped bauhaus/barcode to a corner wedge, and marble/mage shared a filter id.
+- Legacy `square` prop usage in tests replaced with the `className`-based shape API, removing a React DOM attribute warning.
+- Repo lint config: `biome.jsonc` now extends `ultracite/biome/core` + `ultracite/biome/react` (ultracite 7.x export layout) and `demo/biome.json` is marked as a nested config for Biome 2.5.
 
 ## [0.0.4] - 2026-03-04
 
@@ -13,6 +18,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Prevent server-side rendering avatars from returning black squares with CSS/modern theme color formats (including `oklch(...)`) when using the `api` prop.
 - Adjusted server image format negotiation to fallback to SVG when color values are not guaranteed to be WebP-safe.
 - Updated project dependencies in root, demo, and package workspaces.
+
+## [0.0.3] - 2025-08-24
 
 ### Added
 - Default WebP format for server-side rendering when using the `api` prop for better performance

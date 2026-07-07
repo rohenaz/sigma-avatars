@@ -289,11 +289,11 @@ const AvatarFractal = ({
   animate,
   ...otherProps
 }: FractalAvatarProps) => {
-  const maskID = generateId(name, 'mask');
-  const clipID = generateId(name, 'clip');
-  const gradientBgID = generateId(name, 'gradient-bg');
-  const gradientFgID = generateId(name, 'gradient-fg');
-  const gradientAccentID = generateId(name, 'gradient-accent');
+  const maskID = generateId(name, 'fractal-mask');
+  const clipID = generateId(name, 'fractal-clip');
+  const gradientBgID = generateId(name, 'fractal-gradient-bg');
+  const gradientFgID = generateId(name, 'fractal-gradient-fg');
+  const gradientAccentID = generateId(name, 'fractal-gradient-accent');
   const num = hashCode(name);
 
   // Decide if we use gradients or solid colors (20% chance for gradients)

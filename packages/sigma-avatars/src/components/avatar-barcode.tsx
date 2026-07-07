@@ -13,8 +13,8 @@ const AvatarBarcode = ({
   ...otherProps
 }: AvatarProps) => {
   const numFromName = hashCode(name);
-  const maskID = generateId(name, 'mask');
-  const patternID = generateId(name, 'pattern');
+  const maskID = generateId(name, 'barcode-mask');
+  const patternID = generateId(name, 'barcode-pattern');
 
   return (
     <svg

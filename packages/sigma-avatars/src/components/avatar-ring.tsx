@@ -33,7 +33,7 @@ const AvatarRing = ({
   ...otherProps
 }: AvatarProps) => {
   const ringColors = generateColors(name, colors);
-  const maskID = generateId(name, 'mask');
+  const maskID = generateId(name, 'ring-mask');
 
   return (
     <svg

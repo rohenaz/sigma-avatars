@@ -13,9 +13,9 @@ const AvatarMarble = ({
   ...otherProps
 }: AvatarProps) => {
   const seed = hashCode(name);
-  const maskID = generateId(name, 'mask');
-  const filterID = generateId(name, 'filter');
-  const patternID = generateId(name, 'pattern');
+  const maskID = generateId(name, 'marble-mask');
+  const filterID = generateId(name, 'marble-filter');
+  const patternID = generateId(name, 'marble-pattern');
 
   return (
     <svg

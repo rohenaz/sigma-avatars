@@ -39,13 +39,13 @@ describe('Avatar Component Rendering', () => {
   });
 
   test('should render square avatar with no border radius', () => {
-    const svg = renderAvatar({ name: 'Test User', square: true });
+    const svg = renderAvatar({ name: 'Test User', className: 'rounded-none' });
     // Square avatars should not have rounded corners
     expect(svg).not.toContain('rx="200"');
   });
 
   test('should render round avatar with border radius', () => {
-    const svg = renderAvatar({ name: 'Test User', square: false, size: 100 });
+    const svg = renderAvatar({ name: 'Test User', className: 'rounded-full', size: 100 });
     // Round avatars use mask with circular shape
     expect(svg).toContain('mask');
   });

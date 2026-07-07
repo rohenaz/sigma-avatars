@@ -58,9 +58,9 @@ const AvatarMage = ({
   size,
   ...otherProps
 }: AvatarProps) => {
-  const maskID = generateId(name, 'mask');
-  const filterID = generateId(name, 'filter');
-  const patternID = generateId(name, 'pattern');
+  const maskID = generateId(name, 'mage-mask');
+  const filterID = generateId(name, 'mage-filter');
+  const patternID = generateId(name, 'mage-pattern');
   const num = hashCode(name);
 
   // Deterministic parameters

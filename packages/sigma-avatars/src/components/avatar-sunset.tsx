@@ -25,7 +25,7 @@ const AvatarSunset = ({
 }: AvatarProps) => {
   const sunsetColors = generateColors(name, colors);
   const nameWithoutSpace = name.replace(/\s/g, '');
-  const maskID = generateId(name, 'mask');
+  const maskID = generateId(name, 'sunset-mask');
 
   return (
     // biome-ignore lint/a11y/noSvgWithoutTitle: title is available when provided

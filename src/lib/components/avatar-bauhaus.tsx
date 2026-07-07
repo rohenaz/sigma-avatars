@@ -28,7 +28,7 @@ const AvatarBauhaus = ({
   ...otherProps
 }: AvatarProps) => {
   const properties = generateColors(name, colors);
-  const maskID = generateId(name, 'mask');
+  const maskID = generateId(name, 'bauhaus-mask');
 
   return (
     <svg

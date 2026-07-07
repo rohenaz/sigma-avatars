@@ -24,7 +24,7 @@ const AvatarPixel = ({
   ...otherProps
 }: AvatarProps) => {
   const pixelColors = generateColors(name, colors);
-  const maskID = generateId(name, 'mask');
+  const maskID = generateId(name, 'pixel-mask');
 
   return (
     <svg

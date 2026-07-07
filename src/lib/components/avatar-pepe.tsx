@@ -76,7 +76,7 @@ const EyeGroup: React.FC<{
   name: string;
   eyeId: string;
 }> = ({ cx, cy, rx, ry, lidDrop, outline, pupil, name, eyeId }) => {
-  const uid = generateId(name, `eye-${eyeId}`);
+  const uid = generateId(name, `pepe-eye-${eyeId}`);
 
   return (
     <g>
@@ -197,7 +197,7 @@ export default function AvatarPepe({
 }: AvatarProps) {
   const n = hashCode(name);
   const range = colors.length;
-  const maskID = generateId(name, 'mask');
+  const maskID = generateId(name, 'pepe-mask');
 
   // Face style selection - 15% chance of full-canvas face (no border) - made more rare
   const isFullFace = getUnit(n + 200, 100) < 15;
@@ -337,7 +337,7 @@ export default function AvatarPepe({
     cy = SIZE / 2;
 
   // Pattern IDs
-  const patternID = generateId(name, 'pattern');
+  const patternID = generateId(name, 'pepe-pattern');
 
   return (
     <svg
